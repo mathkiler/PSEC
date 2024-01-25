@@ -1,19 +1,51 @@
-import csv
-from math import sqrt
-from random import choice, randint, random
-from datetime import datetime, date
-from time import sleep
+
+
+
+
+
+
+###################################################################################
+#                                                                                 #
+#                                                                                 #
+#                                                                                 #
+#                           ██████╗ ███████╗███████╗ ██████╗                      #
+#                           ██╔══██╗██╔════╝██╔════╝██╔════╝                      #
+#                           ██████╔╝███████╗█████╗  ██║                           #
+#                           ██╔═══╝ ╚════██║██╔══╝  ██║                           #
+#                           ██║     ███████║███████╗╚██████╗                      #
+#                           ╚═╝     ╚══════╝╚══════╝ ╚═════╝                      #
+#                                                                                 #
+#                                                                                 #                                                                                                                                      #
+#                    by : Cucurathieu, Teoad, philzAlicia, CellBrioche            #
+#                                                                                 #
+#                                                                                 #
+###################################################################################
+
+
+
+
+
+
+
+
+
+
+from random import randint, random
 from discord.ext import commands
+from datetime import date
+from time import sleep
+from math import sqrt
+from PIL import Image
 import discord
 import sqlite3
+import csv
 import os
-from PIL import Image
+
 
 
 
 #--|--# get la clé (token) du bot discord
-# token_discord = "OTcyODUxMTA0NDQ4NjU5NDg2.Gbv_cQ.g9Mx56ZplK_FQ1VkKKhuGKCSiVO9ZSYmyFWzHo" old
-token_discord = "MTA2NjM5OTQxMzA2MjM1NzA2Mg.G4OhY8.O-dKf0ujNADxalGPmn2sOnTKUsGvjlxJxTC9ag"
+token_discord = "MTA2NjM5OTQxMzA2MjM1NzA2Mg.G4OhY8.O-dKf0ujNADxalGPmn2sOnTKUsGvjlxJxTC9ag" #token teowbot V2
 #--|--# param bot
 intents = discord.Intents().all()
 intents.members = True
@@ -83,6 +115,8 @@ def formatage_nom_carte(nom) :
     nom = nom.replace("'", "")
     return nom
 
+
+
 #--|--# bot events
 @bot.event
 async def on_ready():
@@ -129,8 +163,8 @@ async def on_message(message):
 
 #--|--# Commande discord (admin = !nom_commande only)
 #commande e base pour afficher les options de l'utilisateur. Renvoi vers la class Voir_Commandes()
-@bot.command(name="c", help="permet d'afficher les commandes possible sous forme de boutons")
-async def c(ctx) :
+@bot.command(name="commandes", help="permet d'afficher les commandes possible sous forme de boutons")
+async def commandes(ctx) :
     test_changement_de_jour()
     await ctx.reply("Commandes possibles", view=Voir_Commandes())
 
@@ -433,7 +467,7 @@ async def mes_cartes(interaction) :
 
 
 #--|--# création des boutons d'interraction
-#bouton des commandes possible des utilisateurs
+#bouton des commandes possible des utilisateurs via la commande !commandes
 class Voir_Commandes(discord.ui.View):
     @discord.ui.button(label="Voir ses stats", style=discord.ButtonStyle.primary)
     async def first_button_callback(self, button, interaction):
