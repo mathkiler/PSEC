@@ -45,7 +45,8 @@ import os
 
 
 #--|--# get la clé (token) du bot discord
-token_discord = "MTA2NjM5OTQxMzA2MjM1NzA2Mg.G4OhY8.O-dKf0ujNADxalGPmn2sOnTKUsGvjlxJxTC9ag" #token teowbot V2
+f = open("token_discord.token", "r")
+token_discord = f.readline()
 #--|--# param bot
 intents = discord.Intents().all()
 intents.members = True
@@ -54,7 +55,7 @@ bot = commands.Bot(command_prefix='!',intents=intents)
 
 
 ###########  USE BDD TEST  ##########
-db_test = True
+db_test = False
 if db_test :
     db_used = "database_test.db"
 else :
@@ -65,6 +66,7 @@ else :
 #--|--# lists/variables
 admin_id_user = [382877512302067712, 408755725796376579, 461802780277997579]
 nom_rarete = ["commun", "peu courant", "rare", "épique", "héroïque"]
+liste_comandes = ["!commandes", "!creation_players", "!force_change_jour", "!ajout_carte"]
 DATE_actuel = date.today()  #date du jour
 cureurs = [] #liste des curseurs des joueurs lorsqu'ils affichent leur carte une par une
 
@@ -94,9 +96,10 @@ def admin_restrict(ctx) :
 #fonction qui permet de voir si on a changé de jour. (elle sera présente devant chaque actions) (elle update tout les joueurs en fonction du nombre e jour passé)
 #PROBLEME = Si le bot est inactif ou crash au moment de changer de jour jusqu'à la prochaine action, le changement ne prendra pas effet
 def test_changement_de_jour() :
+    global DATE_actuel
     jour_diff = int((date.today()-DATE_actuel).days)
     if int(jour_diff) > 0 :
-        print("alors non")
+        DATE_actuel = date.today()  #date du jour
         baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"""UPDATE Joueur 
@@ -116,6 +119,13 @@ def formatage_nom_carte(nom) :
     return nom
 
 
+#test si un joueur écrit une commande pour ne pa lui ajouter de fragment auquel cas
+def test_joueur_ecrit_commande(msg) :
+    for com in liste_comandes :
+        if com in msg :
+            return True
+    return False
+
 
 #--|--# bot events
 @bot.event
@@ -134,7 +144,7 @@ async def on_member_join(member):
     members_in_dbb = [result[k][0] for k in range(len(result))] #permet de réorganiser en une liste d'élément dont on a besoin (ici les id_player)
     #on vérifie quand même si le joueur n'est pas déjà sur la BDD (au cas où un joueur rejoins et quitte plusieurs fois le serveur)
     if member.id not in members_in_dbb :
-        curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp) VALUES (?, ?, ?, ?)", (member.id, 0, 0, 0))
+        curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp, curseur_carte) VALUES (?, ?, ?, ?, ?)", (member.id, 0, 0, 0, 0))
         baseDeDonnees.commit()
     baseDeDonnees.close()
 
@@ -143,21 +153,22 @@ async def on_member_join(member):
 @bot.event
 async def on_message(message):
     test_changement_de_jour()
-    id_user = message.author.id
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-    curseur = baseDeDonnees.cursor()
-    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
-    resultat = curseur.fetchone()
-    player_stats = {"id_discord_player" : resultat[0], "fragment" : resultat[1], "fragment_cumule" : resultat[2], "xp" : resultat[3]}
-    player_stats["xp"]+=1
-    if player_stats["fragment_cumule"] <= 50 : #si le joueur n'a pas ateint son nombre max de fragment obtenut par messge par jour, on lui ajoute un fragment
-        player_stats["fragment"]+=1
-        player_stats["fragment_cumule"]+=1
-    curseur.execute(f"""UPDATE Joueur 
-                    SET fragment = {player_stats['fragment']}, fragment_cumule = {player_stats['fragment_cumule']}, xp = {player_stats['xp']}
-                    WHERE id_discord_player == {player_stats['id_discord_player']}""")
-    baseDeDonnees.commit()
-    baseDeDonnees.close()
+    if test_joueur_ecrit_commande(message.content) == False :
+        id_user = message.author.id
+        baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+        curseur = baseDeDonnees.cursor()
+        curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+        resultat = curseur.fetchone()
+        player_stats = {"id_discord_player" : resultat[0], "fragment" : resultat[1], "fragment_cumule" : resultat[2], "xp" : resultat[3]}
+        player_stats["xp"]+=1
+        if player_stats["fragment_cumule"] <= 50 : #si le joueur n'a pas ateint son nombre max de fragment obtenut par messge par jour, on lui ajoute un fragment
+            player_stats["fragment"]+=1
+            player_stats["fragment_cumule"]+=1
+        curseur.execute(f"""UPDATE Joueur 
+                        SET fragment = {player_stats['fragment']}, fragment_cumule = {player_stats['fragment_cumule']}, xp = {player_stats['xp']}
+                        WHERE id_discord_player == {player_stats['id_discord_player']}""")
+        baseDeDonnees.commit()
+        baseDeDonnees.close()
     await bot.process_commands(message)
 
 
@@ -204,11 +215,16 @@ async def creation_players(ctx) :
             curseur.execute("SELECT id_discord_player FROM Joueur")
             result = curseur.fetchall()
             members_in_dbb = [result[k][0] for k in range(len(result))]
+            curseur.execute(f"SELECT id FROM Cartes ")
+            result = curseur.fetchall()
+            id_cartes = [result[k][0] for k in range(len(result))]
             #ensuite, on regarde tout les gens sur le serveur et si un joueur n'es pas dans la BDD, il y est ajouté avec ses stats à 0
             members = set(bot.get_all_members())
             for member in members :
                 if member.id not in members_in_dbb :
-                    curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp) VALUES (?, ?, ?, ?)", (member.id, 0, 0, 0))
+                    curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp, curseur_carte) VALUES (?, ?, ?, ?, ?)", (member.id, 0, 0, 0, 0))
+                    for id in id_cartes :
+                        curseur.execute("INSERT INTO carte_possede (id_discord_player, id, nombre_carte_possede) VALUES (?, ?, ?)", (member.id, id, 0))    
             baseDeDonnees.commit()
             baseDeDonnees.close()
             await ctx.send("Creation des joueurs effectué.")
@@ -235,21 +251,19 @@ async def voir_stats(interaction, le_cacher) :
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
-    curseur.execute(f"SELECT count(*) FROM carte_possede WHERE id_discord_player == {id_user}")
-    nb_cartes_avec_doublon = curseur.fetchone()[0]
-    curseur.execute(f"SELECT count(nom) FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} group by nom")
-    nb_cartes_sans_doublon = len(curseur.fetchall())
-    curseur.execute(f"SELECT nom, rarete FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user}")
+    curseur.execute(f"SELECT nombre_carte_possede FROM carte_possede WHERE id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    nb_cartes_avec_doublon = curseur.fetchall()
+    nb_cartes_avec_doublon = sum([nb_cartes_avec_doublon[k][0] for k in range(len(nb_cartes_avec_doublon))])
+    curseur.execute(f"SELECT count(*) FROM carte_possede WHERE id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    nb_cartes_sans_doublon = curseur.fetchone()[0]
+    curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
     
     #on range les carte possédé dans leuur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
-        if carte[0] in carte_arange[carte[1]] :
-            carte_arange[carte[1]][carte[0]]+=1
-        else :
-            carte_arange[carte[1]][carte[0]] = 1
+        carte_arange[carte[1]][carte[0]] = carte[2]
 
     txt_print_cartes = ""
     for rarete in carte_arange :
@@ -306,7 +320,9 @@ async def opening(interaction) :
         curseur.execute(f"""UPDATE Joueur 
                     SET fragment = {resultat_user_stats[1]-5}
                     WHERE id_discord_player == {id_user}""")
-        curseur.execute("INSERT INTO carte_possede (id_discord_player, id) VALUES (?, ?)", (id_user, carte_tiree[0]))
+        curseur.execute(f"""UPDATE carte_possede 
+                    SET nombre_carte_possede = nombre_carte_possede + 1
+                    WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
         baseDeDonnees.commit()
         baseDeDonnees.close()
         #Enfin, on affiche le résultat au joueur sur discord
@@ -323,7 +339,7 @@ async def mon_album(interaction, le_montrer) :
     id_user = interaction.user.id
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
-    curseur.execute(f"SELECT nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user}")
+    curseur.execute(f"SELECT nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
     resultat_carte_possede = [resultat_carte_possede[k][0] for k in range(len(resultat_carte_possede))]
@@ -368,7 +384,7 @@ async def mes_cartes(interaction) :
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
-    curseur.execute(f"SELECT DISTINCT nom, rarete FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user}")
+    curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     nb_cartes = len(resultat_carte_possede)
     baseDeDonnees.close()
@@ -399,7 +415,7 @@ async def mes_cartes(interaction) :
             #enfin on affect la nouvelle image à un nouveau embed pour l'affecter à l'embed principal de la fonction mes_cartes
             img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
             new_file = discord.File(img_path)
-            new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}")
+            new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}")
             new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
             await interaction.response.edit_message(embed=new_embed, file=new_file) # attach the new image file with the embed
             
@@ -421,31 +437,14 @@ async def mes_cartes(interaction) :
             baseDeDonnees.commit()
             img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
             new_file = discord.File(img_path)
-            new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}")
+            new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}")
             new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
             await interaction.response.edit_message(embed=new_embed, file=new_file) # attach the new image file with the embed
             baseDeDonnees.close()
 
-    #ECHE : menu déroulant pour aller directement à l'image voulu. 
-    #Problème : le callback ne fournie pas l'information de la value selectionée
-    #     selecteur_carte = discord.ui.Select(
-    #     options=[ # the list of options from which users can choose, a required field
-    #         discord.SelectOption(
-    #             label="Vanilla",
-    #         ),
-    #         discord.SelectOption(
-    #             label="Chocolate",
-    #         ),
-    #         discord.SelectOption(
-    #             label="Strawberry",
-    #         )
-    #     ],
-    #     placeholder="Choisis un emoji...",
-    #     min_values=1,
-    #     max_values=1
-    # )
-    #     async def select_callback(interaction : discord.Interaction, select): # the function called when the user is done selecting options
-    #         print(select.value)
+        # right_button = discord.ui.Button(label="Supprimer Tout les doublon ")
+        # async def simple_right_callback(interaction : discord.Interaction):
+        #     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
 
         #on affecte les bouton à leur callbakc puis dans l'ui via add_item()
         left_button.callback = simple_left_callback
@@ -458,7 +457,7 @@ async def mes_cartes(interaction) :
         #on affiche l'image 
         img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
         file = discord.File(img_path)
-        embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}")
+        embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}")
         embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
 
         #enfin on répond à l'utilisateur par l'image, bouton...

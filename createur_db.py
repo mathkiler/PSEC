@@ -4,14 +4,14 @@ import os
 
 ####
 #Proba des cartes aléatoire
-commun=54
+commun=40
 peu_courant=25
-rare=12
-epique=6
-heroique=3
+rare=16
+epique=11
+heroique=8
 
 
-baseDeDonnees = sqlite3.connect('./assets/database/database_test.db')
+baseDeDonnees = sqlite3.connect('./assets/database/database.db')
 curseur = baseDeDonnees.cursor()
 
 
@@ -23,11 +23,13 @@ def creation_player_table() :
                     (id_discord_player INTEGER NOT NULL UNIQUE PRIMARY KEY,
                     fragment INTEGER,
                     fragment_cumule INTEGER,
-                    xp INTEGER
+                    xp INTEGER,
+                    curseur_carte INTEGER
                     )""")
                         #id_discord_player = id discord du joueur. Avec son id on peux obtenir toutes les info de ce joueur (psuedo, roles...)
                         # fragment = fragment en temps réel du joueur
                         #fragment_cumule = fragement du joueur cumulé dans la journé pour savoir quand il dépasse le max (50) valeur reset à 00h00 tout les jours
+                        #curseur_carte = utile pour savoir quel carte le joueur regarde lors u visionnage es ses cartes une par une
     baseDeDonnees.commit() 
 # creation_player_table()
 
@@ -45,6 +47,7 @@ def creation_carte_possede_table() :
     curseur.execute("""CREATE TABLE carte_possede (
                     id_discord_player INTEGER NOT NULL,
                     id INTEGER NOT NULL,
+                    nombre_carte_possede INTEGER NOT NULL,
                     FOREIGN KEY (id_discord_player) REFERENCES Joueur (id_discord_player),
                     FOREIGN KEY (id) REFERENCES Cartes (id)
     );""")
@@ -81,28 +84,38 @@ def chargement_cartes() :
     proba_rarete.extend(["héroïque" for k in range(heroique)])
     for (repertoire, sousRepertoires, fichiers) in os.walk("./assets/cartes"):
         for nom in fichiers :
-            inser_into_cartes(nom[:-4], choice(proba_rarete))
+            if "nom" != ".inconnue.png" :
+                inser_into_cartes(nom[:-4], choice(proba_rarete))
 
 
 def aff_table_cartes() :
     id_user = 461802780277997579
     rarete = "épique"
-    curseur.execute(f"SELECT count(*) FROM carte_possede WHERE id_discord_player == {id_user}")
-    nb_cartes_avec_doublon = curseur.fetchone()[0]
-    curseur.execute(f"SELECT count(nom) FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} group by nom")
-    nb_cartes_sans_doublon = len(curseur.fetchall())
-    curseur.execute(f"SELECT DISTINCT nom, rarete FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user}")
+    curseur.execute(f"SELECT nombre_carte_possede FROM carte_possede WHERE id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    nb_cartes_avec_doublon = curseur.fetchall()
+    nb_cartes_avec_doublon = sum([nb_cartes_avec_doublon[k][0] for k in range(len(nb_cartes_avec_doublon))])
+    curseur.execute(f"SELECT count(*) FROM carte_possede WHERE id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    nb_cartes_sans_doublon = curseur.fetchone()[0]
+    curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     print(nb_cartes_avec_doublon)
     print(nb_cartes_sans_doublon)
-    print(resultat_carte_possede, len(resultat_carte_possede))
+    print(resultat_carte_possede)
+
     
-    
+
+curseur.execute(f"""UPDATE carte_possede 
+            SET nombre_carte_possede = 5
+            WHERE id_discord_player == {461802780277997579} AND id == 14""")
+baseDeDonnees.commit()
 
 
-
-# curseur.execute("DELETE FROM Cartes WHERE nom ='la carte ajouté' ")
+# curseur.execute("DELETE FROM Cartes WHERE nom ='.inconnue' ")
 # baseDeDonnees.commit()
+    
+
+
+
 
 # curseur.execute(f"SELECT id_discord_player FROM Joueur")
 # result = curseur.fetchall()
@@ -120,9 +133,14 @@ def creation_des_table() :
     baseDeDonnees.commit()
 
 
-
-
+#1 : 
+# creation_des_table()
+# baseDeDonnees.commit()
+#2 : 
 # chargement_cartes()
+# baseDeDonnees.commit()
+#3 : 
+#Avec le bot fait : !creation_players (ce qui va créé les columns pour chaques joueur + alimenter la table carte_possede)
 # baseDeDonnees.commit()
 aff_table_cartes()
 
