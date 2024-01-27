@@ -30,7 +30,9 @@
 
 
 
+import asyncio
 from random import randint, random
+import threading
 from discord.ext import commands
 from datetime import date
 from time import sleep
@@ -108,6 +110,36 @@ def test_changement_de_jour() :
         baseDeDonnees.close()
 
 
+#fonction pour tester si un utilisateur est ans la BDD (test seulement)
+def test_player_in_bdd(id_user) :
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute("SELECT id_discord_player FROM Joueur")
+    result = curseur.fetchall()
+    baseDeDonnees.close()
+    members_in_dbb = [result[k][0] for k in range(len(result))]
+    if id_user in members_in_dbb :
+        return True
+    else :
+        return False
+
+
+#fonction pour tester si un utilisatzur est dans la BDD. Si oui, on lui rajoute ddans la bdd les info nécessaire
+def test_cration_bdd_user(id_user) :
+    if test_player_in_bdd(id_user) == False:
+        baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+        curseur = baseDeDonnees.cursor()
+        curseur.execute(f"SELECT id FROM Cartes ")
+        result = curseur.fetchall()
+        id_cartes = [result[k][0] for k in range(len(result))]
+        #ensuite, on regarde tout les gens sur le serveur et si un joueur n'es pas dans la BDD, il y est ajouté avec ses stats à 0
+        curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp, curseur_carte) VALUES (?, ?, ?, ?, ?)", (id_user, 0, 0, 0, 0))
+        for id in id_cartes :
+            curseur.execute("INSERT INTO carte_possede (id_discord_player, id, nombre_carte_possede) VALUES (?, ?, ?)", (id_user, id, 0))    
+        baseDeDonnees.commit()
+        baseDeDonnees.close()
+
+
 #fonction pour formater le nom de l'image en nom utilisate en tant qu'url pour afficher l'image ans un embed
 def formatage_nom_carte(nom) :
     nom = nom.replace(" ", "_")
@@ -133,27 +165,11 @@ async def on_ready():
     print("\n----------------\nle bot est radis\n----------------\n")
 
 
-# à chaques personne qui rejoin le serveur, on l'ajoute à la BDD
-@bot.event
-async def on_member_join(member):
-    test_changement_de_jour()
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-    curseur = baseDeDonnees.cursor()
-    curseur.execute("SELECT id_discord_player FROM Joueur")
-    result = curseur.fetchall()
-    members_in_dbb = [result[k][0] for k in range(len(result))] #permet de réorganiser en une liste d'élément dont on a besoin (ici les id_player)
-    #on vérifie quand même si le joueur n'est pas déjà sur la BDD (au cas où un joueur rejoins et quitte plusieurs fois le serveur)
-    if member.id not in members_in_dbb :
-        curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp, curseur_carte) VALUES (?, ?, ?, ?, ?)", (member.id, 0, 0, 0, 0))
-        baseDeDonnees.commit()
-    baseDeDonnees.close()
-
-
 #à chaque fois qu'un joueur écrit un message, on va incrémenter ses fragments et xp
 @bot.event
 async def on_message(message):
     test_changement_de_jour()
-    if test_joueur_ecrit_commande(message.content) == False :
+    if test_joueur_ecrit_commande(message.content) == False and test_player_in_bdd(message.author.id):
         id_user = message.author.id
         baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
         curseur = baseDeDonnees.cursor()
@@ -174,8 +190,9 @@ async def on_message(message):
 
 #--|--# Commande discord (admin = !nom_commande only)
 #commande e base pour afficher les options de l'utilisateur. Renvoi vers la class Voir_Commandes()
-@bot.command(name="commandes", help="permet d'afficher les commandes possible sous forme de boutons")
-async def commandes(ctx) :
+@bot.command(name="c", help="permet d'afficher les commandes possible sous forme de boutons")
+async def c(ctx) :
+    test_cration_bdd_user(ctx.message.author.id)
     test_changement_de_jour()
     await ctx.reply("Commandes possibles", view=Voir_Commandes())
 
@@ -203,35 +220,6 @@ async def ajout_carte(ctx) :
 
 
 
-
-#commande pour ajouter les joueur (alimenter la BDD en premier lieu) L'effectuer une 2ème fois ne changera rien à part s'il y a des nouveaux membres
-@bot.command(name="creation_players", help="admin only : permet d'ajouter tout les joueurs du serv dans la BDD (permet aussi une update des nouveaux)")
-async def creation_players(ctx) :
-    if admin_restrict(ctx) :
-        try :
-            #on commencce par choper tout les id des joueurs déjà présent dans la BDD
-            baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-            curseur = baseDeDonnees.cursor()
-            curseur.execute("SELECT id_discord_player FROM Joueur")
-            result = curseur.fetchall()
-            members_in_dbb = [result[k][0] for k in range(len(result))]
-            curseur.execute(f"SELECT id FROM Cartes ")
-            result = curseur.fetchall()
-            id_cartes = [result[k][0] for k in range(len(result))]
-            #ensuite, on regarde tout les gens sur le serveur et si un joueur n'es pas dans la BDD, il y est ajouté avec ses stats à 0
-            members = set(bot.get_all_members())
-            for member in members :
-                if member.id not in members_in_dbb :
-                    curseur.execute("INSERT INTO Joueur (id_discord_player, fragment, fragment_cumule, xp, curseur_carte) VALUES (?, ?, ?, ?, ?)", (member.id, 0, 0, 0, 0))
-                    for id in id_cartes :
-                        curseur.execute("INSERT INTO carte_possede (id_discord_player, id, nombre_carte_possede) VALUES (?, ?, ?)", (member.id, id, 0))    
-            baseDeDonnees.commit()
-            baseDeDonnees.close()
-            await ctx.send("Creation des joueurs effectué.")
-        except Exception as e :
-            await ctx.send(f"Une erreur est survenue : ```{e}```")
-
-
 #commande pour forcer les effets pour passer d'un jour à un autre
 @bot.command(name="force_change_jour", help="admin only : force les effets pour passer d'un jour à un autre")
 async def force_change_jour(ctx) :
@@ -247,6 +235,7 @@ async def force_change_jour(ctx) :
 #--|--# toutes commandes seront accéssible via des boutons (créé dans les classes plus bas). Les fonctions suivantes sont les interactions avecles boutons
 async def voir_stats(interaction, le_cacher) :
     id_user = interaction.user.id
+    test_cration_bdd_user(id_user)
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
@@ -260,7 +249,7 @@ async def voir_stats(interaction, le_cacher) :
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
     
-    #on range les carte possédé dans leuur carégorie pour en même temps compter les doublons de chaques cartes
+    #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
         carte_arange[carte[1]][carte[0]] = carte[2]
@@ -286,57 +275,68 @@ Cartes obtenu :
 
 
 #fonction pour ouvrir un caisse
-async def opening(interaction) :
-    #on chope les info du joueur
-    id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-    curseur = baseDeDonnees.cursor()
-    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
-    resultat_user_stats = curseur.fetchone()
 
-    if resultat_user_stats[1] < 5 :
-            await interaction.response.send_message(f"Fond insuffisant. Il vous manque {5-resultat_user_stats[1]} fragments", ephemeral=True)
-    else :
-        #on lit le taux de drop en fonction du niveau du joueur
-        with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
-            data = list(csv.reader(csvfile, delimiter=","))[1:-1]
-        lvl_column = [int(j.pop(-2)) for j in data]
-        for lvl in lvl_column :
-            if lvl >= resultat_user_stats[3] :
-                break
-        #operations qui permet d'avoir la liste des proba selon le niveau du joueur
-        proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
-        #partie qui va piocher la carte en fonction des proba du niveau du joueur
-        random_number = random()*100
-        cumule_proba = 0
-        for prob in proba_box :
-            if prob+cumule_proba >= random_number :
-                break
-            cumule_proba+=prob
-        index_box = proba_box.index(prob)
-        #on affecte tout les changements à la BDD
-        curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
-        carte_tiree = curseur.fetchone()
-        curseur.execute(f"""UPDATE Joueur 
-                    SET fragment = {resultat_user_stats[1]-5}
-                    WHERE id_discord_player == {id_user}""")
-        curseur.execute(f"""UPDATE carte_possede 
-                    SET nombre_carte_possede = nombre_carte_possede + 1
-                    WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
-        baseDeDonnees.commit()
-        baseDeDonnees.close()
-        #Enfin, on affiche le résultat au joueur sur discord
-        await interaction.response.send_message(file=discord.File('./assets/animations/open-box.gif'))
-        sleep(6) #PROBLEME = le bot est bloqué et ne peut rien faire pendant 6 secondes
-        # await msg.delete() ne fonctionne pas PROBLEME = Le gif du case oppening ne s'éfface pas
-        await interaction.followup.send(f"Vous avez tiré une carte {carte_tiree[2]} !")
-        await interaction.followup.send(file=discord.File(f'./assets/cartes/{carte_tiree[1]}.png'))
-        
+def between_callback(interaction) :        
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    loop.run_until_complete(opening(interaction))
+    loop.close()
+
+
+async def opening(interaction) :
+        # #on chope les info du joueur
+        # id_user = interaction.user.id
+        # test_cration_bdd_user(id_user)
+        # baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+        # curseur = baseDeDonnees.cursor()
+        # curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+        # resultat_user_stats = curseur.fetchone()
+
+        # if resultat_user_stats[1] < 5 :
+        #         await interaction.response.send_message(f"Fond insuffisant. Il vous manque {5-resultat_user_stats[1]} fragments", ephemeral=True)
+        # else :
+        #     #on lit le taux de drop en fonction du niveau du joueur
+        #     with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
+        #         data = list(csv.reader(csvfile, delimiter=","))[1:-1]
+        #     lvl_column = [int(j.pop(-2)) for j in data]
+        #     for lvl in lvl_column :
+        #         if lvl >= resultat_user_stats[3] :
+        #             break
+        #     #operations qui permet d'avoir la liste des proba selon le niveau du joueur
+        #     proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
+        #     #partie qui va piocher la carte en fonction des proba du niveau du joueur
+        #     random_number = random()*100
+        #     cumule_proba = 0
+        #     for prob in proba_box :
+        #         if prob+cumule_proba >= random_number :
+        #             break
+        #         cumule_proba+=prob
+        #     index_box = proba_box.index(prob)
+        #     #on affecte tout les changements à la BDD
+        #     curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
+        #     carte_tiree = curseur.fetchone()
+        #     curseur.execute(f"""UPDATE Joueur 
+        #                 SET fragment = {resultat_user_stats[1]-5}
+        #                 WHERE id_discord_player == {id_user}""")
+        #     curseur.execute(f"""UPDATE carte_possede 
+        #                 SET nombre_carte_possede = nombre_carte_possede + 1
+        #                 WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
+        #     baseDeDonnees.commit()
+        #     baseDeDonnees.close()
+            #Enfin, on affiche le résultat au joueur sur discord
+            await interaction.response.send_message(file=discord.File('./assets/animations/open-box.gif'))
+            sleep(6) #PROBLEME = le bot est bloqué et ne peut rien faire pendant 6 secondes
+            # await msg.delete() ne fonctionne pas PROBLEME = Le gif du case oppening ne s'éfface pas
+            await interaction.followup.send(f"Vous avez tiré une carte {carte_tiree[2]} !")
+            await interaction.followup.send(file=discord.File(f'./assets/cartes/{carte_tiree[1]}.png'))
+            
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
 async def mon_album(interaction, le_montrer) :
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
+    test_cration_bdd_user(id_user)
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
@@ -380,6 +380,7 @@ async def mon_album(interaction, le_montrer) :
 async def mes_cartes(interaction) :
     #on chope les info du joueur (id, nombre de cartes, quel cart il a...)
     id_user = interaction.user.id
+    test_cration_bdd_user(id_user)
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
@@ -505,7 +506,8 @@ class Start_opening(discord.ui.View): # Create a class called MyView that subcla
     @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
     async def first_button_callback(self, button, interaction):
         test_changement_de_jour()
-        await opening(interaction)
+        _thread = threading.Thread(target=between_callback, args=(interaction,))
+        _thread.start()
 
     @discord.ui.button(label="Annuler", style=discord.ButtonStyle.red)
     async def second_button_callback(self, button, interaction):

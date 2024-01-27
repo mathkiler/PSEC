@@ -89,25 +89,22 @@ def chargement_cartes() :
 
 
 def aff_table_cartes() :
-    id_user = 461802780277997579
+    id_user = 1054871101114695690
     rarete = "épique"
-    curseur.execute(f"SELECT nombre_carte_possede FROM carte_possede WHERE id_discord_player == {id_user} AND nombre_carte_possede != 0")
-    nb_cartes_avec_doublon = curseur.fetchall()
-    nb_cartes_avec_doublon = sum([nb_cartes_avec_doublon[k][0] for k in range(len(nb_cartes_avec_doublon))])
-    curseur.execute(f"SELECT count(*) FROM carte_possede WHERE id_discord_player == {id_user} AND nombre_carte_possede != 0")
-    nb_cartes_sans_doublon = curseur.fetchone()[0]
-    curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
-    resultat_carte_possede = curseur.fetchall()
-    print(nb_cartes_avec_doublon)
-    print(nb_cartes_sans_doublon)
-    print(resultat_carte_possede)
+    curseur.execute(f"SELECT * FROM joueur WHERE id_discord_player == {id_user}")
+    result = curseur.fetchall()
+    print(result)
+    curseur.execute(f"SELECT * FROM carte_possede WHERE id_discord_player == {id_user}")
+    result = curseur.fetchall()
+    print(result)
+    
 
     
 
-curseur.execute(f"""UPDATE carte_possede 
-            SET nombre_carte_possede = 5
-            WHERE id_discord_player == {461802780277997579} AND id == 14""")
-baseDeDonnees.commit()
+# curseur.execute(f"""UPDATE carte_possede 
+#             SET nombre_carte_possede = 5
+#             WHERE id_discord_player == {461802780277997579} AND id == 14""")
+# baseDeDonnees.commit()
 
 
 # curseur.execute("DELETE FROM Cartes WHERE nom ='.inconnue' ")
@@ -124,6 +121,7 @@ baseDeDonnees.commit()
 #         inser_into_carte_possede(member[0], randint(1,26))
 
 
+
 def creation_des_table() :
     creation_player_table()
     baseDeDonnees.commit()
@@ -133,15 +131,14 @@ def creation_des_table() :
     baseDeDonnees.commit()
 
 
-#1 : 
-# creation_des_table()
-# baseDeDonnees.commit()
-#2 : 
-# chargement_cartes()
-# baseDeDonnees.commit()
-#3 : 
-#Avec le bot fait : !creation_players (ce qui va créé les columns pour chaques joueur + alimenter la table carte_possede)
-# baseDeDonnees.commit()
+def creation_BDD() : 
+    creation_des_table()
+    baseDeDonnees.commit()
+    chargement_cartes()
+    baseDeDonnees.commit()
+
+# creation_BDD()
+
 aff_table_cartes()
 
 
