@@ -90,13 +90,10 @@ def chargement_cartes() :
 
 def aff_table_cartes() :
     id_user = 1054871101114695690
-    rarete = "épique"
-    curseur.execute(f"SELECT * FROM joueur WHERE id_discord_player == {id_user}")
-    result = curseur.fetchall()
-    print(result)
-    curseur.execute(f"SELECT * FROM carte_possede WHERE id_discord_player == {id_user}")
-    result = curseur.fetchall()
-    print(result)
+    curseur.execute(f"""UPDATE carte_possede 
+             SET nombre_carte_possede = 10
+             WHERE id_discord_player == {461802780277997579} AND id == 14""")
+    baseDeDonnees.commit()
     
 
     

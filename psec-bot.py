@@ -30,14 +30,13 @@
 
 
 
-import asyncio
+
 from random import randint, random
-import threading
 from discord.ext import commands
 from datetime import date
-from time import sleep
 from math import sqrt
 from PIL import Image
+import asyncio
 import discord
 import sqlite3
 import csv
@@ -68,7 +67,7 @@ else :
 #--|--# lists/variables
 admin_id_user = [382877512302067712, 408755725796376579, 461802780277997579]
 nom_rarete = ["commun", "peu courant", "rare", "épique", "héroïque"]
-liste_comandes = ["!commandes", "!creation_players", "!force_change_jour", "!ajout_carte"]
+liste_comandes = ["!commandes", "!c", "!force_change_jour", "!ajout_carte"]
 DATE_actuel = date.today()  #date du jour
 cureurs = [] #liste des curseurs des joueurs lorsqu'ils affichent leur carte une par une
 
@@ -177,7 +176,7 @@ async def on_message(message):
         resultat = curseur.fetchone()
         player_stats = {"id_discord_player" : resultat[0], "fragment" : resultat[1], "fragment_cumule" : resultat[2], "xp" : resultat[3]}
         player_stats["xp"]+=1
-        if player_stats["fragment_cumule"] <= 50 : #si le joueur n'a pas ateint son nombre max de fragment obtenut par messge par jour, on lui ajoute un fragment
+        if player_stats["fragment_cumule"] < 50 : #si le joueur n'a pas ateint son nombre max de fragment obtenut par messge par jour, on lui ajoute un fragment
             player_stats["fragment"]+=1
             player_stats["fragment_cumule"]+=1
         curseur.execute(f"""UPDATE Joueur 
@@ -190,8 +189,14 @@ async def on_message(message):
 
 #--|--# Commande discord (admin = !nom_commande only)
 #commande e base pour afficher les options de l'utilisateur. Renvoi vers la class Voir_Commandes()
+#( posibilité d'écrire !c ou !commandes)
 @bot.command(name="c", help="permet d'afficher les commandes possible sous forme de boutons")
 async def c(ctx) :
+    test_cration_bdd_user(ctx.message.author.id)
+    test_changement_de_jour()
+    await ctx.reply("Commandes possibles", view=Voir_Commandes())
+@bot.command(name="commandes", help="permet d'afficher les commandes possible sous forme de boutons")
+async def commandes(ctx) :
     test_cration_bdd_user(ctx.message.author.id)
     test_changement_de_jour()
     await ctx.reply("Commandes possibles", view=Voir_Commandes())
@@ -262,7 +267,7 @@ async def voir_stats(interaction, le_cacher) :
                 txt_print_cartes+="     "+str(carte_arange[rarete][carte])+" posssédé : "+carte+"\n"
             txt_print_cartes+="\n\n"
     
-    await interaction.response.send_message(f"""Stats du joueur {interaction.user} : 
+    await interaction.response.send_message(f"""Stats du joueur <@{id_user}> : 
                 
 Nombre de fragment actuel : {resultat_user_stats[1]}
 Nombre de fragment du jour : {resultat_user_stats[2]}/50
@@ -275,62 +280,53 @@ Cartes obtenu :
 
 
 #fonction pour ouvrir un caisse
-
-def between_callback(interaction) :        
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    loop.run_until_complete(opening(interaction))
-    loop.close()
-
-
 async def opening(interaction) :
-        # #on chope les info du joueur
-        # id_user = interaction.user.id
-        # test_cration_bdd_user(id_user)
-        # baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-        # curseur = baseDeDonnees.cursor()
-        # curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
-        # resultat_user_stats = curseur.fetchone()
+    #on chope les info du joueur
+    id_user = interaction.user.id
+    test_cration_bdd_user(id_user)
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+    resultat_user_stats = curseur.fetchone()
 
-        # if resultat_user_stats[1] < 5 :
-        #         await interaction.response.send_message(f"Fond insuffisant. Il vous manque {5-resultat_user_stats[1]} fragments", ephemeral=True)
-        # else :
-        #     #on lit le taux de drop en fonction du niveau du joueur
-        #     with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
-        #         data = list(csv.reader(csvfile, delimiter=","))[1:-1]
-        #     lvl_column = [int(j.pop(-2)) for j in data]
-        #     for lvl in lvl_column :
-        #         if lvl >= resultat_user_stats[3] :
-        #             break
-        #     #operations qui permet d'avoir la liste des proba selon le niveau du joueur
-        #     proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
-        #     #partie qui va piocher la carte en fonction des proba du niveau du joueur
-        #     random_number = random()*100
-        #     cumule_proba = 0
-        #     for prob in proba_box :
-        #         if prob+cumule_proba >= random_number :
-        #             break
-        #         cumule_proba+=prob
-        #     index_box = proba_box.index(prob)
-        #     #on affecte tout les changements à la BDD
-        #     curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
-        #     carte_tiree = curseur.fetchone()
-        #     curseur.execute(f"""UPDATE Joueur 
-        #                 SET fragment = {resultat_user_stats[1]-5}
-        #                 WHERE id_discord_player == {id_user}""")
-        #     curseur.execute(f"""UPDATE carte_possede 
-        #                 SET nombre_carte_possede = nombre_carte_possede + 1
-        #                 WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
-        #     baseDeDonnees.commit()
-        #     baseDeDonnees.close()
-            #Enfin, on affiche le résultat au joueur sur discord
-            await interaction.response.send_message(file=discord.File('./assets/animations/open-box.gif'))
-            sleep(6) #PROBLEME = le bot est bloqué et ne peut rien faire pendant 6 secondes
-            # await msg.delete() ne fonctionne pas PROBLEME = Le gif du case oppening ne s'éfface pas
-            await interaction.followup.send(f"Vous avez tiré une carte {carte_tiree[2]} !")
-            await interaction.followup.send(file=discord.File(f'./assets/cartes/{carte_tiree[1]}.png'))
-            
+    if resultat_user_stats[1] < 5 :
+            await interaction.response.send_message(f"Fond insuffisant. Il vous manque {5-resultat_user_stats[1]} fragments", ephemeral=True)
+    else :
+        #on lit le taux de drop en fonction du niveau du joueur
+        with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
+            data = list(csv.reader(csvfile, delimiter=","))[1:-1]
+        lvl_column = [int(j.pop(-2)) for j in data]
+        for lvl in lvl_column :
+            if lvl >= resultat_user_stats[3] :
+                break
+        #operations qui permet d'avoir la liste des proba selon le niveau du joueur
+        proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
+        #partie qui va piocher la carte en fonction des proba du niveau du joueur
+        random_number = random()*100
+        cumule_proba = 0
+        for prob in proba_box :
+            if prob+cumule_proba >= random_number :
+                break
+            cumule_proba+=prob
+        index_box = proba_box.index(prob)
+        #on affecte tout les changements à la BDD
+        curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
+        carte_tiree = curseur.fetchone()
+        curseur.execute(f"""UPDATE Joueur 
+                    SET fragment = {resultat_user_stats[1]-5}
+                    WHERE id_discord_player == {id_user}""")
+        curseur.execute(f"""UPDATE carte_possede 
+                    SET nombre_carte_possede = nombre_carte_possede + 1
+                    WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
+        baseDeDonnees.commit()
+        baseDeDonnees.close()
+        #Enfin, on affiche le résultat au joueur sur discord
+        await interaction.response.send_message(f"<@{id_user}>", file=discord.File('./assets/animations/open-box.gif'))
+        await asyncio.sleep(5)
+        # await msg.delete() ne fonctionne pas PROBLEME = Le gif du case oppening ne s'éfface pas
+        await interaction.followup.send(f"<@{id_user}>, Vous avez tiré une carte {carte_tiree[2]} !")
+        await interaction.followup.send(f"<@{id_user}>", file=discord.File(f'./assets/cartes/{carte_tiree[1]}.png'))
+        
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
 async def mon_album(interaction, le_montrer) :
@@ -372,13 +368,13 @@ async def mon_album(interaction, le_montrer) :
         count+=1
     name_album = randint(10000, 99999)
     album.save(f"./assets/album tamp/{name_album}.png")
-    await interaction.response.send_message(file=discord.File(f'./assets/album tamp/{name_album}.png'), ephemeral=le_montrer)
+    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(f'./assets/album tamp/{name_album}.png'), ephemeral=le_montrer)
     os.remove(f"./assets/album tamp/{name_album}.png")
 
 
 #fonction pour affihcer ses cartes une par une
-async def mes_cartes(interaction) :
-    #on chope les info du joueur (id, nombre de cartes, quel cart il a...)
+async def initialisation_mes_cartes(interaction) :
+    #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
@@ -390,113 +386,153 @@ async def mes_cartes(interaction) :
     nb_cartes = len(resultat_carte_possede)
     baseDeDonnees.close()
 
-    #si le joueur n'a pas de carte on le lui dis gentilment
-    if nb_cartes <= 0 :
-        await interaction.response.send_message("Vous n'avez pas de carte !", ephemeral=True)
+    return resultat_carte_possede, index_curseur, nb_cartes
+    
+
+async def selecteur_button_mes_cartes(interaction : discord.Interaction, button) :
+    #si le bouton est appuyé, on update la variable du curseur puis on affiche la nouvelle image
+    #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
+    id_user = interaction.user.id
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
+    index_curseur = curseur.fetchone()[0]
+    curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    resultat_carte_possede = curseur.fetchall()
+    nb_cartes = len(resultat_carte_possede)
+    #en fonction du bouton appuyé, on renvoi vers la bonne fonction pour bien changer le curseur
+    if button == "five_prev" :
+        index_curseur = mes_cartes_action_five_prev_buton(nb_cartes, index_curseur)
+    elif button == "one_prev" :
+        index_curseur = mes_cartes_action_one_prev_buton(nb_cartes, index_curseur)
+    elif button == "one_next" :
+        index_curseur = mes_cartes_action_one_next_buton(nb_cartes, index_curseur)
+    elif button == "five_next" :
+        index_curseur = mes_cartes_action_five_next_buton(nb_cartes, index_curseur)
+    elif button == "stay_here" :
+        pass
+    #on update et affiche ce qu'il faut
+    curseur.execute(f"""UPDATE Joueur 
+        SET curseur_carte = {index_curseur}
+        WHERE id_discord_player == {id_user}""")
+    baseDeDonnees.commit()
+    baseDeDonnees.close()
+    #enfin on affect la nouvelle image à un nouveau embed pour l'affecter à l'embed principal de la fonction mes_cartes
+    img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
+    new_file = discord.File(img_path)
+    new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}\nExp par doublon vendu ({resultat_carte_possede[index_curseur][1]}) : {(nom_rarete.index(resultat_carte_possede[index_curseur][1])+1)*2}")
+    new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
+    await interaction.response.edit_message(embed=new_embed, file=new_file) # attach the new image file with the embed
+
+
+#fonction pour changer le curseur en fonction
+def mes_cartes_action_five_prev_buton(nb_cartes, index_curseur): #ici, interaction mais référence à l'interaction avec le bouton "mes cartes" de début
+    if index_curseur > 4 : 
+        index_curseur-=5
     else :
-        #creation d'un ui qui va contenir l'image et les boutons de déplacement
-        simple_view = discord.ui.View()
-        #création bouton pour se déplacer à gauche
-        left_button = discord.ui.Button(label="<-")
-        async def simple_left_callback(interaction : discord.Interaction):
-            #si le bouton est appuyé, on update la variable du curseur puis on affiche la nouvelle image
-            baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-            curseur = baseDeDonnees.cursor()
-            curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
-            index_curseur = curseur.fetchone()[0]
-            if index_curseur > 0 : 
-                index_curseur-=1
-            else :
-                index_curseur = nb_cartes-1
-            curseur.execute(f"""UPDATE Joueur 
-                SET curseur_carte = {index_curseur}
-                WHERE id_discord_player == {id_user}""")
-            baseDeDonnees.commit()
-            baseDeDonnees.close()
-            #enfin on affect la nouvelle image à un nouveau embed pour l'affecter à l'embed principal de la fonction mes_cartes
-            img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
-            new_file = discord.File(img_path)
-            new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}")
-            new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
-            await interaction.response.edit_message(embed=new_embed, file=new_file) # attach the new image file with the embed
-            
+        index_curseur = 0
+    return index_curseur
 
-        #bouton de droite. Exactement la même chose que le bouton de gauche mais à droite
-        right_button = discord.ui.Button(label="->")
-        async def simple_right_callback(interaction : discord.Interaction):
-            baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
-            curseur = baseDeDonnees.cursor()
-            curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
-            index_curseur = curseur.fetchone()[0]
-            if index_curseur < nb_cartes-1 : 
-                index_curseur+=1
-            else :
-                index_curseur = 0
-            curseur.execute(f"""UPDATE Joueur 
-                SET curseur_carte = {index_curseur}
-                WHERE id_discord_player == {id_user}""")
-            baseDeDonnees.commit()
-            img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
-            new_file = discord.File(img_path)
-            new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}")
-            new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
-            await interaction.response.edit_message(embed=new_embed, file=new_file) # attach the new image file with the embed
-            baseDeDonnees.close()
+def mes_cartes_action_one_prev_buton(nb_cartes, index_curseur): #ici, interaction mais référence à l'interaction avec le bouton "mes cartes" de début
+    if index_curseur > 0 : 
+        index_curseur-=1
+    else :
+        index_curseur = nb_cartes-1
+    return index_curseur
 
-        # right_button = discord.ui.Button(label="Supprimer Tout les doublon ")
-        # async def simple_right_callback(interaction : discord.Interaction):
-        #     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+def mes_cartes_action_one_next_buton(nb_cartes, index_curseur): #ici, interaction mais référence à l'interaction avec le bouton "mes cartes" de début
+    if index_curseur < nb_cartes-1 : 
+        index_curseur+=1
+    else :
+        index_curseur = 0 
+    return index_curseur
 
-        #on affecte les bouton à leur callbakc puis dans l'ui via add_item()
-        left_button.callback = simple_left_callback
-        simple_view.add_item(left_button)
-        right_button.callback = simple_right_callback
-        simple_view.add_item(right_button)
-        # selecteur_carte.callback = select_callback
-        # simple_view.add_item(selecteur_carte)
+def mes_cartes_action_five_next_buton(nb_cartes, index_curseur): #ici, interaction mais référence à l'interaction avec le bouton "mes cartes" de début
+    if index_curseur < nb_cartes-6 : 
+        index_curseur+=5
+    else :
+        index_curseur = nb_cartes-1
+    return index_curseur
 
-        #on affiche l'image 
-        img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
-        file = discord.File(img_path)
-        embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}")
-        embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
 
-        #enfin on répond à l'utilisateur par l'image, bouton...
-        await interaction.response.send_message(embed = embed, view=simple_view, file=file, ephemeral=True)
+#fonction pour faire supprimer un doublon et obtenir de l'xp
+async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
+    id_user = interaction.user.id
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
+    index_curseur = curseur.fetchone()[0]
+    curseur.execute(f"SELECT cp.id, rarete, nombre_carte_possede, nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    resultat_carte_possede = curseur.fetchall()
+    carte_selected_info = resultat_carte_possede[index_curseur]
+    if carte_selected_info[2] > 1 :
+        if combien_doublon == "UN" : 
+            gain_xp = supprimer_UN_doublon(carte_selected_info)
+            nb_carte_destroy = 1
+        elif combien_doublon == "TOUS" :
+            gain_xp = supprimer_TOUS_doublon(carte_selected_info)
+            nb_carte_destroy = carte_selected_info[2]-1
+        curseur.execute(f"""UPDATE Joueur 
+            SET xp = xp + {gain_xp}
+            WHERE id_discord_player == {id_user}""")
+        curseur.execute(f"""UPDATE carte_possede 
+            SET nombre_carte_possede = nombre_carte_possede - {nb_carte_destroy}
+            WHERE id_discord_player == {id_user} AND id == {carte_selected_info[0]}""")
+        baseDeDonnees.commit()
+        baseDeDonnees.close()
+        await selecteur_button_mes_cartes(interaction, "stay_here")
+    else :
+        await interaction.response.send_message(f"Il ne vous reste plus aucun doublon de {carte_selected_info[3]}.", ephemeral=True)
 
+def supprimer_UN_doublon(carte_selected_info) :
+    return (nom_rarete.index(carte_selected_info[1])+1)*2
+
+def supprimer_TOUS_doublon(carte_selected_info) :
+    return ((nom_rarete.index(carte_selected_info[1])+1)*2)*(carte_selected_info[2]-1)
 
 
 #--|--# création des boutons d'interraction
 #bouton des commandes possible des utilisateurs via la commande !commandes
 class Voir_Commandes(discord.ui.View):
     @discord.ui.button(label="Voir ses stats", style=discord.ButtonStyle.primary)
-    async def first_button_callback(self, button, interaction):
+    async def stats_private_button_callback(self, button, interaction):
         test_changement_de_jour()
         await voir_stats(interaction, True)
 
     @discord.ui.button(label="Montrer ses stats à tout le monde pour flex", style=discord.ButtonStyle.green)
-    async def second_button_callback(self, button, interaction):
+    async def stats_public_button_callback(self, button, interaction):
         test_changement_de_jour()
         await voir_stats(interaction, False)
         
     @discord.ui.button(label="Opening d'une carte", row=1, style=discord.ButtonStyle.primary)
-    async def third_button_callback(self, button, interaction):
+    async def opening_button_callback(self, button, interaction):
         test_changement_de_jour()
         await interaction.response.send_message("Démarer l'opening ?", view=Start_opening(), ephemeral=True)
 
     @discord.ui.button(label="Mes cartes", row=2, style=discord.ButtonStyle.primary)
-    async def fourth_button_callback(self, button, interaction):
+    async def mes_cartes_button_callback(self, button, interaction):
         test_changement_de_jour()
-        await mes_cartes(interaction)
+        resultat_carte_possede, index_curseur, nb_cartes = await initialisation_mes_cartes(interaction)
+        #si le joueur n'a pas de carte on le lui dis gentilment
+        if nb_cartes <= 0 :
+            await interaction.response.send_message("Vous n'avez pas de carte !", ephemeral=True)
+        else :
+            #on affiche l'image 
+            img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
+            file = discord.File(img_path)
+            embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}\nExp par doublon vendu ({resultat_carte_possede[index_curseur][1]}) : {(nom_rarete.index(resultat_carte_possede[index_curseur][1])+1)*2}")
+            embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
+            #enfin on répond à l'utilisateur par l'image, bouton...
+            await interaction.response.send_message(embed = embed, view=Mes_cartes(), file=file, ephemeral=True)
 
 
     @discord.ui.button(label="Mon album", row=3, style=discord.ButtonStyle.primary)
-    async def fifth_button_callback(self, button, interaction):
+    async def album_private_button_callback(self, button, interaction):
         test_changement_de_jour()
         await mon_album(interaction, True)
 
     @discord.ui.button(label="Montrer mon album à tout le monde", row=3, style=discord.ButtonStyle.green)
-    async def sixth_button_callback(self, button, interaction):
+    async def album_public_button_callback(self, button, interaction):
         test_changement_de_jour()
         await mon_album(interaction, False)
 
@@ -504,19 +540,48 @@ class Voir_Commandes(discord.ui.View):
 #bouton/message oui ou non pour la validation lors du choix d'ouvrir un case opening
 class Start_opening(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
     @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
-    async def first_button_callback(self, button, interaction):
+    async def oui_button_callback(self, button, interaction):
         test_changement_de_jour()
-        _thread = threading.Thread(target=between_callback, args=(interaction,))
-        _thread.start()
+        await opening(interaction)
 
     @discord.ui.button(label="Annuler", style=discord.ButtonStyle.red)
-    async def second_button_callback(self, button, interaction):
+    async def non_button_callback(self, button, interaction):
         test_changement_de_jour()
         await interaction.response.send_message("Action annulé", ephemeral=True)
 
 
+#bouton/message pour afficher mes cartes
+class Mes_cartes(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
 
+    @discord.ui.button(label="-5", style=discord.ButtonStyle.secondary)
+    async def five_prev_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await selecteur_button_mes_cartes(interaction, "five_prev")
 
+    @discord.ui.button(label="Prev", style=discord.ButtonStyle.secondary)
+    async def left_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await selecteur_button_mes_cartes(interaction, "one_prev")
+
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.secondary)
+    async def one_next_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await selecteur_button_mes_cartes(interaction, "one_next")
+
+    @discord.ui.button(label="+5", style=discord.ButtonStyle.secondary)
+    async def five_next_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await selecteur_button_mes_cartes(interaction, "five_next")
+
+    @discord.ui.button(label="Recycler UN doublon", row=1, style=discord.ButtonStyle.red)
+    async def supr_one_doublon_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await mes_cartes_supprime_doublon(interaction, "UN")
+
+    @discord.ui.button(label="Recycler TOUT les doublons", row=1, style=discord.ButtonStyle.red)
+    async def supr_all_doublon_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await mes_cartes_supprime_doublon(interaction, "TOUS")
 
 
 
