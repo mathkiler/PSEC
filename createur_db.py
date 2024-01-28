@@ -90,9 +90,9 @@ def chargement_cartes() :
 
 def aff_table_cartes() :
     id_user = 1054871101114695690
-    curseur.execute(f"""UPDATE carte_possede 
-             SET nombre_carte_possede = 10
-             WHERE id_discord_player == {461802780277997579} AND id == 14""")
+    curseur.execute(f"""UPDATE joueur 
+             SET fragment = 100
+             WHERE id_discord_player == {382877512302067712}""")
     baseDeDonnees.commit()
     
 

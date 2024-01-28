@@ -321,11 +321,18 @@ async def opening(interaction) :
         baseDeDonnees.commit()
         baseDeDonnees.close()
         #Enfin, on affiche le résultat au joueur sur discord
-        await interaction.response.send_message(f"<@{id_user}>", file=discord.File('./assets/animations/open-box.gif'))
+        img_path = f"./assets/animations/open-box.gif"
+        file = discord.File(img_path)
+        embed = discord.Embed()
+        embed.set_image(url=f"attachment://open-box.gif")
+        msg = await interaction.response.send_message(f"<@{id_user}>",embed=embed, file=file)
         await asyncio.sleep(5)
         # await msg.delete() ne fonctionne pas PROBLEME = Le gif du case oppening ne s'éfface pas
-        await interaction.followup.send(f"<@{id_user}>, Vous avez tiré une carte {carte_tiree[2]} !")
-        await interaction.followup.send(f"<@{id_user}>", file=discord.File(f'./assets/cartes/{carte_tiree[1]}.png'))
+        img_path = f'./assets/cartes/{carte_tiree[1]}.png'
+        file = discord.File(img_path)
+        embed = discord.Embed(title = f"Vous avez tiré une carte {carte_tiree[2]} !")
+        embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
+        await msg.edit(embed=embed, file=file)
         
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
