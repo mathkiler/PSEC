@@ -56,7 +56,7 @@ def test_cration_bdd_user(id_user) :
     if test_player_in_bdd(id_user) == False:
         baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
         curseur = baseDeDonnees.cursor()
-        curseur.execute(f"SELECT id FROM Cartes ")
+        curseur.execute(f"SELECT id FROM Cartes")
         result = curseur.fetchall()
         id_cartes = [result[k][0] for k in range(len(result))]
         #ensuite, on regarde tout les gens sur le serveur et si un joueur n'es pas dans la BDD, il y est ajouté avec ses stats à 0
@@ -84,3 +84,12 @@ def test_joueur_ecrit_commande(msg) :
         if com in msg :
             return True
     return False
+
+
+
+def get_fragments_by_user(id_user) :
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT fragment FROM joueur Where id_discord_player == {id_user}")
+    result = curseur.fetchone()[0]
+    return result
