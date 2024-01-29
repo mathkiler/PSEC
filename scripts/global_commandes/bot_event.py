@@ -20,13 +20,13 @@ async def on_message(message):
         curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
         resultat = curseur.fetchone()
         player_stats = {"id_discord_player" : resultat[0], "fragment" : resultat[1], "fragment_cumule" : resultat[2], "xp" : resultat[3]}
-        player_stats["xp"]+=1
         if player_stats["fragment_cumule"] < 50 : #si le joueur n'a pas ateint son nombre max de fragment obtenut par messge par jour, on lui ajoute un fragment
             player_stats["fragment"]+=1
             player_stats["fragment_cumule"]+=1
-        curseur.execute(f"""UPDATE Joueur 
-                        SET fragment = {player_stats['fragment']}, fragment_cumule = {player_stats['fragment_cumule']}, xp = {player_stats['xp']}
-                        WHERE id_discord_player == {player_stats['id_discord_player']}""")
-        baseDeDonnees.commit()
+            player_stats["xp"]+=1
+            curseur.execute(f"""UPDATE Joueur 
+                            SET fragment = {player_stats['fragment']}, fragment_cumule = {player_stats['fragment_cumule']}, xp = {player_stats['xp']}
+                            WHERE id_discord_player == {player_stats['id_discord_player']}""")
+            baseDeDonnees.commit()
         baseDeDonnees.close()
     await bot.process_commands(message)

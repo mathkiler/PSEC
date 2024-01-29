@@ -93,3 +93,12 @@ def get_fragments_by_user(id_user) :
     curseur.execute(f"SELECT fragment FROM joueur Where id_discord_player == {id_user}")
     result = curseur.fetchone()[0]
     return result
+
+def get_data_lvl_from_csv(xp_user) :
+    with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
+            data = list(csv.reader(csvfile, delimiter=","))[1:-1]
+    lvl_column = [int(j.pop(-2)) for j in data]
+    for lvl in lvl_column :
+        if lvl >= xp_user :
+            break
+    return data, lvl_column, lvl
