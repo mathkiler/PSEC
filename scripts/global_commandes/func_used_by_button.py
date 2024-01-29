@@ -46,7 +46,7 @@ Cartes obtenu :
 
 
 #fonction pour ouvrir un caisse
-async def opening(interaction) :
+async def opening(interaction, nb_opening) :
     #on chope les info du joueur
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
@@ -54,9 +54,9 @@ async def opening(interaction) :
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
-
-    if resultat_user_stats[1] < 5 :
-            await interaction.response.send_message(f"Fond insuffisant. Il vous manque {5-resultat_user_stats[1]} fragments", ephemeral=True)
+    #on regarde s'il a assez de fragments pour faire l'opening en fonction du nombre de carte qu'il veux ouvrir
+    if resultat_user_stats[1] < 5*nb_opening :
+            await interaction.response.send_message(f"Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments", ephemeral=True)
     else :
         #on lit le taux de drop en fonction du niveau du joueur
         with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
@@ -67,6 +67,29 @@ async def opening(interaction) :
                 break
         #operations qui permet d'avoir la liste des proba selon le niveau du joueur
         proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
+        carte_obtained = pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening)
+        #Enfin, on affiche le résultat au joueur sur discord
+        img_path = f"./assets/animations/open-box.gif"
+        file = discord.File(img_path)
+        embed = discord.Embed()
+        embed.set_image(url=f"attachment://open-box.gif")
+        msg = await interaction.response.send_message(f"<@{id_user}>",embed=embed, file=file)
+        await asyncio.sleep(5)
+        #le premier message change le gif de la box en un carte. Le reste envera des nouveaux messages 
+        for c in range(nb_opening) :
+            img_path = f'./assets/cartes/{carte_obtained[c][1]}.png'
+            file = discord.File(img_path)
+            embed = discord.Embed(title = f"Vous avez tiré une carte {carte_obtained[c][2]} !")
+            embed.set_image(url=f"attachment://{formatage_nom_carte(carte_obtained[c][1])}.png")
+            if c == 0 :
+                await msg.edit(embed=embed, file=file)
+            else :
+                await interaction.followup.send(f"<@{id_user}>", embed=embed, file=file)
+
+#fonction utilisé pour obtenir une liste de carte pioché (et leurs infos) en fonction du nombre de carte à piocher
+def pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening) :
+    carte_obtained = []
+    for c in range(nb_opening) :
         #partie qui va piocher la carte en fonction des proba du niveau du joueur
         random_number = random()*100
         cumule_proba = 0
@@ -79,26 +102,16 @@ async def opening(interaction) :
         curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
         carte_tiree = curseur.fetchone()
         curseur.execute(f"""UPDATE Joueur 
-                    SET fragment = {resultat_user_stats[1]-5}
+                    SET fragment = fragment - 5
                     WHERE id_discord_player == {id_user}""")
+        baseDeDonnees.commit()
         curseur.execute(f"""UPDATE carte_possede 
                     SET nombre_carte_possede = nombre_carte_possede + 1
                     WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
         baseDeDonnees.commit()
-        baseDeDonnees.close()
-        #Enfin, on affiche le résultat au joueur sur discord
-        img_path = f"./assets/animations/open-box.gif"
-        file = discord.File(img_path)
-        embed = discord.Embed()
-        embed.set_image(url=f"attachment://open-box.gif")
-        msg = await interaction.response.send_message(f"<@{id_user}>",embed=embed, file=file)
-        await asyncio.sleep(5)
-        # await msg.delete() ne fonctionne pas PROBLEME = Le gif du case oppening ne s'éfface pas
-        img_path = f'./assets/cartes/{carte_tiree[1]}.png'
-        file = discord.File(img_path)
-        embed = discord.Embed(title = f"Vous avez tiré une carte {carte_tiree[2]} !")
-        embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
-        await msg.edit(embed=embed, file=file)
+        carte_obtained.append(carte_tiree)
+    baseDeDonnees.close()
+    return carte_obtained
         
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
@@ -193,7 +206,7 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     #enfin on affect la nouvelle image à un nouveau embed pour l'affecter à l'embed principal de la fonction mes_cartes
     img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
     new_file = discord.File(img_path)
-    new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}\nExp par doublon vendu ({resultat_carte_possede[index_curseur][1]}) : {(nom_rarete.index(resultat_carte_possede[index_curseur][1])+1)*2}")
+    new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}\nExp par doublon recylé ({resultat_carte_possede[index_curseur][1]}) : {(nom_rarete.index(resultat_carte_possede[index_curseur][1])+1)*2}")
     new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
     await interaction.response.edit_message(embed=new_embed, file=new_file) # attach the new image file with the embed
 
@@ -259,7 +272,7 @@ async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
             baseDeDonnees.commit()
         baseDeDonnees.close()
         await selecteur_button_mes_cartes(interaction, "stay_here")
-        await interaction.followup.send(f"Vous avez obtenue **{gain_xp}** exp en vendant vos doublons", ephemeral=True)
+        await interaction.followup.send(f"Vous avez obtenue **{gain_xp}** exp en recyclant vos doublons", ephemeral=True)
     else :
         await interaction.response.send_message(f"Il ne vous reste plus aucun doublon de {carte_selected_info[3]}.", ephemeral=True)
 

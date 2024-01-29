@@ -16,10 +16,12 @@ class Voir_Commandes(discord.ui.View):
         test_changement_de_jour()
         await voir_stats(interaction, False)
         
-    @discord.ui.button(label="Opening d'une carte", row=1, style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Opening de carte", row=1, style=discord.ButtonStyle.primary)
     async def opening_button_callback(self, button, interaction):
         test_changement_de_jour()
-        await interaction.response.send_message("Démarer l'opening ?", view=Start_opening(), ephemeral=True)
+        #on va chercher le nombre de fragment de l'utilisateur pour lui montrer avant son opening
+        fragments = get_fragments_by_user(interaction.user.id)
+        await interaction.response.send_message(f"vous avez **{fragments}** fragrment(s)\nDémarer l'opening ?", view=Start_opening(), ephemeral=True)
 
     @discord.ui.button(label="Mes cartes", row=2, style=discord.ButtonStyle.primary)
     async def mes_cartes_button_callback(self, button, interaction):
@@ -49,12 +51,22 @@ class Voir_Commandes(discord.ui.View):
         await mon_album(interaction, False)
 
 
-#bouton/message oui ou non pour la validation lors du choix d'ouvrir un case opening
-class Start_opening(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
-    @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
-    async def oui_button_callback(self, button, interaction):
+#bouton/message pour choisir combien de carte l'utilisateur veux ouvrir d'un coup. Ou s'il veux finalemnt annuler l'action (ce ui au passage ne change rien du tout)
+class Start_opening(discord.ui.View): 
+    @discord.ui.button(label="Ouvrir 1 carte", style=discord.ButtonStyle.primary)
+    async def ouvrir_1_button_callback(self, button, interaction):
         test_changement_de_jour()
-        await opening(interaction)
+        await opening(interaction, 1)
+
+    @discord.ui.button(label="Ouvrir 5 carte", style=discord.ButtonStyle.primary)
+    async def ouvrir_5_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await opening(interaction, 5)
+
+    @discord.ui.button(label="Ouvrir 10 carte", style=discord.ButtonStyle.primary)
+    async def ouvrir_10_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await opening(interaction, 10)
 
     @discord.ui.button(label="Annuler", style=discord.ButtonStyle.red)
     async def non_button_callback(self, button, interaction):
