@@ -89,12 +89,15 @@ def chargement_cartes() :
 
 
 def aff_table_cartes() :
-    id_user = 1054871101114695690
-    curseur.execute(f"""UPDATE joueur 
-             SET fragment = 100
-             WHERE id_discord_player == {382877512302067712}""")
-    baseDeDonnees.commit()
-    
+    id_user = 461802780277997579
+    for k in range(3,7) :
+        curseur.execute(f"""UPDATE carte_possede 
+                    SET nombre_carte_possede = {randint(3,10)}
+                    WHERE id_discord_player == {id_user} AND id == {k}""")
+        baseDeDonnees.commit()
+    curseur.execute(f"SELECT cp.id, rarete, nombre_carte_possede, nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    resultat_carte_possede = curseur.fetchall()
+    print(resultat_carte_possede)    
 
     
 

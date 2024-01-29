@@ -86,11 +86,16 @@ class Mes_cartes(discord.ui.View): # Create a class called MyView that subclasse
         await selecteur_button_mes_cartes(interaction, "five_next")
 
     @discord.ui.button(label="Recycler UN doublon", row=1, style=discord.ButtonStyle.red)
-    async def supr_one_doublon_button_callback(self, button, interaction):
+    async def supr_un_doublon_button_callback(self, button, interaction):
         test_changement_de_jour()
         await mes_cartes_supprime_doublon(interaction, "UN")
 
-    @discord.ui.button(label="Recycler TOUT les doublons", row=1, style=discord.ButtonStyle.red)
-    async def supr_all_doublon_button_callback(self, button, interaction):
+    @discord.ui.button(label="Recycler TOUT les doublons de cette carte", row=1, style=discord.ButtonStyle.red)
+    async def supr_tout_doublon_button_callback(self, button, interaction):
         test_changement_de_jour()
         await mes_cartes_supprime_doublon(interaction, "TOUS")
+
+    @discord.ui.button(label="Recycler TOUT les doublons de  l'album", row=2, style=discord.ButtonStyle.red)
+    async def supr_all_doublon_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        await mes_cartes_supprime_doublon(interaction, "ALL")

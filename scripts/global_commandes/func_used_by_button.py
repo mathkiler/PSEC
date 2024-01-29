@@ -238,22 +238,28 @@ async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
     curseur.execute(f"SELECT cp.id, rarete, nombre_carte_possede, nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     carte_selected_info = resultat_carte_possede[index_curseur]
-    if carte_selected_info[2] > 1 :
+    if carte_selected_info[2] > 1 or combien_doublon == "ALL" :
         if combien_doublon == "UN" : 
             gain_xp = supprimer_UN_doublon(carte_selected_info)
             nb_carte_destroy = 1
         elif combien_doublon == "TOUS" :
             gain_xp = supprimer_TOUS_doublon(carte_selected_info)
             nb_carte_destroy = carte_selected_info[2]-1
+        elif combien_doublon == "ALL" :
+            gain_xp = supprimer_ALL_doublon(resultat_carte_possede, baseDeDonnees, curseur, id_user)
+            nb_carte_destroy = carte_selected_info[2]-1
         curseur.execute(f"""UPDATE Joueur 
             SET xp = xp + {gain_xp}
             WHERE id_discord_player == {id_user}""")
-        curseur.execute(f"""UPDATE carte_possede 
-            SET nombre_carte_possede = nombre_carte_possede - {nb_carte_destroy}
-            WHERE id_discord_player == {id_user} AND id == {carte_selected_info[0]}""")
         baseDeDonnees.commit()
+        if combien_doublon != "ALL" :
+            curseur.execute(f"""UPDATE carte_possede 
+                SET nombre_carte_possede = nombre_carte_possede - {nb_carte_destroy}
+                WHERE id_discord_player == {id_user} AND id == {carte_selected_info[0]}""")
+            baseDeDonnees.commit()
         baseDeDonnees.close()
         await selecteur_button_mes_cartes(interaction, "stay_here")
+        await interaction.followup.send(f"Vous avez obtenue **{gain_xp}** exp en vendant vos doublons", ephemeral=True)
     else :
         await interaction.response.send_message(f"Il ne vous reste plus aucun doublon de {carte_selected_info[3]}.", ephemeral=True)
 
@@ -262,3 +268,14 @@ def supprimer_UN_doublon(carte_selected_info) :
 
 def supprimer_TOUS_doublon(carte_selected_info) :
     return ((nom_rarete.index(carte_selected_info[1])+1)*2)*(carte_selected_info[2]-1)
+
+def supprimer_ALL_doublon(resultat_carte_possede, baseDeDonnees, curseur, id_user) :
+    gain_xp = 0
+    for carte in resultat_carte_possede :
+        if carte[2] > 1 :
+            gain_xp+=((nom_rarete.index(carte[1])+1)*2)*(carte[2]-1)
+            curseur.execute(f"""UPDATE carte_possede 
+                    SET nombre_carte_possede = 1
+                    WHERE id_discord_player == {id_user} AND id == {carte[0]}""")
+            baseDeDonnees.commit()
+    return gain_xp
