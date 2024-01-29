@@ -18,6 +18,17 @@ async def commandes(ctx) :
     await ctx.reply("Commandes possibles", view=Voir_Commandes())
 
 
+@bot.command(name="proba", help="permet d'afficher le tableau des probabilités utilisé pour le drop des cartes.")
+async def proba(ctx) :
+    test_cration_bdd_user(ctx.message.author.id)
+    test_changement_de_jour()
+    await ctx.reply("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File("./assets/proba/proba_drop.png"))
+
+
+
+
+
+#--|--# Commandes admin only
 
 #commande pour ajouter une carte (une par une)
 @bot.command(name="ajout_carte", help="admin only : permet de rajouter des cartes. !ajout_carte nom rarete")

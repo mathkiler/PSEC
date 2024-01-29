@@ -19,7 +19,9 @@ async def voir_stats(interaction, le_cacher) :
     curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
-    
+    #calcule du lvl du joueur
+    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
+
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
@@ -37,7 +39,7 @@ async def voir_stats(interaction, le_cacher) :
                 
 Nombre de fragment actuel : {resultat_user_stats[1]}
 Nombre de fragment du jour : {resultat_user_stats[2]}/50
-Exp : {resultat_user_stats[3]}
+Exp : {resultat_user_stats[3]} (niv {lvl_column.index(lvl)})
 Nombre de carte obtenu (en comptant les doublons) : {nb_cartes_avec_doublon}
 Nombre de carte obtenu (sans compter les doublons) : {nb_cartes_sans_doublon}
 
@@ -59,12 +61,7 @@ async def opening(interaction, nb_opening) :
             await interaction.response.send_message(f"Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments", ephemeral=True)
     else :
         #on lit le taux de drop en fonction du niveau du joueur
-        with open('./assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
-            data = list(csv.reader(csvfile, delimiter=","))[1:-1]
-        lvl_column = [int(j.pop(-2)) for j in data]
-        for lvl in lvl_column :
-            if lvl >= resultat_user_stats[3] :
-                break
+        data, lvl_column, lvl = get_data_lvl_from_csv(resultat_user_stats[3])
         #operations qui permet d'avoir la liste des proba selon le niveau du joueur
         proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
         carte_obtained = pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening)
