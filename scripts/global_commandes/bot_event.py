@@ -1,5 +1,5 @@
-from import_et_variable import *
-from fonctions import *
+from scripts.global_commandes.import_et_variable import *
+from scripts.global_commandes.fonctions import *
 
 
 

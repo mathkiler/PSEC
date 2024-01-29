@@ -1,6 +1,6 @@
-from import_et_variable import *
-from fonctions import *
-from func_used_by_button import *
+from scripts.global_commandes.import_et_variable import *
+from scripts.global_commandes.fonctions import *
+from scripts.global_commandes.func_used_by_button import *
 
 
 #--|--# création des boutons d'interraction
