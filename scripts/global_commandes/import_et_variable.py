@@ -12,9 +12,6 @@ import os
 
 
 
-#--|--# get la clé (token) du bot discord
-f = open("token_discord.token", "r")
-token_discord = f.readline()
 #--|--# param bot
 intents = discord.Intents().all()
 intents.members = True
@@ -27,7 +24,6 @@ if db_test :
     db_used = "database_test.db"
 else :
     db_used = "database.db"
-
 
 
 #--|--# lists/variables

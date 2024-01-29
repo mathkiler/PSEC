@@ -1,7 +1,6 @@
-
-from import_et_variable import *
-from fonctions import *
-from bouton import *
+from scripts.global_commandes.import_et_variable import *
+from scripts.global_commandes.fonctions import *
+from scripts.global_commandes.bouton import *
 
 
 #--|--# Commande discord (admin = !nom_commande only)
