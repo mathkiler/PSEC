@@ -24,12 +24,14 @@ def creation_player_table() :
                     fragment INTEGER,
                     fragment_cumule INTEGER,
                     xp INTEGER,
-                    curseur_carte INTEGER
+                    curseur_carte INTEGER,
+                    daily_quest_done INTEGER
                     )""")
                         #id_discord_player = id discord du joueur. Avec son id on peux obtenir toutes les info de ce joueur (psuedo, roles...)
                         # fragment = fragment en temps réel du joueur
                         #fragment_cumule = fragement du joueur cumulé dans la journé pour savoir quand il dépasse le max (50) valeur reset à 00h00 tout les jours
                         #curseur_carte = utile pour savoir quel carte le joueur regarde lors u visionnage es ses cartes une par une
+                        #daily_quest_done = 0 = False, le joueur n'as pas encore fini la quest. 1
     baseDeDonnees.commit() 
 # creation_player_table()
 
@@ -53,6 +55,15 @@ def creation_carte_possede_table() :
     );""")
     baseDeDonnees.commit() 
 # creation_carte_possede_table()
+    
+def creation_daily_quest_table() :
+    curseur.execute("""CREATE TABLE daily_quest (
+                    nom_event TEXT NOT NULL PRIMARY KEY,
+                    jour_event TEXT NOT NULL,
+                    info_quest TEXT
+    );""")
+    baseDeDonnees.commit() 
+# creation_daily_quest_table()
 
 
 
@@ -90,11 +101,18 @@ def chargement_cartes() :
 
 def aff_table_cartes() :
     id_user = 461802780277997579
-    for k in range(3,7) :
-        curseur.execute(f"""UPDATE joueur 
-                    SET fragment = 100
-                    WHERE id_discord_player == {id_user}""")
-        baseDeDonnees.commit()
+    curseur.execute(f"""SELECT * FROM daily_quest""")
+    result = curseur.fetchall()
+    print(result)
+    curseur.execute("""UPDATE Joueur
+                    SET daily_quest_done = 1""")
+    baseDeDonnees.commit()
+    curseur.execute("""UPDATE daily_quest
+                    SET jour_event = '2024-01-30'""")
+    baseDeDonnees.commit()
+    curseur.execute(f"""SELECT * FROM Joueur WHERE id_discord_player == {id_user}""")
+    result = curseur.fetchall()
+    print(result)
 
 
     
@@ -126,6 +144,8 @@ def creation_des_table() :
     creation_cartes_table()
     baseDeDonnees.commit()
     creation_carte_possede_table()
+    baseDeDonnees.commit()
+    creation_daily_quest_table()
     baseDeDonnees.commit()
 
 

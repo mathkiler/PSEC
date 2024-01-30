@@ -51,6 +51,17 @@ class Voir_Commandes(discord.ui.View):
         await mon_album(interaction, False)
 
 
+    @discord.ui.button(label="Quete quotidienne", row=4, style=discord.ButtonStyle.primary)
+    async def mes_cartes_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        test_cration_bdd_user(interaction.user.id)
+        quest_class = get_daily_quest()
+        if test_daily_quest_completed(interaction.user.id) :
+            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
+        else :
+            await interaction.response.send_message(view=quest_class, ephemeral=True)
+
+
 #bouton/message pour choisir combien de carte l'utilisateur veux ouvrir d'un coup. Ou s'il veux finalemnt annuler l'action (ce ui au passage ne change rien du tout)
 class Start_opening(discord.ui.View): 
     @discord.ui.button(label="Ouvrir 1 carte", style=discord.ButtonStyle.primary)
