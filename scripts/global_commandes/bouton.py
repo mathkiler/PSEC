@@ -52,7 +52,7 @@ class Voir_Commandes(discord.ui.View):
 
 
     @discord.ui.button(label="Quete quotidienne", row=4, style=discord.ButtonStyle.primary)
-    async def mes_cartes_button_callback(self, button, interaction):
+    async def daily_quest_button_callback(self, button, interaction):
         test_changement_de_jour()
         test_cration_bdd_user(interaction.user.id)
         quest_class = get_daily_quest()
