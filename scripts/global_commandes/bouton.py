@@ -55,11 +55,11 @@ class Voir_Commandes(discord.ui.View):
     async def daily_quest_button_callback(self, button, interaction):
         test_changement_de_jour()
         test_cration_bdd_user(interaction.user.id)
-        quest_class = get_daily_quest()
+        name_quest = get_daily_quest()
         if test_daily_quest_completed(interaction.user.id) :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
         else :
-            await interaction.response.send_message(view=quest_class, ephemeral=True)
+            await selecteur_lunch_quest(name_quest, interaction)
 
 
 #bouton/message pour choisir combien de carte l'utilisateur veux ouvrir d'un coup. Ou s'il veux finalemnt annuler l'action (ce ui au passage ne change rien du tout)

@@ -1,0 +1,107 @@
+from scripts.global_commandes.fonctions import *
+from scripts.global_commandes.import_et_variable import *
+
+
+
+
+
+
+#renvoi l'embed lorsque le gain est rien
+def effet_rien_roue_fortune() :
+    
+    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/rien.png"
+    file = discord.File(img_path)
+    embed = discord.Embed(title="""Résultat : 
+                         
+PERDU !
+
+Tu n'as rien gagné(e) et pourtant tu n'avais qu'une chance sur 6 de perdre...""")
+    embed.set_image(url=f"attachment://rien.gif")
+    return embed, file
+
+
+#renvoi l'embed et effectu l'effet lorsque le gain est carte
+def effet_carte_roue_fortune(id_user) :
+    #on get l'xp que le joueur possède
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {id_user}")
+    resultat_user_stats = curseur.fetchone()[0]
+    #on lit le taux de drop en fonction du niveau du joueur
+    data, lvl_column, lvl = get_data_lvl_from_csv(resultat_user_stats)
+    #operations qui permet d'avoir la liste des proba selon le niveau du joueur
+    proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
+    #pioche d'une carte
+    random_number = random()*100
+    cumule_proba = 0
+    for prob in proba_box :
+        if prob+cumule_proba >= random_number :
+            break
+        cumule_proba+=prob
+    index_box = proba_box.index(prob)
+    #on affecte tout les changements à la BDD
+    curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
+    carte_tiree = curseur.fetchone()
+    curseur.execute(f"""UPDATE carte_possede 
+                SET nombre_carte_possede = nombre_carte_possede + 1
+                WHERE id_discord_player == {id_user} AND id == {carte_tiree[0]}""")
+    baseDeDonnees.commit()
+    baseDeDonnees.close()
+    #Enfin, on affiche le résultat au joueur sur discord
+    img_path = f'./assets/cartes/{carte_tiree[1]}.png'
+    file = discord.File(img_path)
+    embed = discord.Embed(title = f"""Résultat : 
+
+Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
+    embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
+    return embed, file
+
+
+#renvoi l'embed et effectu l'effet lorsque le gain est carte
+def effet_xp_roue_fortune(id_user) :
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"""UPDATE Joueur 
+                SET xp = xp + 100
+                WHERE id_discord_player == {id_user}""")
+    baseDeDonnees.commit()
+    baseDeDonnees.close()
+    
+    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/xp.png"
+    file = discord.File(img_path)
+    embed = discord.Embed(title="""Résultat : 
+                         
+
+Vous avez obtenu un gain de + 100 exp !""")
+    embed.set_image(url=f"attachment://xp.gif")
+    return embed, file
+
+def effet_fragment_roue_fortune(id_user, nb_fragment) :
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"""UPDATE Joueur 
+                SET fragment = fragment + {nb_fragment}
+                WHERE id_discord_player == {id_user}""")
+    baseDeDonnees.commit()
+    baseDeDonnees.close()
+    #pour mettre le s ou non en fonction du nombre de fragments
+    if nb_fragment == 1 :
+        s = ""
+    else :
+        s = "s"
+    
+    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/fragment_{nb_fragment}.png"
+    file = discord.File(img_path)
+    embed = discord.Embed(title=f"""Résultat : 
+                         
+
+Vous avez obtenu un gain de + {nb_fragment} fragment{s} !""")
+    embed.set_image(url=f"attachment://fragment_{nb_fragment}.gif")
+    return embed, file
+
+
+def get_nb_fragment(txt_fragment) :
+    if "10" in txt_fragment :
+        return txt_fragment[-2:]
+    else :
+        return txt_fragment[-1:]

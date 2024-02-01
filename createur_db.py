@@ -104,12 +104,10 @@ def aff_table_cartes() :
     curseur.execute(f"""SELECT * FROM daily_quest""")
     result = curseur.fetchall()
     print(result)
-    curseur.execute("""UPDATE Joueur
-                    SET daily_quest_done = 1""")
+    curseur.execute("""UPDATE joueur
+                    SET daily_quest_done = 0""")
     baseDeDonnees.commit()
-    curseur.execute("""UPDATE daily_quest
-                    SET jour_event = '2024-01-30'""")
-    baseDeDonnees.commit()
+
     curseur.execute(f"""SELECT * FROM Joueur WHERE id_discord_player == {id_user}""")
     result = curseur.fetchall()
     print(result)
