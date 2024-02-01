@@ -37,4 +37,4 @@ admin_id_user = [382877512302067712, 408755725796376579, 461802780277997579]
 nom_rarete = ["commun", "peu courant", "rare", "épique", "héroïque"]
 liste_comandes = ["!commandes", "!c", "!force_change_jour", "!ajout_carte"]
 DATE_actuel = date.today()  #date du jour
-daily_quest_list_name = ["roue de la fortune"]#liste contenant les nom des events.
+daily_quest_list_name = ["roue de la fortune", "bouton de quackity"]#liste contenant les nom des events.

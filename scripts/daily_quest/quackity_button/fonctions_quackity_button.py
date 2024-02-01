@@ -2,26 +2,23 @@ from scripts.global_commandes.fonctions import *
 from scripts.global_commandes.import_et_variable import *
 
 
+def get_number_chance_left(id_user) :
+    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+        txt = f.readlines()
+    if len(txt) == 1 :
+        txt = txt[0]
+    else :
+        txt = txt[0][:1]
+    try :
+        return int(txt[0])
+    except Exception as e:
+        print("il y a eu un problème lors de la lecture de sfichier de save", e)
 
 
-
-
-#renvoi l'embed lorsque le gain est rien
-def effet_rien_roue_fortune() :
-    
-    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/rien.png"
-    file = discord.File(img_path)
-    embed = discord.Embed(title="""Résultat : 
-                         
-PERDU !
-
-Tu n'as rien gagné(e) et pourtant tu n'avais qu'une chance sur 6 de perdre...""")
-    embed.set_image(url=f"attachment://rien.gif")
-    return embed, file
 
 
 #renvoi l'embed et effectu l'effet lorsque le gain est carte
-def effet_carte_roue_fortune(id_user) :
+def effet_carte_quackity_button(id_user) :
     #on get l'xp que le joueur possède
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
@@ -50,7 +47,7 @@ def effet_carte_roue_fortune(id_user) :
     #Enfin, on affiche le résultat au joueur sur discord
     img_path = f'./assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
-    embed = discord.Embed(title = f"""Résultat : 
+    embed = discord.Embed(title = f"""Bravo vous avez trouvé le bon bouton ! 
 
 Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
     embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
@@ -58,7 +55,7 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 
 
 #renvoi l'embed et effectu l'effet lorsque le gain est xp
-def effet_xp_roue_fortune(id_user) :
+def effet_xp_quackity_button(id_user) :
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
@@ -67,32 +64,24 @@ def effet_xp_roue_fortune(id_user) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
-    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/xp.png"
-    file = discord.File(img_path)
-    embed = discord.Embed(title="""Résultat : 
-                         
+    embed = discord.Embed(title="""Bravo vous avez trouvé le bon bouton ! 
 
 Vous avez obtenu un gain de + 100 exp !""")
-    embed.set_image(url=f"attachment://xp.gif")
-    return embed, file
+    return embed, None
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
-def effet_fragment_roue_fortune(id_user, nb_fragment) :
+def effet_fragment_quackity_button(id_user, nb_fragment) :
     baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET fragment = fragment + {nb_fragment}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
-    baseDeDonnees.close()
-    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/fragment_{nb_fragment}.png"
-    file = discord.File(img_path)
-    embed = discord.Embed(title=f"""Résultat : 
-                         
+    baseDeDonnees.close()    
+    embed = discord.Embed(title=f"""Bravo vous avez trouvé le bon bouton !  
 
 Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
-    embed.set_image(url=f"attachment://fragment_{nb_fragment}.gif")
-    return embed, file
+    return embed, None
 
 
 def get_nb_fragment(txt_fragment) :

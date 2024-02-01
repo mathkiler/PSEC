@@ -3,9 +3,8 @@ from scripts.global_commandes.fonctions import *
 
 
 #--|--# import des daily quests
-#roue de la fortune
 from scripts.daily_quest.roue_fortune.bouton_roue_fortune import message_lunch_quest_roue_fortune
-
+from scripts.daily_quest.quackity_button.bouton_quackity_button import message_lunch_quest_quackity_button
 
 
 
@@ -302,3 +301,5 @@ def supprimer_ALL_doublon(resultat_carte_possede, baseDeDonnees, curseur, id_use
 async def selecteur_lunch_quest(name_quest, interaction) :
     if name_quest == "roue de la fortune" :
         await message_lunch_quest_roue_fortune(interaction)
+    elif name_quest == "bouton de quackity" :
+        await message_lunch_quest_quackity_button(interaction)

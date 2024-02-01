@@ -136,6 +136,7 @@ def get_daily_quest() :
         info_quest = selecteur_info_daily_quest(name_quest) #daily_quest_dict_info renvoi le return de la fonction lié à l'event pour les info pour syncrhoniser tout les joueurs
         curseur.execute("INSERT INTO daily_quest (nom_event, jour_event, info_quest) VALUES (?, ?, ?)", (name_quest, str(date.today()), info_quest))
         baseDeDonnees.commit()
+        reset_initialisation_daily_quest_save(name_quest)
         baseDeDonnees.close()
         return name_quest
     #on prend la dernière quête 
@@ -157,6 +158,7 @@ def get_daily_quest() :
         info_quest = selecteur_info_daily_quest(name_quest) #daily_quest_dict_info renvoi le return de la fonction lié à l'event pour les info pour syncrhoniser tout les joueurs
         curseur.execute("INSERT INTO daily_quest (nom_event, jour_event, info_quest) VALUES (?, ?, ?)", (name_quest, str(date.today()), info_quest))
         baseDeDonnees.commit()
+        reset_initialisation_daily_quest_save(name_quest)
     #la quest du jour est encore d'actualité (on a pas encore changé de jour)
     else :
         name_quest = result_daily_quest[-1][0]
@@ -169,3 +171,32 @@ def get_daily_quest() :
 def selecteur_info_daily_quest(name_quest) :
     if name_quest == daily_quest_list_name[0] : #roue de la fortune
         return "None"
+    elif name_quest == daily_quest_list_name[1] :
+        return "None"
+    
+
+def selecteur_txt_initialisation_daily_quest(name_quest) :
+    if name_quest == daily_quest_list_name[0] : #roue de la fortune
+        return ""
+    elif name_quest == daily_quest_list_name[1] :
+        return "3"
+    
+    return ""
+
+#fonction pour initialiser le ficihier txt de la save de la daily quest si besoin pour quaques utilisateur
+def reset_initialisation_daily_quest_save(name_quest) :
+    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute("SELECT id_discord_player FROM Joueur")
+    result_id_players = curseur.fetchall()
+    result_id_players = [result_id_players[k][0] for k in range(len(result_id_players))]
+    for id_user in result_id_players :
+        with open(f'./assets/daily_quest_save/{id_user}.txt', 'w') as f:
+            f.write(selecteur_txt_initialisation_daily_quest(name_quest))
+
+
+def pluriel(nb) :
+    if nb == 1 :
+        return ""
+    else :
+        return "s"
