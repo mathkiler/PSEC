@@ -2,6 +2,12 @@ from scripts.global_commandes.import_et_variable import *
 from scripts.global_commandes.fonctions import *
 
 
+#--|--# import des daily quests
+#roue de la fortune
+from scripts.daily_quest.roue_fortune.bouton_roue_fortune import message_lunch_quest_roue_fortune
+
+
+
 
 #--|--# toutes commandes seront accéssible via des boutons (créé dans les classes plus bas). Les fonctions suivantes sont les interactions avecles boutons
 async def voir_stats(interaction, le_cacher) :
@@ -289,3 +295,10 @@ def supprimer_ALL_doublon(resultat_carte_possede, baseDeDonnees, curseur, id_use
                     WHERE id_discord_player == {id_user} AND id == {carte[0]}""")
             baseDeDonnees.commit()
     return gain_xp
+
+
+
+#fonction pour selectionner le message d'arrivé dans la quest (la plus part du temps les règles). On passe part un selecteur dans une fonction car on veux garder l'information de l'interaction
+async def selecteur_lunch_quest(name_quest, interaction) :
+    if name_quest == "roue de la fortune" :
+        await message_lunch_quest_roue_fortune(interaction)
