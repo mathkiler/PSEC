@@ -4,10 +4,12 @@ temps = time()
 yes = False
 w = "zythums"
 with open("liste_de_mot_fr.txt") as file:
-    for m in file.readlines() :    
-        if m == w :
+    line = file.readline() 
+    while line :
+         if line == w :    
             yes = True
             break
+         line = file.readline()
 
 print(f"Le mot « {w} »", "est" if yes else "n'est pas", "un mot français.")
 
