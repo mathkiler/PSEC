@@ -5,7 +5,7 @@ from scripts.global_commandes.fonctions import *
 #--|--# import des daily quests
 from scripts.daily_quest.roue_fortune.bouton_roue_fortune import message_lunch_quest_roue_fortune
 from scripts.daily_quest.quackity_button.bouton_quackity_button import message_lunch_quest_quackity_button
-
+from scripts.daily_quest.motus.bouton_motus import message_lunch_quest_motus
 
 
 #--|--# toutes commandes seront accéssible via des boutons (créé dans les classes plus bas). Les fonctions suivantes sont les interactions avecles boutons
@@ -154,10 +154,10 @@ async def mon_album(interaction, le_montrer) :
             im_carte = Image.open(f"./assets/cartes/.inconnue.png")
         album.paste(im_carte, ((count%nb_carte_square)*width_carte,  (count//nb_carte_square)*height_carte))
         count+=1
-    name_album = randint(10000, 99999)
-    album.save(f"./assets/album tamp/{name_album}.png")
-    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(f'./assets/album tamp/{name_album}.png'), ephemeral=le_montrer)
-    os.remove(f"./assets/album tamp/{name_album}.png")
+    name_album = randint(100000, 999999)
+    album.save(f"./assets/img tamp/{name_album}.png")
+    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(f'./assets/img tamp/{name_album}.png'), ephemeral=le_montrer)
+    os.remove(f"./assets/img tamp/{name_album}.png")
 
 
 #fonction pour affihcer ses cartes une par une
@@ -303,3 +303,5 @@ async def selecteur_lunch_quest(name_quest, interaction) :
         await message_lunch_quest_roue_fortune(interaction)
     elif name_quest == "bouton de quackity" :
         await message_lunch_quest_quackity_button(interaction)
+    elif name_quest == "motus" :
+        await message_lunch_quest_motus(interaction)

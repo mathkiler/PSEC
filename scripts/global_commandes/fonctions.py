@@ -173,14 +173,15 @@ def selecteur_info_daily_quest(name_quest) :
         return "None"
     elif name_quest == daily_quest_list_name[1] :
         return "None"
+    elif name_quest == daily_quest_list_name[2] :
+        with open("./assets/motus/mot_possible_motus.txt", "r") as f :
+            mot_mystere = choice(f.readlines()).replace("\n", "")
+        return mot_mystere
     
 
 def selecteur_txt_initialisation_daily_quest(name_quest) :
-    if name_quest == daily_quest_list_name[0] : #roue de la fortune
-        return ""
-    elif name_quest == daily_quest_list_name[1] :
+    if name_quest == daily_quest_list_name[1] :
         return "3"
-    
     return ""
 
 #fonction pour initialiser le ficihier txt de la save de la daily quest si besoin pour quaques utilisateur
