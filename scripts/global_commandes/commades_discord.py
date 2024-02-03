@@ -6,12 +6,7 @@ from scripts.global_commandes.bouton import *
 #--|--# Commande discord (admin = !nom_commande only)
 #commande e base pour afficher les options de l'utilisateur. Renvoi vers la class Voir_Commandes()
 #( posibilité d'écrire !c ou !commandes)
-@bot.command(name="c", help="permet d'afficher les commandes possible sous forme de boutons")
-async def c(ctx) :
-    test_cration_bdd_user(ctx.message.author.id)
-    test_changement_de_jour()
-    await ctx.reply("Commandes possibles", view=Voir_Commandes())
-@bot.command(name="commandes", help="permet d'afficher les commandes possible sous forme de boutons")
+@bot.command(name="commandes", aliases=['c'], help="permet d'afficher les commandes possible sous forme de boutons")
 async def commandes(ctx) :
     test_cration_bdd_user(ctx.message.author.id)
     test_changement_de_jour()
