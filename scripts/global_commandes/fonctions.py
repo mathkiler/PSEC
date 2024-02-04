@@ -169,19 +169,29 @@ def get_daily_quest() :
 #fonction qui permet d'obtenir les infos synchronisé pour tout les joueurs. Si aucune info n'est recise, un simple None sera return.
 #Si une info à synchroniser est requise, on ira voir dans la fonction en question dans le fichier des fonctions de la daily quest
 def selecteur_info_daily_quest(name_quest) :
-    if name_quest == daily_quest_list_name[0] : #roue de la fortune
-        return "None"
-    elif name_quest == daily_quest_list_name[1] :
-        return "None"
-    elif name_quest == daily_quest_list_name[2] :
+    if name_quest == daily_quest_list_name[2] :
         with open("./assets/motus/mot_possible_motus.txt", "r") as f :
             mot_mystere = choice(f.readlines()).replace("\n", "")
         return mot_mystere
-    
+    return "None"
 
 def selecteur_txt_initialisation_daily_quest(name_quest) :
     if name_quest == daily_quest_list_name[1] :
         return "3"
+    elif name_quest == daily_quest_list_name[3] : #initialisation du plateau démineur
+        plateau_save = ["0\n", "1\n"]
+        plateau_save.extend(["c\n" if k == 9*9-1 else "c," for k in range(9*9)])
+        ind_list_bomb = []
+        for k in range(10) : #nombre de bombes
+            placement = randint(0,9*9-1)
+            while placement in ind_list_bomb :
+                placement = randint(0,9*9-1)
+            ind_list_bomb.append(f"{placement},")
+        ind_list_bomb[-1] = ind_list_bomb[-1][:-1]+"\n"
+        plateau_save.extend(ind_list_bomb)
+        plateau_save.append("3")
+        return "".join(plateau_save)
+
     return ""
 
 #fonction pour initialiser le ficihier txt de la save de la daily quest si besoin pour quaques utilisateur

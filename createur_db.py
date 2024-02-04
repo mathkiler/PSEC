@@ -104,9 +104,9 @@ def aff_table_cartes() :
     curseur.execute("""UPDATE joueur
                     SET daily_quest_done = 0""")
     baseDeDonnees.commit()
-    curseur.execute("""UPDATE daily_quest
-                    SET jour_event = '2024-02-02'""")
-    baseDeDonnees.commit()
+    # curseur.execute("""UPDATE daily_quest
+    #                 SET jour_event = '2024-02-02'""")
+    # baseDeDonnees.commit()
 
     curseur.execute(f"""SELECT * FROM daily_quest""")
     result = curseur.fetchall()
