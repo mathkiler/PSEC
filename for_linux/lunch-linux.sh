@@ -1,1 +1,1 @@
-python3 psec-bot.py
+python3 ../psec-bot.py
