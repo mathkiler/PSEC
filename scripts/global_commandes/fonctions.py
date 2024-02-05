@@ -191,6 +191,11 @@ def selecteur_txt_initialisation_daily_quest(name_quest) :
         plateau_save.extend(ind_list_bomb)
         plateau_save.append("3")
         return "".join(plateau_save)
+    elif name_quest == daily_quest_list_name[4] :
+        save_to_paste = ""
+        for k in range(6*7) :
+            save_to_paste+="v,"
+        return save_to_paste[:-1] #[:-1] pour enlever la dernière virgule ","
 
     return ""
 

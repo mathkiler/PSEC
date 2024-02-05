@@ -7,6 +7,7 @@ from scripts.daily_quest.roue_fortune.bouton_roue_fortune import message_lunch_q
 from scripts.daily_quest.quackity_button.bouton_quackity_button import message_lunch_quest_quackity_button
 from scripts.daily_quest.motus.bouton_motus import message_lunch_quest_motus
 from scripts.daily_quest.demineur.bouton_demineur import message_lunch_quest_demineur
+from scripts.daily_quest.puissance_4.bouton_puissance_4 import message_lunch_quest_puissance_4
 
 
 #--|--# toutes commandes seront accéssible via des boutons (créé dans les classes plus bas). Les fonctions suivantes sont les interactions avecles boutons
@@ -308,3 +309,5 @@ async def selecteur_lunch_quest(name_quest, interaction) :
         await message_lunch_quest_motus(interaction)
     elif name_quest == "demineur" :
         await message_lunch_quest_demineur(interaction)
+    elif name_quest == "puissance 4" :
+        await message_lunch_quest_puissance_4(interaction)
