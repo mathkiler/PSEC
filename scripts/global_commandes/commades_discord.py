@@ -52,3 +52,21 @@ async def force_change_jour(interaction: discord.Interaction) :
         baseDeDonnees.commit()
         baseDeDonnees.close()
         await interaction.response.send_message("Bdd mise à jour.", ephemeral=True)
+
+
+
+#commande qui montre les artistes
+@bot.command(name="artistes", description="Affiche les artistes qui on participés pour les cartes")
+async def artistes(interaction : discord.Interaction) :
+    with open("./assets/artistes/artistes.txt") as f :
+        txt_artistes = f.readlines()
+    txt_to_print_discord = ""
+    for artiste in txt_artistes :
+        artiste = artiste.split("|")
+        if len(artiste[1]) == 0 :
+            txt_to_print_discord+=f"**{artiste[0]}**"
+        else :
+            nb_tiret = "".join(["-" for k in range(17-len(artiste[0]))])
+            txt_to_print_discord+=f"**{artiste[0]}** {nb_tiret}> [{artiste[2]}]({artiste[1]})\n"
+    embed = discord.Embed(title="Artistes : ", description=txt_to_print_discord)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
