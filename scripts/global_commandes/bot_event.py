@@ -43,4 +43,3 @@ async def on_message(message):
                                 WHERE id_discord_player == {player_stats['id_discord_player']}""")
                 baseDeDonnees.commit()
             baseDeDonnees.close()
-    await bot.process_commands(message)
