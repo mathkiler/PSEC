@@ -25,7 +25,6 @@ async def place_pion(interaction, ind_colone_pion) :
             replace_somthing(interaction.user.id, "j_last_posed", (ind_line_pion, colonne))
             list_plateau = get_etat_puissance_4(interaction.user.id)
             result_test_fin_jeu = fin_du_jeu(list_plateau)
-            print(result_test_fin_jeu)
             if result_test_fin_jeu[0] == "eguale" :
                 await c_gagne(interaction, result_test_fin_jeu[0],  result_test_fin_jeu)
             elif result_test_fin_jeu[0] == "win" :
