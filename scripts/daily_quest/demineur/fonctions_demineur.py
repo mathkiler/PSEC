@@ -3,7 +3,7 @@ from scripts.global_commandes.import_et_variable import *
 
 
 def get_info_demineur(id_user) :
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
     y_ind_arrow = int(txt[0][:-1])
     x_ind_arrow = int(txt[1][:-1])-1
@@ -13,13 +13,13 @@ def get_info_demineur(id_user) :
     return x_ind_arrow, y_ind_arrow, list_demineur, list_ind_bomb
 
 def get_tentative_restante(id_user) :
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
     return txt[4]
 
 def get_info_case(id_user, coord_to_get) :
     coord_to_get = (coord_to_get[0])+get_taille_demineur()*coord_to_get[1]
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
     list_demineur = txt[2][:-1].split(",")
     return list_demineur[coord_to_get]
@@ -55,22 +55,22 @@ def convert_txt_to_discord_demineur(id_user) :
 
 #pour modifier la colone ou ligne des selects
 def modif_ligne_colonne_selected(new_value, ligne_colonne, id_user) : #ligne_colonne = 0 -> ligne, ligne_colonne = 1 -> colonne
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
     txt[ligne_colonne] = f"{new_value}\n"
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "w") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "w") as f :
         f.write("".join(txt))
 
 
 #remplace l'etat d'une case par autre chose : new_emote dans le txt save
 def replace_somthing_in_demineur(id_user, new_emote, coord_to_replace) : 
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
     list_demineur = txt[2][:-1].split(",")
     list_demineur[(coord_to_replace[0]-1)+get_taille_demineur()*coord_to_replace[1]] = new_emote
     txt[2] = ",".join(list_demineur)
     txt[2]+="\n"
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "w") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "w") as f :
         txt = f.write("".join(txt))
 
 
@@ -114,7 +114,7 @@ def demine_case_vide(case_to_explore, already_explore, ind_case_to_reveal, list_
 
 #test si le démineur est terminé
 def test_demineur_termine(id_user) :
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
     list_demineur = txt[2][:-1].split(",")
     list_ind_bomb = txt[3][:-1].split(",")
@@ -132,7 +132,7 @@ def test_demineur_termine(id_user) :
 #renvoi l'embed et effectu l'effet lorsque le gain est carte
 def effet_carte_demineur(id_user) :
     #on get l'xp que le joueur possède
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()[0]
@@ -157,7 +157,7 @@ def effet_carte_demineur(id_user) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     #Enfin, on affiche le résultat au joueur sur discord
-    img_path = f'./assets/cartes/{carte_tiree[1]}.png'
+    img_path = CURRENT_PATH+f'/assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
     embed = discord.Embed(title = f"""Bravo vous avez terminé le démineur ! 
 
@@ -168,7 +168,7 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est xp
 def effet_xp_demineur(id_user) :
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET xp = xp + 100
@@ -183,7 +183,7 @@ Vous avez obtenu un gain de + 100 exp !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
 def effet_fragment_demineur(id_user, nb_fragment) :
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET fragment = fragment + {nb_fragment}

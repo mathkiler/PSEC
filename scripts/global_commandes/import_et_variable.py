@@ -33,6 +33,7 @@ else :
 
 
 #--|--# lists/variables
+CURRENT_PATH = os.getcwd()
 admin_id_user = [382877512302067712, 408755725796376579, 461802780277997579, 581776637042098188]
 nom_rarete = ["commun", "peu courant", "rare", "épique", "héroïque"]
 liste_comandes = ["!commandes", "!c", "!force_change_jour", "!ajout_carte"]

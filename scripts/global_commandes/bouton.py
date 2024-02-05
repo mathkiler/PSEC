@@ -32,7 +32,7 @@ class Voir_Commandes(discord.ui.View):
             await interaction.response.send_message("Vous n'avez pas de carte !", ephemeral=True)
         else :
             #on affiche l'image 
-            img_path = f"./assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
+            img_path = CURRENT_PATH+f"/assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
             file = discord.File(img_path)
             embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}\nExp par doublon vendu ({resultat_carte_possede[index_curseur][1]}) : {(nom_rarete.index(resultat_carte_possede[index_curseur][1])+1)*2}")
             embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")

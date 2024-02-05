@@ -2,6 +2,8 @@ from random import choice, randint
 import sqlite3
 import os
 
+from scripts.global_commandes.import_et_variable import CURRENT_PATH
+
 ####
 #Proba des cartes aléatoire
 commun=40
@@ -11,7 +13,7 @@ epique=11
 heroique=8
 
 
-baseDeDonnees = sqlite3.connect('./assets/database/database.db')
+baseDeDonnees = sqlite3.connect(CURRENT_PATH+'/database/database.db')
 curseur = baseDeDonnees.cursor()
 
 
@@ -93,7 +95,7 @@ def chargement_cartes() :
     proba_rarete.extend(["rare" for k in range(rare)])
     proba_rarete.extend(["épique" for k in range(epique)])
     proba_rarete.extend(["héroïque" for k in range(heroique)])
-    for (repertoire, sousRepertoires, fichiers) in os.walk("./assets/cartes"):
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/cartes"):
         for nom in fichiers :
             if "nom" != ".inconnue.png" :
                 inser_into_cartes(nom[:-4], choice(proba_rarete))

@@ -29,7 +29,7 @@ async def on_message(message):
                     await message.channel.send("Un prolème est survenue, probablement que le time out du message est dépassé.\nRecomencez l'intecation depuis !commande pour recommencer.")
         else :
             id_user = message.author.id
-            baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+            baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
             curseur = baseDeDonnees.cursor()
             curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
             resultat = curseur.fetchone()
