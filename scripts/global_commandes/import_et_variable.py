@@ -21,7 +21,7 @@ import os
 #--|--# param bot
 intents = discord.Intents().all()
 intents.members = True
-bot = commands.Bot(command_prefix='!',intents=intents)
+bot = discord.Bot(intents=intents)
 
 
 ###########  USE BDD TEST  ##########

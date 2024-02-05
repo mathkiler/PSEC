@@ -3,8 +3,8 @@ from scripts.global_commandes.import_et_variable import *
 
 
 #fonction pour restrindre certaines commande uniquement au admins
-def admin_restrict(ctx) :
-    if ctx.message.author.id in admin_id_user :
+def admin_restrict(id_user) :
+    if id_user in admin_id_user :
         return True
     else :
         return False
