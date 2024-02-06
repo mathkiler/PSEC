@@ -130,7 +130,7 @@ class Reroll(discord.ui.View):
     @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
     async def Confirmer_button_callback(self, button, interaction):
         test_changement_de_jour()
-        baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
         xp_user = curseur.fetchone()[0]

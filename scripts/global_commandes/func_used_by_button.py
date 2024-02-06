@@ -316,7 +316,7 @@ async def selecteur_lunch_quest(name_quest, interaction) :
 
 #fonction pour faire prendre effet au reroll
 async def effet_reroll(interaction) :
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
     xp_user = curseur.fetchone()[0]
