@@ -14,7 +14,7 @@ from scripts.daily_quest.puissance_4.bouton_puissance_4 import message_lunch_que
 async def voir_stats(interaction, le_cacher) :
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
@@ -59,7 +59,7 @@ async def opening(interaction, nb_opening) :
     #on chope les info du joueur
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
@@ -73,7 +73,7 @@ async def opening(interaction, nb_opening) :
         proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
         carte_obtained = pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening)
         #Enfin, on affiche le résultat au joueur sur discord
-        img_path = CURRENT_PATH+f"/assets/animations/open-box.gif"
+        img_path = CURRENT_PATH+f"\\assets\\animations\\open-box.gif"
         file = discord.File(img_path)
         embed = discord.Embed()
         embed.set_image(url=f"attachment://open-box.gif")
@@ -81,7 +81,7 @@ async def opening(interaction, nb_opening) :
         await asyncio.sleep(5)
         #le premier message change le gif de la box en un carte. Le reste envera des nouveaux messages 
         for c in range(nb_opening) :
-            img_path = CURRENT_PATH+f'/assets/cartes/{carte_obtained[c][1]}.png'
+            img_path = CURRENT_PATH+f'\\assets\\cartes\\{carte_obtained[c][1]}.png'
             file = discord.File(img_path)
             embed = discord.Embed(title = f"Vous avez tiré une carte {carte_obtained[c][2]} !")
             embed.set_image(url=f"attachment://{formatage_nom_carte(carte_obtained[c][1])}.png")
@@ -123,7 +123,7 @@ async def mon_album(interaction, le_montrer) :
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
@@ -132,7 +132,7 @@ async def mon_album(interaction, le_montrer) :
         #on calcule la position des images (on démare à -1 car on va compter la carte unknown (carte qui montre celles non obtenue))
     nombre_totale_carte = -1
     ordre_cartes = []
-    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"\\assets\\cartes"):
         for f in fichiers :
             ordre_cartes.append(f[:-4])
             nombre_totale_carte+=1
@@ -151,15 +151,15 @@ async def mon_album(interaction, le_montrer) :
     count = 0
     for carte in ordre_cartes :
         if carte in resultat_carte_possede :
-            im_carte = Image.open(CURRENT_PATH+f"/assets/cartes/{carte}.png")
+            im_carte = Image.open(CURRENT_PATH+f"\\assets\\cartes\\{carte}.png")
         else :
-            im_carte = Image.open(CURRENT_PATH+f"/assets/cartes/.inconnue.png")
+            im_carte = Image.open(CURRENT_PATH+f"\\assets\\cartes\\.inconnue.png")
         album.paste(im_carte, ((count%nb_carte_square)*width_carte,  (count//nb_carte_square)*height_carte))
         count+=1
     name_album = randint(100000, 999999)
-    album.save(CURRENT_PATH+f"/assets/img tamp/{name_album}.png")
-    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(CURRENT_PATH+f'/assets/img tamp/{name_album}.png'), ephemeral=le_montrer)
-    os.remove(CURRENT_PATH+f"/assets/img tamp/{name_album}.png")
+    album.save(CURRENT_PATH+f"\\assets\\img tamp\\{name_album}.png")
+    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(CURRENT_PATH+f'\\assets\\img tamp\\{name_album}.png'), ephemeral=le_montrer)
+    os.remove(CURRENT_PATH+f"\\assets\\img tamp\\{name_album}.png")
 
 
 #fonction pour affihcer ses cartes une par une
@@ -167,7 +167,7 @@ async def initialisation_mes_cartes(interaction) :
     #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -183,7 +183,7 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     #si le bouton est appuyé, on update la variable du curseur puis on affiche la nouvelle image
     #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -208,7 +208,7 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     baseDeDonnees.commit()
     baseDeDonnees.close()
     #enfin on affect la nouvelle image à un nouveau embed pour l'affecter à l'embed principal de la fonction mes_cartes
-    img_path = CURRENT_PATH+f"/assets/cartes/{resultat_carte_possede[index_curseur][0]}.png"
+    img_path = CURRENT_PATH+f"\\assets\\cartes\\{resultat_carte_possede[index_curseur][0]}.png"
     new_file = discord.File(img_path)
     new_embed = discord.Embed(title=f"{index_curseur+1}/{nb_cartes}\nPossédée(s) : {resultat_carte_possede[index_curseur][2]}\nExp par doublon recylé ({resultat_carte_possede[index_curseur][1]}) : {(nom_rarete.index(resultat_carte_possede[index_curseur][1])+1)*2}")
     new_embed.set_image(url=f"attachment://{formatage_nom_carte(resultat_carte_possede[index_curseur][0])}.png")
@@ -248,7 +248,7 @@ def mes_cartes_action_five_next_buton(nb_cartes, index_curseur): #ici, interacti
 #fonction pour faire supprimer un doublon et obtenir de l'xp
 async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
     id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
