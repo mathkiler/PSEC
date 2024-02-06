@@ -58,7 +58,7 @@ async def force_change_jour(interaction: discord.Interaction) :
 #commande qui montre les artistes
 @bot.command(name="artistes", description="Affiche les artistes qui on participés pour les cartes")
 async def artistes(interaction : discord.Interaction) :
-    with open("./assets/artistes/artistes.txt") as f :
+    with open(CURRENT_PATH+"/assets/artistes/artistes.txt") as f :
         txt_artistes = f.readlines()
     txt_to_print_discord = ""
     for artiste in txt_artistes :
