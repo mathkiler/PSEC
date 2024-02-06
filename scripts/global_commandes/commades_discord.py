@@ -17,7 +17,7 @@ async def commandes(ctx) :
 async def proba(ctx) :
     test_cration_bdd_user(ctx.message.author.id)
     test_changement_de_jour()
-    await ctx.reply("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File(CURRENT_PATH+"\\assets\\proba\\proba_drop.png"))
+    await ctx.reply("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File(CURRENT_PATH+"/assets/proba/proba_drop.png"))
 
 
 
