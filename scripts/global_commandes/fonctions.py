@@ -95,7 +95,7 @@ def get_fragments_by_user(id_user) :
     return result
 
 def get_data_lvl_from_csv(xp_user) :
-    with open(CURRENT_PATH+'\\assets\\proba\\Probabilité drop par niveau.csv', newline='') as csvfile:
+    with open(CURRENT_PATH+'/assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
             data = list(csv.reader(csvfile, delimiter=","))[1:-1]
     lvl_column = [int(j.pop(-2)) for j in data]
     for lvl in lvl_column :
@@ -170,7 +170,7 @@ def get_daily_quest() :
 #Si une info à synchroniser est requise, on ira voir dans la fonction en question dans le fichier des fonctions de la daily quest
 def selecteur_info_daily_quest(name_quest) :
     if name_quest == daily_quest_list_name[2] :
-        with open(CURRENT_PATH+"\\assets\\motus\\mot_possible_motus.txt", "r") as f :
+        with open(CURRENT_PATH+"/assets/motus/mot_possible_motus.txt", "r") as f :
             mot_mystere = choice(f.readlines()).replace("\n", "")
         return mot_mystere
     return "None"
@@ -207,7 +207,7 @@ def reset_initialisation_daily_quest_save(name_quest) :
     result_id_players = curseur.fetchall()
     result_id_players = [result_id_players[k][0] for k in range(len(result_id_players))]
     for id_user in result_id_players :
-        with open(CURRENT_PATH+f'\\assets\\daily_quest_save\\{id_user}.txt', 'w') as f:
+        with open(CURRENT_PATH+f'/assets/daily_quest_save/{id_user}.txt', 'w') as f:
             f.write(selecteur_txt_initialisation_daily_quest(name_quest))
 
 
