@@ -25,9 +25,10 @@ def ajouter_une_carte(nom, rarete) :
 #fonction qui permet de voir si on a changé de jour. (elle sera présente devant chaque actions) (elle update tout les joueurs en fonction du nombre e jour passé)
 #PROBLEME = Si le bot est inactif ou crash au moment de changer de jour jusqu'à la prochaine action, le changement ne prendra pas effet
 def test_changement_de_jour() :
-    global DATE_actuel
+    global DATE_actuel, motus_msg_player
     jour_diff = int((date.today()-DATE_actuel).days)
     if int(jour_diff) > 0 :
+        motus_msg_player = {} #on reset le motus 
         DATE_actuel = date.today()  #date du jour
         baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
         curseur = baseDeDonnees.cursor()
