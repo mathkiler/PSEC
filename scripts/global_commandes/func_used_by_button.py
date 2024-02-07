@@ -311,3 +311,18 @@ async def selecteur_lunch_quest(name_quest, interaction) :
         await message_lunch_quest_demineur(interaction)
     elif name_quest == "puissance 4" :
         await message_lunch_quest_puissance_4(interaction)
+
+
+
+#fonction pour faire prendre effet au reroll
+async def effet_reroll(interaction) :
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
+    xp_user = curseur.fetchone()[0]
+    curseur.execute(f"""UPDATE Joueur 
+            SET xp = 0, fragment = fragment + {xp_user//2}
+            WHERE id_discord_player == {interaction.user.id}""")
+    baseDeDonnees.commit()
+    baseDeDonnees.close()
+    await interaction.response.send_message(f"Vous avez obtenu {xp_user//2} fragments", ephemeral=True)
