@@ -7,8 +7,9 @@ from scripts.global_commandes.func_used_by_button import *
 #bouton des commandes possible des utilisateurs via la commande !commandes
 class Voir_Commandes(discord.ui.View):
     @discord.ui.button(label="Voir ses stats", style=discord.ButtonStyle.primary)
-    async def stats_private_button_callback(self, interaction, button):
+    async def stats_private_button_callback(self, button, interaction):
         test_changement_de_jour()
+        interaction = select_interaction_argument(interaction, button)
         await voir_stats(interaction, True)
 
     @discord.ui.button(label="Montrer ses stats à tout le monde pour flex", style=discord.ButtonStyle.green)
