@@ -3,3 +3,4 @@ backup
 __pycache__
 *.psd
 photoshop
+test_db.py
