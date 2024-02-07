@@ -13,12 +13,12 @@ class MsgPuissance_4(discord.ui.View):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             name_img = create_img_p4(interaction.user.id, ["rien", None, None])
-            img_path = CURRENT_PATH+f"/assets/img tamp/{name_img}.png"
+            img_path = CURRENT_PATH+f"/assets/img_tamp/{name_img}.png"
             file = discord.File(img_path)
             embed = discord.Embed(title="Puissance 4")
             embed.set_image(url=f"attachment://{name_img}.png")
             await interaction.response.send_message(embed=embed, view=Puissance_4(),file=file,  ephemeral=True)
-            os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+            os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 

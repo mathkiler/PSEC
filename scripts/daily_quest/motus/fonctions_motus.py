@@ -49,7 +49,7 @@ def genere_image_motus(mot_mystere, mots_donnes) :
             ind_lettre+=1
         count_mot+=1   
     name_img = randint(100000, 999999)
-    img_final_motus.save(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+    img_final_motus.save(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
     return name_img
 
 
@@ -66,7 +66,7 @@ def genere_FIRST_image_motus(mot_mystere) :
         let = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/lettre/.point.png")
         img_final_motus.paste(let, (75*(k+1), 0), let)
     name_img = randint(100000, 999999)
-    img_final_motus.save(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+    img_final_motus.save(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
     return name_img
 
 
@@ -109,8 +109,8 @@ async def user_test_mot_motus(id_user, mot_user) :
             motus_msg_player[id_user]["mot_donnes"].append(mot_user)
             name_img = genere_image_motus(mot_mystere, motus_msg_player[id_user]["mot_donnes"])
             embed.set_image(url=f"attachment://{name_img}.png")
-            await motus_msg_player[id_user]["message_motus"].edit(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img tamp/{name_img}.png'))
-            os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+            await motus_msg_player[id_user]["message_motus"].edit(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_img}.png'))
+            os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
             #test si c'est la fin du jeu
             if mot_user == mot_mystere :
                 await gagne_motus(motus_msg_player[id_user]["interaction"])

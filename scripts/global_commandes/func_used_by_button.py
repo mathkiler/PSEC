@@ -157,9 +157,9 @@ async def mon_album(interaction, le_montrer) :
         album.paste(im_carte, ((count%nb_carte_square)*width_carte,  (count//nb_carte_square)*height_carte))
         count+=1
     name_album = randint(100000, 999999)
-    album.save(CURRENT_PATH+f"/assets/img tamp/{name_album}.png")
-    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(CURRENT_PATH+f'/assets/img tamp/{name_album}.png'), ephemeral=le_montrer)
-    os.remove(CURRENT_PATH+f"/assets/img tamp/{name_album}.png")
+    album.save(CURRENT_PATH+f"/assets/img_tamp/{name_album}.png")
+    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_album}.png'), ephemeral=le_montrer)
+    os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_album}.png")
 
 
 #fonction pour affihcer ses cartes une par une

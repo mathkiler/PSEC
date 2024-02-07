@@ -37,18 +37,18 @@ async def place_pion(interaction, ind_colone_pion) :
                 baseDeDonnees.close()
                 name_img = create_img_p4(interaction.user.id, result_test_fin_jeu)
                 await affiche_image_discord(interaction, name_img)
-                os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+                os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
                 await interaction.followup.send("C'est perdu ! Pomme-bot a été bien trop forte pour cette fois ||gros nul||", ephemeral=True)
 
             else :            
                 name_img = create_img_p4(interaction.user.id, ["rien", None, None])
                 await affiche_image_discord(interaction, name_img)
-                os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+                os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
 
     else :
         name_img = create_img_p4(interaction.user.id, ["rien", None, None])
         await affiche_image_discord(interaction, name_img)
-        os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+        os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
         msg = await interaction.followup.send("La colonne est déjà complête", ephemeral = True)
         await asyncio.sleep(5)
         await msg.delete()
@@ -61,7 +61,7 @@ async def c_gagne(interaction, win_or_eguale, result_win) :
     #on actualise le plateau pour voi comment ça c'est fini
     name_img = create_img_p4(interaction.user.id, result_win)
     await affiche_image_discord(interaction, name_img)
-    os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+    os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
     baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur

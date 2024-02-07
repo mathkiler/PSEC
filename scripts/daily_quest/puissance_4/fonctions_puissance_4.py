@@ -39,7 +39,7 @@ def create_img_p4(id_user, result_win) :
         img_bar_win = Image.open(CURRENT_PATH+f"/assets/puissance_4/win_bar/win_{result_win[1]}.png")
         img_final.paste(img_bar_win, (50*result_win[2][1], 50*(6-result_win[2][0])), img_bar_win)
     name_img = randint(100000, 999999)
-    img_final.save(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
+    img_final.save(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
     return name_img
 
 
@@ -51,7 +51,7 @@ def reset_last_ia_posed(id_user) :
 
 
 async def affiche_image_discord(interaction, name_img) :
-    img_path = CURRENT_PATH+f"/assets/img tamp/{name_img}.png"
+    img_path = CURRENT_PATH+f"/assets/img_tamp/{name_img}.png"
     file = discord.File(img_path)
     embed = discord.Embed(title="Puissance 4")
     embed.set_image(url=f"attachment://{name_img}.png")

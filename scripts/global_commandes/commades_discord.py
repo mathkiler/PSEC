@@ -85,10 +85,10 @@ async def affiche_bdd(interaction : discord.Interaction) :
     if admin_restrict(interaction.user.id) :
         txt_all_tables = calc_txt_bdd()
         name_file = str(randint(100000, 999999))
-        with open(CURRENT_PATH+f"/assets/img tamp/{name_file}.txt", "w") as f :
+        with open(CURRENT_PATH+f"/assets/img_tamp/{name_file}.txt", "w") as f :
             f.write(txt_all_tables)
-        await interaction.response.send_message("voici les tables : ", file=discord.File(CURRENT_PATH+f"/assets/img tamp/{name_file}.txt"), ephemeral=True)
-        os.remove(CURRENT_PATH+f"/assets/img tamp/{name_file}.txt")
+        await interaction.response.send_message("voici les tables : ", file=discord.File(CURRENT_PATH+f"/assets/img_tamp/{name_file}.txt"), ephemeral=True)
+        os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_file}.txt")
 
 @bot.command(name="reroll", description="Échanger tout son XP contre des fragments (2 pour 1). Disponnible qu'à partir du niveau 5")
 async def reroll(interaction : discord.Interaction) :
