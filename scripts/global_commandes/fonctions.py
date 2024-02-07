@@ -216,3 +216,10 @@ def pluriel(nb) :
         return ""
     else :
         return "s"
+    
+
+def select_interaction_argument(interaction1, interaction2) :
+    if str(type(interaction1)) == "<class 'discord.interactions.Interaction'>" :
+        return interaction1
+    else :
+        return interaction2
