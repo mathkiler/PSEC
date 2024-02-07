@@ -20,13 +20,8 @@ async def on_message(message):
                 await message.delete()
             except :
                 pass
-            try : #si le timeout du premier message est dépassé
-                await user_test_mot_motus(str(message.author.id), message.content.lower())
-            except :
-                try : #si l'utilisateur à bloqué ses DM...
-                    await message.author.send("Un prolème est survenue, probablement que le time out du message est dépassé.\nRecomencez l'intecation depuis !commande pour recommencer.")
-                except :
-                    await message.channel.send("Un prolème est survenue, probablement que le time out du message est dépassé.\nRecomencez l'intecation depuis !commande pour recommencer.")
+            await user_test_mot_motus(str(message.author.id), message.content.lower())
+
         else :
             id_user = message.author.id
             baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
