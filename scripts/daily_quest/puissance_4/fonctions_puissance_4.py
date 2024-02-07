@@ -3,7 +3,7 @@ from scripts.global_commandes.import_et_variable import *
 
 
 def get_etat_puissance_4(id_user) :
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "r") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         etat_p4 = f.readline().split(",")
     return etat_p4
 
@@ -20,7 +20,7 @@ def get_line_by_column(id_user, ind_column) :
 def replace_somthing(id_user, new_etat, coords) :
     etat_p4 = get_etat_puissance_4(id_user)
     etat_p4[coords[1]+coords[0]*7] = new_etat
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "w") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "w") as f :
         f.write(",".join(etat_p4))
 
 def create_img_p4(id_user, result_win) :
@@ -28,30 +28,30 @@ def create_img_p4(id_user, result_win) :
     img_final = Image.new('RGBA', (50*7, 50*7))
     ind_pion = 0
     for nb in range(1,8) :
-        img_pion = Image.open(f"./assets/puissance_4/nombres/{nb}.png")
+        img_pion = Image.open(CURRENT_PATH+f"/assets/puissance_4/nombres/{nb}.png")
         img_final.paste(img_pion, (50*(nb-1), 0))
     for y in range(6) : 
         for x in range(7) :
-            img_pion = Image.open(f"./assets/puissance_4/{etat_p4[ind_pion]}.png")
+            img_pion = Image.open(CURRENT_PATH+f"/assets/puissance_4/{etat_p4[ind_pion]}.png")
             img_final.paste(img_pion, (50*x, 50*(y+1)))
             ind_pion+=1
     if result_win[0] not in ["eguale", "rien"] :
-        img_bar_win = Image.open(f"./assets/puissance_4/win_bar/win_{result_win[1]}.png")
+        img_bar_win = Image.open(CURRENT_PATH+f"/assets/puissance_4/win_bar/win_{result_win[1]}.png")
         img_final.paste(img_bar_win, (50*result_win[2][1], 50*(6-result_win[2][0])), img_bar_win)
     name_img = randint(100000, 999999)
-    img_final.save(f"./assets/img tamp/{name_img}.png")
+    img_final.save(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
     return name_img
 
 
 def reset_last_ia_posed(id_user) :
     list_plateau = get_etat_puissance_4(id_user)
     list_plateau[list_plateau.index("j_last_posed")] = "j"
-    with open(f"./assets/daily_quest_save/{id_user}.txt", "w") as f :
+    with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "w") as f :
         f.write(",".join(list_plateau))
 
 
 async def affiche_image_discord(interaction, name_img) :
-    img_path = f"./assets/img tamp/{name_img}.png"
+    img_path = CURRENT_PATH+f"/assets/img tamp/{name_img}.png"
     file = discord.File(img_path)
     embed = discord.Embed(title="Puissance 4")
     embed.set_image(url=f"attachment://{name_img}.png")
@@ -335,7 +335,7 @@ def cacl_move_gagant(board, piece):
 #renvoi l'embed et effectu l'effet lorsque le gain est carte
 def effet_carte_puissance_4(id_user) :
     #on get l'xp que le joueur possède
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()[0]
@@ -360,7 +360,7 @@ def effet_carte_puissance_4(id_user) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     #Enfin, on affiche le résultat au joueur sur discord
-    img_path = f'./assets/cartes/{carte_tiree[1]}.png'
+    img_path = CURRENT_PATH+f'/assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
     embed = discord.Embed(title = f"""Bravo avez gagné contre Pomme-bot ! 
 
@@ -377,7 +377,7 @@ def effet_xp_puissance_4(id_user, gain) :
     else :
         msgWinOrNot = "Égualité, voici un lot de consolation"
         xp = 50
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET xp = xp + {xp}
@@ -396,7 +396,7 @@ def effet_fragment_puissance_4(id_user, nb_fragment) :
         msg_to_print = "Égualité, voici un lot de consolation"
     else :
         msg_to_print = "Bravo avez gagné contre Pomme-bot !"
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET fragment = fragment + {nb_fragment}

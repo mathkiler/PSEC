@@ -15,7 +15,7 @@ async def tourne_roue(interaction) :
     else :
         embed_wheel_finish, file_wheel_finish = effet_fragment_roue_fortune(interaction.user.id, get_nb_fragment(gain))
 
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur
                     SET daily_quest_done = 1
@@ -25,7 +25,7 @@ async def tourne_roue(interaction) :
 
     #Enfin, on affiche le résultat au joueur sur discord 
     #en premeir le gif en fonction du gain gagné
-    img_path = f"./assets/animations/daily_quest/roue_fortune/anim_gif/{gain}.gif"
+    img_path = CURRENT_PATH+f"/assets/animations/daily_quest/roue_fortune/anim_gif/{gain}.gif"
     file = discord.File(img_path)
     embed = discord.Embed()
     embed.set_image(url=f"attachment://{gain}.gif")

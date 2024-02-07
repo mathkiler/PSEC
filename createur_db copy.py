@@ -13,7 +13,7 @@ epique=11
 heroique=8
 
 
-baseDeDonnees = sqlite3.connect(CURRENT_PATH+'\\assets\\database\\database.db')
+baseDeDonnees = sqlite3.connect(CURRENT_PATH+'/database/database.db')
 curseur = baseDeDonnees.cursor()
 
 
@@ -95,7 +95,7 @@ def chargement_cartes() :
     proba_rarete.extend(["rare" for k in range(rare)])
     proba_rarete.extend(["épique" for k in range(epique)])
     proba_rarete.extend(["héroïque" for k in range(heroique)])
-    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"\\cartes"):
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/cartes"):
         for nom in fichiers :
             if "nom" != ".inconnue.png" :
                 inser_into_cartes(nom[:-4], choice(proba_rarete))
@@ -158,9 +158,9 @@ def creation_BDD() :
     chargement_cartes()
     baseDeDonnees.commit()
 
-creation_BDD()
+# creation_BDD()
 
-# aff_table_cartes()
+aff_table_cartes()
 
 
 baseDeDonnees.close()

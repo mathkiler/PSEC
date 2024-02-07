@@ -18,6 +18,7 @@ from scripts.global_commandes.import_et_variable import *
 class MsgDemineur(discord.ui.View):
     @discord.ui.button(label="Démarer le jeu", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             tentative_restante = get_tentative_restante(interaction.user.id)
@@ -38,6 +39,7 @@ class Demineur(discord.ui.View):
         ]
     )
     async def select_colonne_callback(self, select, interaction): # the function called when the user is done selecting options
+        interaction = select_interaction_argument(interaction, select)
         if test_daily_quest_completed(interaction.user.id) == False :
             modif_ligne_colonne_selected(int(select.values[0]), 1, interaction.user.id)
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
@@ -56,6 +58,7 @@ class Demineur(discord.ui.View):
         ]
     )
     async def select_ligne_callback(self, select, interaction): # the function called when the user is done selecting options
+        interaction = select_interaction_argument(interaction, select)
         if test_daily_quest_completed(interaction.user.id) == False :
             modif_ligne_colonne_selected(int(select.values[0])-1, 0, interaction.user.id)
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
@@ -70,6 +73,7 @@ class Demineur(discord.ui.View):
 
     @discord.ui.button(label="déminer", style=discord.ButtonStyle.primary)
     async def deminer_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             await demine_case(interaction)
         else :
@@ -79,6 +83,7 @@ class Demineur(discord.ui.View):
 
     @discord.ui.button(label="drapeau", style=discord.ButtonStyle.primary)
     async def drapeau_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             await add_flag(interaction)
         else :

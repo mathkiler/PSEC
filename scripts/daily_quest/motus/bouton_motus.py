@@ -1,11 +1,12 @@
 from scripts.daily_quest.motus.fonctions_motus import genere_FIRST_image_motus, genere_image_motus, get_mot_mystere
-from scripts.global_commandes.fonctions import pluriel, test_daily_quest_completed
+from scripts.global_commandes.fonctions import pluriel, select_interaction_argument, test_daily_quest_completed
 from scripts.global_commandes.import_et_variable import *
 
 
 class Motus(discord.ui.View):
     @discord.ui.button(label="Démarer le jeu", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             if str(interaction.user.id) in motus_msg_player : #true si il a déjà démarer le jeu
                 mot_mystere = get_mot_mystere()
@@ -14,10 +15,10 @@ class Motus(discord.ui.View):
 mot en {len(mot_mystere)} lettres""")
                 name_img = genere_image_motus(mot_mystere, motus_msg_player[f"{interaction.user.id}"]["mot_donnes"])
                 embed.set_image(url=f"attachment://{name_img}.png")
-                msg = await interaction.response.send_message(embed=embed, file=discord.File(f'./assets/img tamp/{name_img}.png'), ephemeral=True)
+                msg = await interaction.response.send_message(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img tamp/{name_img}.png'), ephemeral=True)
                 motus_msg_player[str(interaction.user.id)]["interaction"] = interaction
                 motus_msg_player[str(interaction.user.id)]["message_motus"] = msg
-                os.remove(f"./assets/img tamp/{name_img}.png")
+                os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
             else : #premier message affichant le motus
                 nb_chance_left = 6
                 mot_mystere = get_mot_mystere()
@@ -25,8 +26,8 @@ mot en {len(mot_mystere)} lettres""")
 mot en {len(mot_mystere)} lettres""")
                 name_img = genere_FIRST_image_motus(mot_mystere)
                 embed.set_image(url=f"attachment://{name_img}.png")
-                msg = await interaction.response.send_message(embed=embed, file=discord.File(f'./assets/img tamp/{name_img}.png'), ephemeral=True)
-                os.remove(f"./assets/img tamp/{name_img}.png")
+                msg = await interaction.response.send_message(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img tamp/{name_img}.png'), ephemeral=True)
+                os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
                 motus_msg_player[str(interaction.user.id)] = {"message_motus" : msg, "nb_chance_left" : 6, "mot_donnes" : [], "interaction" : interaction}
                 
 

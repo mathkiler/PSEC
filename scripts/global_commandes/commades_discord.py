@@ -17,7 +17,7 @@ async def commandes(interaction: discord.Interaction) :
 async def proba(interaction: discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()
-    await interaction.response.send_message("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File("./assets/proba/proba_drop.png"), ephemeral=True)
+    await interaction.response.send_message("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File(CURRENT_PATH+"/assets/proba/proba_drop.png"))
 
 
 
@@ -45,7 +45,7 @@ async def ajout_carte(
 @bot.command(name="force_change_jour", description="admin only : force les effets pour passer d'un jour à un autre")
 async def force_change_jour(interaction: discord.Interaction) :
     if admin_restrict(interaction.user.id) :
-        baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"""UPDATE Joueur 
                     SET fragment = fragment + 1, fragment_cumule = 0, xp = xp + 1, daily_quest_done = 0""")

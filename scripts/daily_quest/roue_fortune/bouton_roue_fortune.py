@@ -1,11 +1,12 @@
 from scripts.daily_quest.roue_fortune.func_used_by_button_roue_fortune import tourne_roue
-from scripts.global_commandes.fonctions import test_daily_quest_completed
+from scripts.global_commandes.fonctions import select_interaction_argument, test_daily_quest_completed
 from scripts.global_commandes.import_et_variable import *
 
 
 class Roue_fortune(discord.ui.View):
     @discord.ui.button(label="Tourner la roue", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             await tourne_roue(interaction)
         else :

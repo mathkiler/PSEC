@@ -9,7 +9,7 @@ from scripts.global_commandes.import_et_variable import *
 #renvoi l'embed lorsque le gain est rien
 def effet_rien_roue_fortune() :
     
-    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/rien.png"
+    img_path = CURRENT_PATH+f"/assets/animations/daily_quest/roue_fortune/fin_animation_png/rien.png"
     file = discord.File(img_path)
     embed = discord.Embed(title="""Résultat : 
                          
@@ -23,7 +23,7 @@ Tu n'as rien gagné(e) et pourtant tu n'avais qu'une chance sur 6 de perdre...""
 #renvoi l'embed et effectu l'effet lorsque le gain est carte
 def effet_carte_roue_fortune(id_user) :
     #on get l'xp que le joueur possède
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()[0]
@@ -48,7 +48,7 @@ def effet_carte_roue_fortune(id_user) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     #Enfin, on affiche le résultat au joueur sur discord
-    img_path = f'./assets/cartes/{carte_tiree[1]}.png'
+    img_path = CURRENT_PATH+f'/assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
     embed = discord.Embed(title = f"""Résultat : 
 
@@ -59,7 +59,7 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est xp
 def effet_xp_roue_fortune(id_user) :
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET xp = xp + 100
@@ -67,7 +67,7 @@ def effet_xp_roue_fortune(id_user) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
-    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/xp.png"
+    img_path = CURRENT_PATH+f"/assets/animations/daily_quest/roue_fortune/fin_animation_png/xp.png"
     file = discord.File(img_path)
     embed = discord.Embed(title="""Résultat : 
                          
@@ -78,14 +78,14 @@ Vous avez obtenu un gain de + 100 exp !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
 def effet_fragment_roue_fortune(id_user, nb_fragment) :
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET fragment = fragment + {nb_fragment}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
-    img_path = f"./assets/animations/daily_quest/roue_fortune/fin_animation_png/fragment_{nb_fragment}.png"
+    img_path = CURRENT_PATH+f"/assets/animations/daily_quest/roue_fortune/fin_animation_png/fragment_{nb_fragment}.png"
     file = discord.File(img_path)
     embed = discord.Embed(title=f"""Résultat : 
                          

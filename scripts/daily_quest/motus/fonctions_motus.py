@@ -7,7 +7,7 @@ from scripts.global_commandes.import_et_variable import *
 
 
 def get_mot_mystere() :
-    baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute("SELECT info_quest FROM daily_quest")
     result = curseur.fetchall()[-1][0]
@@ -42,31 +42,31 @@ def genere_image_motus(mot_mystere, mots_donnes) :
         ind_lettre = 0
         #enfin on affiche les lettres sur l'image
         for lettre in mot :
-            img_back_letter = Image.open(f"./assets/motus/image_lettre/{ordonancement_lettre[ind_lettre]}.png")
+            img_back_letter = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/{ordonancement_lettre[ind_lettre]}.png")
             img_final_motus.paste(img_back_letter, (75*ind_lettre, 75*count_mot))
-            let = Image.open(f"./assets/motus/image_lettre/lettre/{lettre}.png")
+            let = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/lettre/{lettre}.png")
             img_final_motus.paste(let, (75*ind_lettre, 75*count_mot), let)
             ind_lettre+=1
         count_mot+=1   
     name_img = randint(100000, 999999)
-    img_final_motus.save(f"./assets/img tamp/{name_img}.png")
+    img_final_motus.save(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
     return name_img
 
 
 
 def genere_FIRST_image_motus(mot_mystere) :
     img_final_motus = Image.new('RGBA', (75*len(mot_mystere), 75))
-    img_back_letter = Image.open(f"./assets/motus/image_lettre/lettre_bonne.png")
+    img_back_letter = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/lettre_bonne.png")
     img_final_motus.paste(img_back_letter, (0, 0))
-    let = Image.open(f"./assets/motus/image_lettre/lettre/{mot_mystere[0]}.png")
+    let = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/lettre/{mot_mystere[0]}.png")
     img_final_motus.paste(let, (0, 0), let)
     for k in range(len(mot_mystere)-1) :
-        img_back_letter = Image.open(f"./assets/motus/image_lettre/lettre_normal.png")
+        img_back_letter = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/lettre_normal.png")
         img_final_motus.paste(img_back_letter, (75*(k+1), 0))
-        let = Image.open(f"./assets/motus/image_lettre/lettre/.point.png")
+        let = Image.open(CURRENT_PATH+f"/assets/motus/image_lettre/lettre/.point.png")
         img_final_motus.paste(let, (75*(k+1), 0), let)
     name_img = randint(100000, 999999)
-    img_final_motus.save(f"./assets/img tamp/{name_img}.png")
+    img_final_motus.save(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
     return name_img
 
 
@@ -89,7 +89,7 @@ async def user_test_mot_motus(id_user, mot_user) :
         await msg.delete()
     else :
         mot_in_dico = False
-        with open("./assets/motus/liste_de_mot_fr_dico.txt") as file:
+        with open(CURRENT_PATH+f"/assets/motus/liste_de_mot_fr_dico.txt") as file:
             line = file.readline() 
             while line :
                 if line.replace("\n", "") == mot_user :    
@@ -109,8 +109,8 @@ async def user_test_mot_motus(id_user, mot_user) :
             motus_msg_player[id_user]["mot_donnes"].append(mot_user)
             name_img = genere_image_motus(mot_mystere, motus_msg_player[id_user]["mot_donnes"])
             embed.set_image(url=f"attachment://{name_img}.png")
-            await motus_msg_player[id_user]["message_motus"].edit(embed=embed, file=discord.File(f'./assets/img tamp/{name_img}.png'))
-            os.remove(f"./assets/img tamp/{name_img}.png")
+            await motus_msg_player[id_user]["message_motus"].edit(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img tamp/{name_img}.png'))
+            os.remove(CURRENT_PATH+f"/assets/img tamp/{name_img}.png")
             #test si c'est la fin du jeu
             if mot_user == mot_mystere :
                 await gagne_motus(motus_msg_player[id_user]["interaction"])
@@ -119,7 +119,7 @@ async def user_test_mot_motus(id_user, mot_user) :
             elif motus_msg_player[id_user]["nb_chance_left"] == 0 :
                 await motus_msg_player[id_user]["interaction"].followup.send(f"Perdu ! Le mot était **{mot_mystere}**", ephemeral = True)
                 motus_msg_player.pop(id_user)
-                baseDeDonnees = sqlite3.connect(f'./assets/database/{db_used}')
+                baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
                 curseur = baseDeDonnees.cursor()
                 curseur.execute(f"""UPDATE Joueur
                                 SET daily_quest_done = 1
