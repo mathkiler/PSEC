@@ -5,3 +5,4 @@ pip install discord
 pip install pillow
 pip install python-dotenv
 pip install numpy
+pip install py-cord
