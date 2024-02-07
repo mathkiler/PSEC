@@ -223,3 +223,61 @@ def select_interaction_argument(interaction1, interaction2) :
         return interaction1
     else :
         return interaction2
+
+def calc_txt_bdd() :
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f"\\assets\\database\\{db_used}")
+    curseur = baseDeDonnees.cursor()
+    txt_all_tables = ""
+    curseur.execute("SELECT * FROM Joueur")
+    result_table = curseur.fetchall()
+    
+    max_len_pseudo = max([len(bot.get_user(result_table[k][0]).name) for k in range(len(result_table))])
+    txt_all_tables+=f"""TABLE Joueur :
+
+|-{"".join(["-" for k in range(max_len_pseudo//2-3)])}pseudo{"".join(["-" for k in range(max_len_pseudo//2-3)])}-|-fragment-|-fragment cumule-|---xp---|-curseur-|-daily quest done-|\n"""
+    for user in result_table :
+        txt_all_tables+=f'| {bot.get_user(user[0]).name}{get_nb_espace(bot.get_user(user[0]).name, max_len_pseudo)} |  {user[1]}{get_nb_espace(user[1], 8)}|  {user[2]}{get_nb_espace(user[2], 15)}|  {user[3]}{get_nb_espace(user[3], 6)}|  {user[4]}{get_nb_espace(user[4], 7)}|  {user[5]}{get_nb_espace(user[5], 16)}|\n'
+
+
+    curseur.execute("SELECT * FROM Cartes")
+    result_table = curseur.fetchall()
+
+    max_len = max([len(str(result_table[k][1])) for k in range(len(result_table))])
+    txt_all_tables+=f"""\n\n\nTABLE Cartes :
+                                                                                                                                 
+|-id carte-|-{"".join(["-" for k in range(max_len//2-4)])}nom carte{"".join(["-" for k in range(max_len//2-4)])}-|-----rareté-----|\n"""
+    for user in result_table :
+        txt_all_tables+=f'|  {user[0]}{get_nb_espace(user[0], 7)} |  {user[1]}{get_nb_espace(user[1], max_len)}|  {user[2]}{get_nb_espace(user[2], 14)}|\n'
+
+
+
+    curseur.execute("SELECT * FROM carte_possede")
+    result_table = curseur.fetchall()
+
+    max_len_pseudo = max([len(bot.get_user(result_table[k][0]).name) for k in range(len(result_table))])
+    txt_all_tables+=f"""\n\n\nTABLE Carte possède :
+                                                                                                                                 
+|-{"".join(["-" for k in range(max_len_pseudo//2-3)])}pseudo{"".join(["-" for k in range(max_len_pseudo//2-3)])}--|-id carte-|-nombre carte possédé-|\n"""
+    for user in result_table :
+        txt_all_tables+=f'|  {bot.get_user(user[0]).name}{get_nb_espace(bot.get_user(user[0]).name, max_len_pseudo)} |  {user[1]}{get_nb_espace(user[1], 8)}|  {user[2]}{get_nb_espace(user[2], 20)}|\n'
+
+
+
+    curseur.execute("SELECT * FROM daily_quest")
+    result_table = curseur.fetchall()
+
+    max_len_nom_event = max([len(str(result_table[k][0])) for k in range(len(result_table))])
+    max_len_info_quest = max([len(str(result_table[k][2])) for k in range(len(result_table))])
+    if max_len_info_quest <= 10 :
+        max_len_info_quest = 10
+    txt_all_tables+=f"""\n\n\nTABLE daily quest :
+                                                                                                                                 
+|-{"".join(["-" for k in range(max_len_nom_event//2-4)])}nom event{"".join(["-" for k in range(max_len_nom_event//2-3)])}-|--jour event--|-{"".join(["-" for k in range(max_len_info_quest//2-5)])}info quest{"".join(["-" for k in range(max_len_info_quest//2-5)])}-|\n"""
+    for user in result_table :
+        txt_all_tables+=f'|  {user[0]}{get_nb_espace(user[0], max_len_nom_event)} |  {user[1]}{get_nb_espace(user[1], 12)}|  {user[2]}{get_nb_espace(user[2], max_len_info_quest)}|\n'
+
+    return txt_all_tables
+
+def get_nb_espace(thing_to_print, nb_left) :
+    return "".join([" " for k in range(nb_left-len(str(thing_to_print)))])
+

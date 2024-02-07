@@ -55,6 +55,7 @@ async def force_change_jour(interaction: discord.Interaction) :
 
 
 
+
 #commande qui montre les artistes
 @bot.command(name="artistes", description="Affiche les artistes qui on participés pour les cartes")
 async def artistes(interaction : discord.Interaction) :
@@ -70,3 +71,15 @@ async def artistes(interaction : discord.Interaction) :
             txt_to_print_discord+=f"**{artiste[0]}** {nb_tiret}> [{artiste[2]}]({artiste[1]})\n"
     embed = discord.Embed(title="Artistes : ", description=txt_to_print_discord)
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+@bot.command(name="affiche_bdd", description="admin only : affiche l'état actuel de la bdd en format txt")
+async def affiche_bdd(interaction : discord.Interaction) :
+    if admin_restrict(interaction.user.id) :
+        txt_all_tables = calc_txt_bdd()
+        name_file = str(randint(100000, 999999))
+        with open(CURRENT_PATH+f"/assets/img tamp/{name_file}.txt", "w") as f :
+            f.write(txt_all_tables)
+        await interaction.response.send_message("voici les tables : ", file=discord.File(CURRENT_PATH+f"/assets/img tamp/{name_file}.txt"), ephemeral=True)
+        os.remove(CURRENT_PATH+f"/assets/img tamp/{name_file}.txt")
+
