@@ -33,12 +33,20 @@ async def ajout_carte(
     rarete: discord.Option(str, choices=['commun', 'peu courant', 'rare', 'épique', 'héroïque'])
     ) :
     if admin_restrict(interaction.user.id) :
-        resultat = ajouter_une_carte(nom, rarete)
-        if resultat == None :
-            await interaction.response.send_message("Carte bien ajouté", ephemeral=True)
+        carte_in_folder = False
+        for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
+            for file in fichiers :
+                if file == nom+".png" :
+                    carte_in_folder = True
+                    break
+        if carte_in_folder :
+            resultat = ajouter_une_carte(nom, rarete)
+            if resultat == None :
+                await interaction.response.send_message("Carte bien ajouté", ephemeral=True)
+            else :
+                await interaction.response.send_message(f"Une erreur est survenue : ```{resultat}```", ephemeral=True)
         else :
-            await interaction.response.send_message(f"Une erreur est survenue : ```{resultat}```", ephemeral=True)
-
+            await interaction.response.send_message(f"L'image au nom de `{nom}` ne figure pas dans le dossier des images des cartes. Vauillez ajouter l'image avant d'ajouter la carte dans la bdd", ephemeral=True)
 
 
 #commande pour forcer les effets pour passer d'un jour à un autre
