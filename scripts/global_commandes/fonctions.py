@@ -218,7 +218,7 @@ def pluriel(nb) :
         return "s"
     
 def calc_txt_bdd() :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f"/assets/database/{db_used}")
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f"\\assets\\database\\{db_used}")
     curseur = baseDeDonnees.cursor()
     txt_all_tables = ""
     curseur.execute("SELECT * FROM Joueur")
