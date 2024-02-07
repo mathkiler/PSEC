@@ -19,7 +19,7 @@ mot en {len(mot_mystere)} lettres""")
                 motus_msg_player[str(interaction.user.id)]["interaction"] = interaction
                 motus_msg_player[str(interaction.user.id)]["message_motus"] = msg
                 os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
-            else : #premier message affichant le motus
+            elif isinstance(interaction.channel, discord.channel.DMChannel) : #premier message affichant le motus
                 nb_chance_left = 6
                 mot_mystere = get_mot_mystere()
                 embed = discord.Embed(title=f"""Tentative{pluriel(nb_chance_left)} restante{pluriel(nb_chance_left)} : {nb_chance_left}
@@ -28,8 +28,9 @@ mot en {len(mot_mystere)} lettres""")
                 embed.set_image(url=f"attachment://{name_img}.png")
                 msg = await interaction.response.send_message(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_img}.png'), ephemeral=True)
                 os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
-                motus_msg_player[str(interaction.user.id)] = {"message_motus" : msg, "nb_chance_left" : 6, "mot_donnes" : [], "interaction" : interaction}
-                
+                motus_msg_player[str(interaction.user.id)] = {"nb_chance_left" : 6, "mot_donnes" : []}
+            else :
+                await interaction.response.send_message("Cette quête ne peut s'éfectuer **qu'en** MP avec pomme-bot", ephemeral=True)
 
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
@@ -43,7 +44,9 @@ async def message_lunch_quest_motus(interaction) :
 La 1ère lettre du mot mystère est affichée. Le but est de trouver le mot en un minimum de coups sans dépasser 6 tentatives ou la partie est perdue.
 A chaque tentative, les lettres bien placées sont en rouge et celles mal placées en jaune. Les mots mal orthographiés ou absents du dictionnaire ne seront pas testé.
 
-**Comment jouer :** écrivez simplement un mot dans le chat (ou en mp au bot) Il est conseilé de faire ce jeu en mp avec le bot.
+**Comment jouer :** écrivez simplement un mot dans le chat.
+                          
+:warning:**Attention**:warning: : Le jeu est faisable **uniquement en MP avec pomme-bot** 
            
 **Gain possible :** 
  • XP

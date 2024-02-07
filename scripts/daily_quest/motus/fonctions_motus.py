@@ -17,6 +17,8 @@ def get_mot_mystere() :
 
 def genere_image_motus(mot_mystere, mots_donnes) :
         #enfin, on créer l'image
+    if len(mots_donnes) == 0 :
+        return genere_FIRST_image_motus(mot_mystere)
     
     img_final_motus = Image.new('RGBA', (75*len(mot_mystere), 75*len(mots_donnes)))
 
@@ -72,22 +74,19 @@ def genere_FIRST_image_motus(mot_mystere) :
 
 
 
-async def user_test_mot_motus(id_user, mot_user) :
+async def user_test_mot_motus(message, id_user, mot_user) :
     mot_user = formatage_mot_user_motus(mot_user)
     mot_mystere = get_mot_mystere()
-    if len(mot_user) > len(mot_mystere) :
-        msg = await motus_msg_player[id_user]["interaction"].followup.send(f"**{mot_user}** est trop long ({len(mot_user)} lettres au lieu de {len(mot_mystere)} lettres)", ephemeral = True)
-        await asyncio.sleep(5)
-        await msg.delete()
-    elif len(mot_user) < len(mot_mystere) :
-        msg = await motus_msg_player[id_user]["interaction"].followup.send(f"**{mot_user}** est trop court ({len(mot_user)} lettres au lieu de {len(mot_mystere)} lettres)", ephemeral = True)
-        await asyncio.sleep(5)
-        await msg.delete()
-    elif mot_user in motus_msg_player[id_user]["mot_donnes"] :
-        msg = await motus_msg_player[id_user]["interaction"].followup.send(f"**{mot_user}** a déjà été proposé.", ephemeral = True)
-        await asyncio.sleep(5)
-        await msg.delete()
-    else :
+    if len(mot_user) > len(mot_mystere) : #si mo trop long
+        await message.reply(f"**{mot_user}** est trop long ({len(mot_user)} lettres au lieu de {len(mot_mystere)} lettres)")
+        await send_current_state_motus(message, id_user, None, mot_mystere)
+    elif len(mot_user) < len(mot_mystere) : #si mot trop cours
+        await message.reply(f"**{mot_user}** est trop court ({len(mot_user)} lettres au lieu de {len(mot_mystere)} lettres)")
+        await send_current_state_motus(message, id_user, None, mot_mystere)
+    elif mot_user in motus_msg_player[id_user]["mot_donnes"] : #si mot déjà donné
+        await message.reply(f"**{mot_user}** a déjà été proposé.")
+        await send_current_state_motus(message, id_user, None, mot_mystere)
+    else : #check dans le dico
         mot_in_dico = False
         with open(CURRENT_PATH+f"/assets/motus/liste_de_mot_fr_dico.txt") as file:
             line = file.readline() 
@@ -96,28 +95,19 @@ async def user_test_mot_motus(id_user, mot_user) :
                     mot_in_dico = True
                     break
                 line = file.readline()
-        if mot_in_dico == False :
-            msg = await motus_msg_player[id_user]["interaction"].followup.send(f"**{mot_user}** n'est pas dans mon dictionnaire", ephemeral = True)
-            await asyncio.sleep(5)
-            await msg.delete()
+        if mot_in_dico == False : #mot n'es pas dans le dico
+            await message.reply(f"**{mot_user}** n'est pas dans mon dictionnaire")
+            await send_current_state_motus(message, id_user, None, mot_mystere)
         else :
             
-            motus_msg_player[id_user]["nb_chance_left"]-=1
-            nb_chance_left = motus_msg_player[id_user]["nb_chance_left"]
-            embed = discord.Embed(title=f"""Tentative{pluriel(nb_chance_left)} restante{pluriel(nb_chance_left)} : {nb_chance_left}
-    mot en {len(mot_mystere)} lettres""")
-            motus_msg_player[id_user]["mot_donnes"].append(mot_user)
-            name_img = genere_image_motus(mot_mystere, motus_msg_player[id_user]["mot_donnes"])
-            embed.set_image(url=f"attachment://{name_img}.png")
-            await motus_msg_player[id_user]["message_motus"].edit(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_img}.png'))
-            os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
+            await send_current_state_motus(message, id_user, mot_user, mot_mystere)
             #test si c'est la fin du jeu
             if mot_user == mot_mystere :
-                await gagne_motus(motus_msg_player[id_user]["interaction"])
+                await gagne_motus(message)
                 motus_msg_player.pop(id_user)
             #le user perd le jeu aucune tentative restante
             elif motus_msg_player[id_user]["nb_chance_left"] == 0 :
-                await motus_msg_player[id_user]["interaction"].followup.send(f"Perdu ! Le mot était **{mot_mystere}**", ephemeral = True)
+                await message.reply(f"Perdu ! Le mot était **{mot_mystere}**")
                 motus_msg_player.pop(id_user)
                 baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
                 curseur = baseDeDonnees.cursor()
@@ -127,6 +117,21 @@ async def user_test_mot_motus(id_user, mot_user) :
                 baseDeDonnees.commit()
                 baseDeDonnees.close()
 
+
+
+
+#genere and send the image of the current state of motus
+async def send_current_state_motus(message, id_user, mot_user, mot_mystere) :
+    if mot_user!= None :
+        motus_msg_player[id_user]["nb_chance_left"]-=1
+        motus_msg_player[id_user]["mot_donnes"].append(mot_user)
+    nb_chance_left = motus_msg_player[id_user]["nb_chance_left"]
+    embed = discord.Embed(title=f"""Tentative{pluriel(nb_chance_left)} restante{pluriel(nb_chance_left)} : {nb_chance_left}
+mot en {len(mot_mystere)} lettres""")
+    name_img = genere_image_motus(mot_mystere, motus_msg_player[id_user]["mot_donnes"])
+    embed.set_image(url=f"attachment://{name_img}.png")
+    await message.author.send(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_img}.png'))
+    os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
 
 
     

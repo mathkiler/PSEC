@@ -12,6 +12,10 @@ rare=16
 epique=11
 heroique=8
 
+try : 
+    os.remove(CURRENT_PATH+"/assets/database/database.db")
+except :
+    pass
 
 
 baseDeDonnees = sqlite3.connect(CURRENT_PATH+'\\assets\\database\\database.db')
@@ -93,7 +97,7 @@ def chargement_cartes() :
     proba_rarete.extend(["rare" for k in range(rare)])
     proba_rarete.extend(["épique" for k in range(epique)])
     proba_rarete.extend(["héroïque" for k in range(heroique)])
-    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/cartes"):
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
         for nom in fichiers :
             if "nom" != ".inconnue.png" :
                 inser_into_cartes(nom[:-4], choice(proba_rarete))
@@ -106,25 +110,24 @@ def chargement_cartes() :
 def creation_des_table() :
     creation_player_table()
     baseDeDonnees.commit()
-    try : #on essai si la table cartes est déjà créé. Si oui, on set une variable pour ne pas charger les cartes une nouvelle fois
-        creation_cartes_table()
-        carte_already_load = False
-    except :
-        carte_already_load = True
+
+    creation_cartes_table()
     baseDeDonnees.commit()
+
+
     creation_carte_possede_table()
     baseDeDonnees.commit()
+
     creation_daily_quest_table()
     baseDeDonnees.commit()
-    return carte_already_load
+
 
 
 def creation_BDD() : 
-    carte_already_load = creation_des_table()
+    creation_des_table()
     baseDeDonnees.commit()
-    if carte_already_load == False:
-        chargement_cartes()
-        baseDeDonnees.commit()
+    chargement_cartes()
+    baseDeDonnees.commit()
 
 creation_BDD()
 

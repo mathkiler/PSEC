@@ -15,12 +15,9 @@ async def on_ready():
 async def on_message(message):
     test_changement_de_jour()
     if test_joueur_ecrit_commande(message.content) == False and test_player_in_bdd(message.author.id):
-        if str(message.author.id) in motus_msg_player and " " not in message.content :
-            try : #si on est en MP discord, on ne peux pas supprimer le message de l'utilisteur
-                await message.delete()
-            except :
-                pass
-            await user_test_mot_motus(str(message.author.id), message.content.lower())
+        #si le joueur est en train de jouer (dans le dich motus), si il 'a pas mis d'espace dans sont message, et si il est bien en MP
+        if str(message.author.id) in motus_msg_player and " " not in message.content and isinstance(message.channel, discord.channel.DMChannel):
+            await user_test_mot_motus(message, str(message.author.id), message.content.lower())
 
         else :
             id_user = message.author.id

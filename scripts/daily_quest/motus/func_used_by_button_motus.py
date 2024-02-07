@@ -4,29 +4,29 @@ from scripts.global_commandes.import_et_variable import *
 
 
 #effet si on appui sur un bouton 
-async def gagne_motus(interaction) :
-    gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+async def gagne_motus(message) :
+    gain = choice(["carte"]) #, "xp", "fragment_5", "fragment_10"
     if gain == "carte" :
-        embed_gain_result, file_gain_result = effet_carte_motus(interaction.user.id)
+        embed_gain_result, file_gain_result = effet_carte_motus(message.author.id)
     elif gain == "xp" :
-        embed_gain_result, file_gain_result = effet_xp_motus(interaction.user.id)
+        embed_gain_result, file_gain_result = effet_xp_motus(message.author.id)
     else :
-        embed_gain_result, file_gain_result = effet_fragment_motus(interaction.user.id, get_nb_fragment(gain))
+        embed_gain_result, file_gain_result = effet_fragment_motus(message.author.id, get_nb_fragment(gain))
 
     baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur
                     SET daily_quest_done = 1
-                    WHERE id_discord_player == {interaction.user.id}""")
+                    WHERE id_discord_player == {message.author.id}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
 
     #Enfin, on affiche le résultat au joueur sur discord 
     #en premeir le gif en fonction du gain gagné
     if file_gain_result == None :
-        await interaction.followup.send(embed=embed_gain_result, ephemeral=True)
+        await message.author.send(embed=embed_gain_result)
     else : 
-        await interaction.followup.send(embed=embed_gain_result, file=file_gain_result, ephemeral=True)
+        await message.author.send(embed=embed_gain_result, file=file_gain_result)
 
 
 
