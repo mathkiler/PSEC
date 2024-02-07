@@ -59,7 +59,7 @@ async def force_change_jour(interaction: discord.Interaction) :
 async def reroll(interaction : discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
     xp_user = curseur.fetchone()[0]
