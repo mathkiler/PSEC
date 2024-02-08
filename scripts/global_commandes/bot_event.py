@@ -14,7 +14,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     test_changement_de_jour()
-    if test_joueur_ecrit_commande(message.content) == False and test_player_in_bdd(message.author.id):
+    if test_joueur_ecrit_commande(message.content) == False and test_player_in_bdd(message.author.id) and test_message_mp(message.channel) == False:
         #si le joueur est en train de jouer (dans le dich motus), si il 'a pas mis d'espace dans sont message, et si il est bien en MP
         if str(message.author.id) in motus_msg_player and " " not in message.content and isinstance(message.channel, discord.channel.DMChannel):
             await user_test_mot_motus(message, str(message.author.id), message.content.lower())

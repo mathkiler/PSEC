@@ -309,3 +309,10 @@ def calc_txt_bdd() :
 def get_nb_espace(thing_to_print, nb_left) :
     return "".join([" " for k in range(nb_left-len(str(thing_to_print)))])
 
+
+
+#test si le message est écrit en MP
+def test_message_mp(channel) :
+    if "Direct Message with" in str(channel) or "discord.channel.PartialMessageable" in str(channel) :
+        return True
+    return False
