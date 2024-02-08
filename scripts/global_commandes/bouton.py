@@ -62,7 +62,7 @@ class Voir_Commandes(discord.ui.View):
         test_changement_de_jour()
         interaction = select_interaction_argument(interaction, button)
         test_cration_bdd_user(interaction.user.id)
-        name_quest = get_daily_quest()
+        name_quest = get_daily_quest(interaction.user.id)
         if test_daily_quest_completed(interaction.user.id) :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
         else :

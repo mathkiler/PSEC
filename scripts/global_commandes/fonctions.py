@@ -122,7 +122,8 @@ def reset_daily_quest_all_users(baseDeDonnees, curseur) :
                     SET daily_quest_done = 0""")
     baseDeDonnees.commit()
 
-def get_daily_quest() :
+def get_daily_quest(id_user) :
+    global motus_msg_player
     #get toutes les info
     baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
@@ -132,6 +133,7 @@ def get_daily_quest() :
     #test si on dois rajouter une quest ou non
     #si aucune quête n'a encore été proposé
     if len(result_daily_quest) == 0 :
+        motus_msg_player = []
         reset_daily_quest_all_users(baseDeDonnees, curseur)
         name_quest = choice(daily_quest_list_name)
         info_quest = selecteur_info_daily_quest(name_quest) #daily_quest_dict_info renvoi le return de la fonction lié à l'event pour les info pour syncrhoniser tout les joueurs
@@ -144,6 +146,7 @@ def get_daily_quest() :
     jour_diff = int((date.today()-date.fromisoformat(result_daily_quest[-1][1])).days)
     #tet si on a fait le tour des quest pour faire un roulement des quêtes
     if jour_diff >= 1 :
+        motus_msg_player = []
         reset_daily_quest_all_users(baseDeDonnees, curseur)
         #on choisi une quest au hazard selon 2 options : 1=le roulement complet des quest a été fini, on reboot et propose une quest au hazard. 2=Le roulement n'est pas fini. On choisi donc une quest dans les quest restantes non proposé
         if len(result_daily_quest) >= len(daily_quest_list_name) :
@@ -163,6 +166,7 @@ def get_daily_quest() :
     #la quest du jour est encore d'actualité (on a pas encore changé de jour)
     else :
         name_quest = result_daily_quest[-1][0]
+        create_daily_quest_save_if_not_exist(name_quest, id_user)
     baseDeDonnees.close()
     return name_quest
 
@@ -210,6 +214,13 @@ def reset_initialisation_daily_quest_save(name_quest) :
     for id_user in result_id_players :
         with open(CURRENT_PATH+f'/assets/daily_quest_save/{id_user}.txt', 'w') as f:
             f.write(selecteur_txt_initialisation_daily_quest(name_quest))
+
+#fonction pour initialiser le ficihier txt de la save de la daily quest si besoin pour quaques utilisateur
+def create_daily_quest_save_if_not_exist(name_quest, id_user) :
+    if os.path.exists(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt") == False:
+        with open(CURRENT_PATH+f'/assets/daily_quest_save/{id_user}.txt', 'w') as f:
+            f.write(selecteur_txt_initialisation_daily_quest(name_quest))
+
 
 
 def pluriel(nb) :
