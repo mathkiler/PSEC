@@ -147,20 +147,8 @@ class Reroll(discord.ui.View):
     @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
     async def Confirmer_button_callback(self, button, interaction):
         test_changement_de_jour()
-        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
-        curseur = baseDeDonnees.cursor()
-        curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
-        xp_user = curseur.fetchone()[0]
-        _, lvl_column, lvl = get_data_lvl_from_csv(xp_user)
-        if lvl_column.index(lvl) >= 5 :
-            await effet_reroll(interaction)
-        else :
-            await interaction.response.send_message(
-f"""Vous devez être minimum **niveau 5** pour reroll.
-Vous êtes actuelement **niveau {lvl_column.index(lvl)}**.
-/proba pour voir l'xp nécessaire poru monter de niveau""",
-            ephemeral=True
-            )    
+        await effet_reroll(interaction)
+  
 
     @discord.ui.button(label="Annuler", style=discord.ButtonStyle.primary)
     async def Annuler_button_callback(self, button, interaction):
