@@ -35,7 +35,7 @@ def get_nb_bombes() :
 def convert_txt_to_discord_demineur(id_user) :
     x_ind_arrow, y_ind_arrow, list_demineur, _ = get_info_demineur(id_user)
     taille_demineur = get_taille_demineur()
-    discord_txt = f""":black_medium_square::black_medium_square::one::two::three::four::five::six::seven::eight::nine:
+    discord_txt = f""":black_medium_square::black_medium_square::regional_indicator_a::regional_indicator_b::regional_indicator_c::regional_indicator_d::regional_indicator_e::regional_indicator_f::regional_indicator_g::regional_indicator_h::regional_indicator_i:
 :black_medium_square:{':black_medium_square:'*(x_ind_arrow+1)}:arrow_down:"""
     ind_demineur_lecture = 0
     for y in range(taille_demineur) :
@@ -54,10 +54,16 @@ def convert_txt_to_discord_demineur(id_user) :
         
 
 #pour modifier la colone ou ligne des selects
-def modif_ligne_colonne_selected(new_value, ligne_colonne, id_user) : #ligne_colonne = 0 -> ligne, ligne_colonne = 1 -> colonne
+def modif_ligne_colonne_selected(move_select_info, id_user) :
     with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "r") as f :
         txt = f.readlines()
-    txt[ligne_colonne] = f"{new_value}\n"
+    if move_select_info["type selecteur"] == "column" :
+        txt[1] = f"{move_select_info['content_msg']}"+"\n"
+    if move_select_info["type selecteur"] == "line" :
+        txt[0] = f"{int(move_select_info['content_msg'])-1}"+"\n"
+    if move_select_info["type selecteur"] == "both" :
+        txt[1] = f"{move_select_info['content_msg'][1]}"+"\n"
+        txt[0] = f"{int(move_select_info['content_msg'][0])-1}"+"\n"
     with open(CURRENT_PATH+f"/assets/daily_quest_save/{id_user}.txt", "w") as f :
         f.write("".join(txt))
 
