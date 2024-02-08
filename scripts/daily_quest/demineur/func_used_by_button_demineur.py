@@ -25,7 +25,7 @@ async def demine_case(interaction) :
     case_to_compare = get_info_case(interaction.user.id, (x_ind_arrow, y_ind_arrow))
     ind_case = x_ind_arrow+get_taille_demineur()*y_ind_arrow
     taille_demineur = get_taille_demineur()
-    if ind_case in list_ind_bomb : #si il clic sur une bombe (le nul)
+    if ind_case in list_ind_bomb and case_to_compare != "d": #si il clic sur une bombe (le nul)
         tentative_restante = int(get_tentative_restante(interaction.user.id))-1
         for bomb in list_ind_bomb :
             replace_somthing_in_demineur(interaction.user.id, "b", (bomb%taille_demineur+1, bomb//taille_demineur))
@@ -41,13 +41,13 @@ async def demine_case(interaction) :
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative restante : 0", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
-            await interaction.followup.send(f"Perdu ! Réfléchit mieux la prochaine fois :upside_down:", ephemeral = True)
+            await interaction.followup.send(f"Perdu ! Réfléchit mieux la prochaine fois :upside_down:")
         else : #il perd juste une chance sur x
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative restante : {tentative_restante}", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
             message = await interaction.original_response()
-            msg = await interaction.followup.send(f"**Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}. Le plateau va redémarer dans **5** secondes. Veuillez **ATTENDRE**, merci", ephemeral = True)
+            msg = await interaction.followup.send(f"**Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}. Le plateau va redémarer dans **5** secondes. Veuillez **ATTENDRE**, merci")
             await asyncio.sleep(5)
             await msg.delete()
             #recalcule d'un nouveau plateau démineur
@@ -141,6 +141,6 @@ async def c_gagne(interaction) :
     #Enfin, on affiche le résultat au joueur sur discord 
     #en premeir le gif en fonction du gain gagné
     if file_gain_result == None :
-        await interaction.followup.send(embed=embed_gain_result, ephemeral=True)
+        await interaction.followup.send(embed=embed_gain_result)
     else : 
-        await interaction.followup.send(embed=embed_gain_result, file=file_gain_result, ephemeral=True)
+        await interaction.followup.send(embed=embed_gain_result, file=file_gain_result)

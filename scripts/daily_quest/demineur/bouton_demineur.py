@@ -1,6 +1,6 @@
-from scripts.daily_quest.demineur.fonctions_demineur import convert_txt_to_discord_demineur, get_nb_bombes, get_taille_demineur, modif_ligne_colonne_selected
+from scripts.daily_quest.demineur.fonctions_demineur import *
 from scripts.daily_quest.demineur.func_used_by_button_demineur import *
-from scripts.global_commandes.fonctions import pluriel, test_daily_quest_completed
+from scripts.global_commandes.fonctions import pluriel, test_daily_quest_completed, select_interaction_argument, test_message_mp
 from scripts.global_commandes.import_et_variable import *
 
 
@@ -20,57 +20,19 @@ class MsgDemineur(discord.ui.View):
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-            tentative_restante = get_tentative_restante(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
-            await interaction.response.send_message(embed=embed, view=Demineur(), ephemeral=True)
+            if test_message_mp(interaction.channel) :
+                discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
+                tentative_restante = get_tentative_restante(interaction.user.id)
+                embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+                await interaction.response.send_message(embed=embed, view=Demineur(), ephemeral=True)
+            else :
+                await interaction.response.send_message("Cette quête ne peut s'éfectuer **qu'en** MP avec pomme-bot", ephemeral=True)
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
 
 #class du jeu
 class Demineur(discord.ui.View):
-    #select pour choisir la colonne
-    @discord.ui.select( placeholder = "flèche en haut (colonne)", min_values = 1, max_values = 1,
-        options = [ 
-            discord.SelectOption(
-                label=f"{k}",
-            ) for k in range(1, get_taille_demineur()+1)
-        ]
-    )
-    async def select_colonne_callback(self, select, interaction): # the function called when the user is done selecting options
-        interaction = select_interaction_argument(interaction, select)
-        if test_daily_quest_completed(interaction.user.id) == False :
-            modif_ligne_colonne_selected(int(select.values[0]), 1, interaction.user.id)
-            discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-            tentative_restante = get_tentative_restante(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
-            await interaction.response.edit_message(embed=embed)
-        else :
-            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
-
-
-    @discord.ui.select( placeholder = "flèche de gauche (ligne)", min_values = 1, max_values = 1,
-        options = [
-            discord.SelectOption(
-                label=f"{k}",
-            ) for k in range(1, get_taille_demineur()+1)
-        ]
-    )
-    async def select_ligne_callback(self, select, interaction): # the function called when the user is done selecting options
-        interaction = select_interaction_argument(interaction, select)
-        if test_daily_quest_completed(interaction.user.id) == False :
-            modif_ligne_colonne_selected(int(select.values[0])-1, 0, interaction.user.id)
-            discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-            tentative_restante = get_tentative_restante(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
-            await interaction.response.edit_message(embed=embed)
-        else :
-            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
-
-
-
-
     @discord.ui.button(label="déminer", style=discord.ButtonStyle.primary)
     async def deminer_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
@@ -93,12 +55,14 @@ class Demineur(discord.ui.View):
 async def message_lunch_quest_demineur(interaction) :
     embed = discord.Embed(title="""Daily quest : Demineur""", description="""
 
-**Règle** : voir ce site pour les règles bien expliqués **[ici]**(https://demineur.nhtdev.com/fr/rules) 
+**Règle** : voir ce site pour les règles bien expliqués [ici](https://demineur.nhtdev.com/fr/rules) 
 
-**Comment jouer** :selectionner la ligne et la colonne grâce au 2 selecteurs présent
+**Comment jouer** :selectionner la ligne et la colonne en écrvant dans le chat la ligne, la colone ou les 2, exemple `e4`, `c`, `4`ou `1a`
 Puis appuyer sur le bouton "déminer" ou "drapeau" pour effectuer les bonnes actions.
 (Pour drapeau, appuyer en place un. Réappuyer pour l'enlenver)
-                          
+
+:warning:**Attention**:warning: : Le jeu est faisable **uniquement en MP avec pomme-bot** 
+
 **légende** :
  • :white_medium_square: = case non exploré
  • :bomb: = bombe
@@ -116,3 +80,29 @@ Puis appuyer sur le bouton "déminer" ou "drapeau" pour effectuer les bonnes act
 """)
     #enfin on répond à l'utilisateur par  bouton...
     await interaction.response.send_message(embed = embed, view=MsgDemineur(), ephemeral=True)
+
+
+
+
+
+async def demineur_move_selecteur(message) :
+    if message.content in alphabet_demnineur :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content)+1, "type selecteur" : "column"}
+    elif message.content in nombre_demineur :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : message.content, "type selecteur" : "line"}
+    elif message.content in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : [message.content[1], alphabet_demnineur.index(message.content[0])+1], "type selecteur" : "both"}
+    elif message.content in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : [message.content[0], alphabet_demnineur.index(message.content[1])+1], "type selecteur" : "both"}
+    else :
+        message_for_demineur = False
+    if message_for_demineur :
+        modif_ligne_colonne_selected(move_select_info, message.author.id)
+        discord_txt = convert_txt_to_discord_demineur(message.author.id)
+        tentative_restante = get_tentative_restante(message.author.id)
+        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+        await message.author.send(embed=embed, view=Demineur())

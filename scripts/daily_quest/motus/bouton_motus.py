@@ -25,7 +25,7 @@ mot en {len(mot_mystere)} lettres""")
 mot en {len(mot_mystere)} lettres""")
                 name_img = genere_FIRST_image_motus(mot_mystere)
                 embed.set_image(url=f"attachment://{name_img}.png")
-                await interaction.response.send_message(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_img}.png'), ephemeral=True)
+                await interaction.response.send_message(embed=embed, file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_img}.png'))
                 os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
                 motus_msg_player[str(interaction.user.id)] = {"nb_chance_left" : 6, "mot_donnes" : []}
             else :
