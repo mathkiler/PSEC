@@ -304,6 +304,7 @@ def calc_txt_bdd() :
         txt_all_tables+=f"""\n\n\nTABLE daily quest :
                                                                                                                                     
 |----nom event----|--jour event--|----info quest----|\n"""
+    baseDeDonnees.close()
     return txt_all_tables
 
 def get_nb_espace(thing_to_print, nb_left) :
