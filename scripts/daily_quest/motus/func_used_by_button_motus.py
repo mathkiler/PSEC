@@ -5,7 +5,7 @@ from scripts.global_commandes.import_et_variable import *
 
 #effet si on appui sur un bouton 
 async def gagne_motus(message) :
-    gain = choice(["carte"]) #, "xp", "fragment_5", "fragment_10"
+    gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
     if gain == "carte" :
         embed_gain_result, file_gain_result = effet_carte_motus(message.author.id)
     elif gain == "xp" :

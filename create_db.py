@@ -12,10 +12,11 @@ rare=16
 epique=11
 heroique=8
 
-try : 
-    os.remove(CURRENT_PATH+"/assets/database/database.db")
+try :
+    os.remove(CURRENT_PATH+"\\assets\\database\\database.db")
 except :
     pass
+
 
 
 baseDeDonnees = sqlite3.connect(CURRENT_PATH+'\\assets\\database\\database.db')

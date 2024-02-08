@@ -4,3 +4,4 @@ __pycache__
 *.psd
 photoshop
 test_db.py
+*.deb
