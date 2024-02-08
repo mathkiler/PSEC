@@ -17,7 +17,7 @@ async def commandes(interaction: discord.Interaction) :
 async def proba(interaction: discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()
-    await interaction.response.send_message("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File(CURRENT_PATH+"/assets/proba/proba_drop.png"))
+    await interaction.response.send_message("Tableau des probabilités utilisées pour le drop des cartes.", file=discord.File(CURRENT_PATH+"/assets/proba/proba_drop.png"), ephemeral=True)
 
 
 
