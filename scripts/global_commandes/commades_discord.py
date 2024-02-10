@@ -119,5 +119,5 @@ Vous êtes actuellement **niveau {lvl_column.index(lvl)}**.
 async def affiche_bdd(interaction : discord.Interaction) :
     if admin_restrict(interaction.user.id) :
         dt_string = datetime.now().strftime("%d-%m-%Y_%Hh-%Mm-%Ss")
-        shutil.copyfile(CURRENT_PATH+"/assets/database/database.db", CURRENT_PATH+f"/assets/database/backup/database_backup_{dt_string}.db")
+        shutil.copyfile(CURRENT_PATH+"/assets/database/database.db", CURRENT_PATH+f"/assets/database/backup_database/database_backup_{dt_string}.db")
         await interaction.response.send_message("Backup créée.", ephemeral=True)
