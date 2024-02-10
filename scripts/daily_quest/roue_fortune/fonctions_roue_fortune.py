@@ -71,7 +71,6 @@ def effet_xp_roue_fortune(id_user) :
     file = discord.File(img_path)
     embed = discord.Embed(title="""Résultat : 
                          
-
 Vous avez obtenu un gain de + 100 exp !""")
     embed.set_image(url=f"attachment://xp.gif")
     return embed, file
@@ -89,7 +88,6 @@ def effet_fragment_roue_fortune(id_user, nb_fragment) :
     file = discord.File(img_path)
     embed = discord.Embed(title=f"""Résultat : 
                          
-
 Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
     embed.set_image(url=f"attachment://fragment_{nb_fragment}.gif")
     return embed, file

@@ -16,24 +16,24 @@ from scripts.global_commandes.import_et_variable import *
 
 #class pour afficher le message d'explication au début
 class MsgDemineur(discord.ui.View):
-    @discord.ui.button(label="Démarer le jeu", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Démarrer le jeu", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
             if test_message_mp(interaction.channel) :
                 discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
                 tentative_restante = get_tentative_restante(interaction.user.id)
-                embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+                embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
                 await interaction.response.send_message(embed=embed, view=Demineur(), ephemeral=True)
             else :
-                await interaction.response.send_message("Cette quête ne peut s'éfectuer **qu'en** MP avec pomme-bot", ephemeral=True)
+                await interaction.response.send_message("Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot", ephemeral=True)
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
 
 #class du jeu
 class Demineur(discord.ui.View):
-    @discord.ui.button(label="déminer", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Déminer", style=discord.ButtonStyle.primary)
     async def deminer_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
@@ -43,7 +43,7 @@ class Demineur(discord.ui.View):
 
 
 
-    @discord.ui.button(label="drapeau", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Drapeau", style=discord.ButtonStyle.primary)
     async def drapeau_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
@@ -54,29 +54,28 @@ class Demineur(discord.ui.View):
 
 async def message_lunch_quest_demineur(interaction) :
     embed = discord.Embed(title="""Daily quest : Demineur""", description="""
+**Règle** : voir ce site pour les règles bien expliquées [ici](https://demineur.nhtdev.com/fr/rules) 
 
-**Règle** : voir ce site pour les règles bien expliqués [ici](https://demineur.nhtdev.com/fr/rules) 
-
-**Comment jouer** :selectionner la ligne et la colonne en écrvant dans le chat la ligne, la colone ou les 2, exemple `e4`, `c`, `4`ou `1a`
+**Comment jouer** :sélectionner la ligne et la colonne en écrivant dans le chat la ligne, la colonne ou les 2, par exemple `e4`, `c`, `4`ou `1a`
 Puis appuyer sur le bouton "déminer" ou "drapeau" pour effectuer les bonnes actions.
-(Pour drapeau, appuyer en place un. Réappuyer pour l'enlenver)
+(Pour Drapeau, appuyer en place un. Réappuyer pour l'enlever)
 
 :warning:**Attention**:warning: : Le jeu est faisable **uniquement en MP avec pomme-bot** 
 
 **légende** :
- • :white_medium_square: = case non exploré
- • :bomb: = bombe
- • :triangular_flag_on_post: = drapeau
- •     = case vide (pas d'emoji)
- • :one: :two: :three: :four: :five: :six: :seven: :eight: = nombre de bombe dans les cases adjacente   
- • :arrow_down: = colonne séléctionné
- • :arrow_right: = ligne séléctionné
- • :green_circle: = case selectioné (s'affiche uniquement si c'est une case non minée)
-                                     
+ • :white_medium_square: = case non explorée
+ • :bomb: = bombe
+ • :triangular_flag_on_post: = drapeau
+ •     = case vide (pas d'emoji)
+ • :one: :two: :three: :four: :five: :six: :seven: :eight: = nombre de bombes dans les cases adjacentes   
+ • :arrow_down: = colonne sélectionnée
+ • :arrow_right: = ligne sélectionnée
+ • :green_circle: = case sélectionnée (s'affiche uniquement si c'est une case non minée)
+                                     
 **Gain possible** : 
- • XP
- • Fragments
- • carte
+ • XP
+ • Fragments
+ • carte
 """)
     #enfin on répond à l'utilisateur par  bouton...
     await interaction.response.send_message(embed = embed, view=MsgDemineur(), ephemeral=True)
@@ -104,5 +103,5 @@ async def demineur_move_selecteur(message) :
         modif_ligne_colonne_selected(move_select_info, message.author.id)
         discord_txt = convert_txt_to_discord_demineur(message.author.id)
         tentative_restante = get_tentative_restante(message.author.id)
-        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
         await message.author.send(embed=embed, view=Demineur())

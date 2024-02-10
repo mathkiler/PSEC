@@ -20,13 +20,13 @@ async def response_choix_button_quackity(interaction, ind_button) :
             baseDeDonnees.close()
             new_embed = discord.Embed(title="0 chance restante")
             await interaction.response.edit_message(embed=new_embed)
-            await interaction.followup.send("C'est perdu ! Vous ferez peut être mieux la prochaines fois.", ephemeral= True)
+            await interaction.followup.send("C'est perdu ! Vous ferez peut-être mieux la prochaine fois.", ephemeral= True)
         else :
             with open(CURRENT_PATH+f"/assets/daily_quest_save/{interaction.user.id}.txt", "w") as f :
                 f.write(str(nb_chance_left-1))
             new_embed = discord.Embed(title=f"{nb_chance_left-1} chance{pluriel(nb_chance_left-1)} restante{pluriel(nb_chance_left-1)}")
             await interaction.response.edit_message(embed=new_embed)
-            await interaction.followup.send(f"Loupé, il vous reste encore {nb_chance_left-1} chance{pluriel(nb_chance_left-1)}", ephemeral=True)
+            await interaction.followup.send(f"Loupé, il vous reste encore {nb_chance_left-1} chance{pluriel(nb_chance_left-1)}.", ephemeral=True)
     else :
         #choix du gain
         #xp gagné -> toujours 100

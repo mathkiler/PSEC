@@ -43,14 +43,14 @@ async def voir_stats(interaction, le_cacher) :
             txt_print_cartes+="\n\n"
     
     await interaction.response.send_message(f"""Stats du joueur <@{id_user}> : 
-                
-Nombre de fragment actuel : {resultat_user_stats[1]}
-Nombre de fragment du jour : {resultat_user_stats[2]}/50
+               
+Nombre de fragments actuels : {resultat_user_stats[1]}
+Nombre de fragments du jour : {resultat_user_stats[2]}/50
 Exp : {resultat_user_stats[3]} (niv {lvl_column.index(lvl)})
-Nombre de carte obtenu (en comptant les doublons) : {nb_cartes_avec_doublon}
-Nombre de carte obtenu (sans compter les doublons) : {nb_cartes_sans_doublon}
+Nombre de cartes obtenues (en comptant les doublons) : {nb_cartes_avec_doublon}
+Nombre de cartes obtenues (sans compter les doublons) : {nb_cartes_sans_doublon}
 
-Cartes obtenu : 
+Cartes obtenues :
 ```{txt_print_cartes}```""", ephemeral=le_cacher)
 
 
@@ -65,7 +65,7 @@ async def opening(interaction, nb_opening) :
     resultat_user_stats = curseur.fetchone()
     #on regarde s'il a assez de fragments pour faire l'opening en fonction du nombre de carte qu'il veux ouvrir
     if resultat_user_stats[1] < 5*nb_opening :
-            await interaction.response.send_message(f"Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments", ephemeral=True)
+            await interaction.response.send_message(f"Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments.", ephemeral=True)
     else :
         #on lit le taux de drop en fonction du niveau du joueur
         data, lvl_column, lvl = get_data_lvl_from_csv(resultat_user_stats[3])
@@ -276,7 +276,7 @@ async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
             baseDeDonnees.commit()
         baseDeDonnees.close()
         await selecteur_button_mes_cartes(interaction, "stay_here")
-        await interaction.followup.send(f"Vous avez obtenue **{gain_xp}** exp en recyclant vos doublons", ephemeral=True)
+        await interaction.followup.send(f"Vous avez obtenu **{gain_xp}** exp en recyclant vos doublons.", ephemeral=True)
     else :
         await interaction.response.send_message(f"Il ne vous reste plus aucun doublon de {carte_selected_info[3]}.", ephemeral=True)
 
@@ -325,4 +325,4 @@ async def effet_reroll(interaction) :
             WHERE id_discord_player == {interaction.user.id}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
-    await interaction.response.send_message(f"Vous avez obtenu {xp_user//2} fragments", ephemeral=True)
+    await interaction.response.send_message(f"Vous avez obtenu {xp_user//2} fragments.", ephemeral=True)

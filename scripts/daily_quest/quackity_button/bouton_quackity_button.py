@@ -5,7 +5,7 @@ from scripts.daily_quest.quackity_button.fonctions_quackity_button import get_nu
 
 
 class Quackity_button(discord.ui.View):
-    @discord.ui.button(label="Démarer le jeu", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Démarrer le jeu", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
@@ -127,8 +127,8 @@ class Choix_quackity_button(discord.ui.View):
 async def message_lunch_quest_quackity_button(interaction) :
     embed = discord.Embed(title="""Daily quest : Boutons de Quackity
 
-Règle : Vous devrez choisir entre 25 boutons pour gagner une possible récompense.
-Vous avez 3 chances possible.
+Règle : vous devrez choisir entre 25 boutons pour gagner une possible récompense.
+Vous avez 3 chances possibles.
                           
 Gain possible : 
  • XP

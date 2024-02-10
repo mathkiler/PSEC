@@ -78,7 +78,7 @@ async def user_test_mot_motus(message, id_user, mot_user) :
     mot_user = formatage_mot_user_motus(mot_user)
     mot_mystere = get_mot_mystere()
     if len(mot_user) > len(mot_mystere) : #si mo trop long
-        await message.reply(f"**{mot_user}** est trop long ({len(mot_user)} lettres au lieu de {len(mot_mystere)} lettres)")
+        await message.reply(f"**{mot_user}** est trop long ({len(mot_user)} lettres au lieu de {len(mot_mystere)})")
         await send_current_state_motus(message, id_user, None, mot_mystere)
     elif len(mot_user) < len(mot_mystere) : #si mot trop cours
         await message.reply(f"**{mot_user}** est trop court ({len(mot_user)} lettres au lieu de {len(mot_mystere)} lettres)")
@@ -96,7 +96,7 @@ async def user_test_mot_motus(message, id_user, mot_user) :
                     break
                 line = file.readline()
         if mot_in_dico == False : #mot n'es pas dans le dico
-            await message.reply(f"**{mot_user}** n'est pas dans mon dictionnaire")
+            await message.reply(f"**{mot_user}** n'est pas dans mon dictionnaire.")
             await send_current_state_motus(message, id_user, None, mot_mystere)
         else :
             

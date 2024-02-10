@@ -14,7 +14,7 @@ async def add_flag(interaction) :
     #si il clic sur une case autre que d ou c, on réaffiche quand même le plateau pour ne pas avoir un "echec de l'interaction"
     discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
     tentative_restante = get_tentative_restante(interaction.user.id)
-    embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+    embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
     await interaction.response.edit_message(embed=embed)
 
 
@@ -39,15 +39,15 @@ async def demine_case(interaction) :
             baseDeDonnees.close()
             
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative restante : 0", description=discord_txt)
+            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative restante : 0", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
             await interaction.followup.send(f"Perdu ! Réfléchit mieux la prochaine fois :upside_down:")
         else : #il perd juste une chance sur x
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative restante : {tentative_restante}", description=discord_txt)
+            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative restante : {tentative_restante}", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
             message = await interaction.original_response()
-            msg = await interaction.followup.send(f"**Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}. Le plateau va redémarer dans **5** secondes. Veuillez **ATTENDRE**, merci")
+            msg = await interaction.followup.send(f"**Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}. Le plateau va redémarrer dans **5** secondes. Veuillez **ATTENDRE**, merci")
             await asyncio.sleep(5)
             await msg.delete()
             #recalcule d'un nouveau plateau démineur
@@ -67,7 +67,7 @@ async def demine_case(interaction) :
             with open(CURRENT_PATH+f"/assets/daily_quest_save/{interaction.user.id}.txt", "w") as f :
                 f.write(plateau_save)
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(tentative_restante)} restante{pluriel(tentative_restante)} : {tentative_restante}", description=discord_txt)
+            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(tentative_restante)} restante{pluriel(tentative_restante)} : {tentative_restante}", description=discord_txt)
             await message.edit(embed=embed)
 
     elif case_to_compare == "c" : #il appui sur une case non minée
@@ -76,7 +76,7 @@ async def demine_case(interaction) :
             replace_somthing_in_demineur(interaction.user.id, str(nb_bombe), (x_ind_arrow+1, y_ind_arrow))
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             tentative_restante = get_tentative_restante(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
         else : #une case vide qui implique d'enlever les autres cases vides autour en casquade (c'est un peux le bordel pour le faire mais avec de la recursivité ça passe)
             case_to_explore = [ind_case] #case qu'on dois explorer
@@ -99,7 +99,7 @@ async def demine_case(interaction) :
 
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             tentative_restante = get_tentative_restante(interaction.user.id)
-            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+            embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
         if test_demineur_termine(interaction.user.id) : #si le joueur gagne = il ne reste sur le plateau que lescases non miné (ou drapeaué) 
             await c_gagne(interaction)
@@ -108,7 +108,7 @@ async def demine_case(interaction) :
     else :
         discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
         tentative_restante = get_tentative_restante(interaction.user.id)
-        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
         await interaction.response.edit_message(embed=embed)
 
 
@@ -126,7 +126,7 @@ async def c_gagne(interaction) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-    embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\ntentative restante : 0", description=discord_txt)
+    embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative restante : 0", description=discord_txt)
     message = await interaction.original_response()
     await message.edit(embed=embed)
     #choix du gain
