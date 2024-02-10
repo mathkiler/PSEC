@@ -56,5 +56,5 @@ demineur_redirect_emote = { #dict des emotes poru le démineur
     "0" : ":black_medium_square:"
 }
 nombre_demineur = [str(k+1) for k in range(9)]
-alphabet_demnineur = "abcdefghi"
+alphabet_demnineur = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 INFINI = inf
