@@ -1,5 +1,5 @@
 from scripts.daily_quest.quackity_button.func_used_by_button_quackity_button import response_choix_button_quackity
-from scripts.global_commandes.fonctions import pluriel, select_interaction_argument, test_daily_quest_completed
+from scripts.global_commandes.fonctions import pluriel, select_interaction_argument, test_daily_quest_completed, check_current_daily_quest
 from scripts.global_commandes.import_et_variable import *
 from scripts.daily_quest.quackity_button.fonctions_quackity_button import get_number_chance_left
 
@@ -9,9 +9,12 @@ class Quackity_button(discord.ui.View):
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            nb_chance_left = get_number_chance_left(interaction.user.id)
-            embed = discord.Embed(title=f"{nb_chance_left} chance{pluriel(nb_chance_left)} restante{pluriel(nb_chance_left)}")
-            await interaction.response.send_message(embed=embed, view=Choix_quackity_button(), ephemeral=True)
+            if check_current_daily_quest("bouton de quackity") : 
+                nb_chance_left = get_number_chance_left(interaction.user.id)
+                embed = discord.Embed(title=f"{nb_chance_left} chance{pluriel(nb_chance_left)} restante{pluriel(nb_chance_left)}")
+                await interaction.response.send_message(embed=embed, view=Choix_quackity_button(), ephemeral=True)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 

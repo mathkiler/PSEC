@@ -1,6 +1,6 @@
 from scripts.daily_quest.puissance_4.fonctions_puissance_4 import create_img_p4
 from scripts.daily_quest.puissance_4.func_used_by_button_puissance_4 import place_pion
-from scripts.global_commandes.fonctions import select_interaction_argument, test_daily_quest_completed
+from scripts.global_commandes.fonctions import select_interaction_argument, test_daily_quest_completed, check_current_daily_quest
 from scripts.global_commandes.import_et_variable import *
 
 #toujours : joueur 1 = player = rouge
@@ -12,13 +12,16 @@ class MsgPuissance_4(discord.ui.View):
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            name_img = create_img_p4(interaction.user.id, ["rien", None, None])
-            img_path = CURRENT_PATH+f"/assets/img_tamp/{name_img}.png"
-            file = discord.File(img_path)
-            embed = discord.Embed(title="Puissance 4")
-            embed.set_image(url=f"attachment://{name_img}.png")
-            await interaction.response.send_message(embed=embed, view=Puissance_4(),file=file,  ephemeral=True)
-            os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
+            if check_current_daily_quest("puissance 4") :
+                name_img = create_img_p4(interaction.user.id, ["rien", None, None])
+                img_path = CURRENT_PATH+f"/assets/img_tamp/{name_img}.png"
+                file = discord.File(img_path)
+                embed = discord.Embed(title="Puissance 4")
+                embed.set_image(url=f"attachment://{name_img}.png")
+                await interaction.response.send_message(embed=embed, view=Puissance_4(),file=file,  ephemeral=True)
+                os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -29,7 +32,10 @@ class Puissance_4(discord.ui.View) :
     async def colone1_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 0)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 0)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -38,7 +44,10 @@ class Puissance_4(discord.ui.View) :
     async def colone2_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 1)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 1)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -46,7 +55,10 @@ class Puissance_4(discord.ui.View) :
     async def colone3_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 2)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 2)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -54,7 +66,10 @@ class Puissance_4(discord.ui.View) :
     async def colone4_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 3)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 3)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -62,7 +77,10 @@ class Puissance_4(discord.ui.View) :
     async def colone5_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 4)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 4)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -70,7 +88,10 @@ class Puissance_4(discord.ui.View) :
     async def colone6_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 5)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 5)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -78,7 +99,10 @@ class Puissance_4(discord.ui.View) :
     async def colone7_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await place_pion(interaction, 6)
+            if check_current_daily_quest("puissance 4") :
+                await place_pion(interaction, 6)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 

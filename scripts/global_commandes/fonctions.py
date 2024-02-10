@@ -328,3 +328,15 @@ def test_message_mp(channel) :
     if "Direct Message with" in str(channel) or "discord.channel.PartialMessageable" in str(channel) :
         return True
     return False
+
+
+
+#the if the current game is realy the game that user click on
+def check_current_daily_quest(daily_quest_to_test) :
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"""SELECT * FROM daily_quest""")
+    current_daily_quest = curseur.fetchall()[-1][0]
+    if daily_quest_to_test == current_daily_quest :
+        return True
+    return False
