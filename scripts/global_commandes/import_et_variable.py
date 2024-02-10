@@ -1,13 +1,14 @@
 #import des modules
 from random import randint, random, choice
 from discord.ext import commands
-from datetime import date
+from datetime import date, datetime
 from math import sqrt, inf
 from PIL import Image
 import numpy as np
 import asyncio
 import discord
 import sqlite3
+import shutil
 import csv
 import os
 
