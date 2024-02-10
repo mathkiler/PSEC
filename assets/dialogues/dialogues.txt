@@ -1,0 +1,322 @@
+à chaque fois on a : 
+chemin/relatif/script.py -/line xx\- texte qui s'affiche par le bot sur discord
+
+légende : 
+• {variable} = tout ce qui est entre crochet "{}" est du code (accès à une variable, calcule...) donc ne pas toucher à ce qu'il y a entre crochet
+• <@{id_user}> = ping quelqu'un
+• **un mot** = mettre un mot en gras (via le texte dicord directement)
+• :nom_emote: = affiche une emote discord
+• \n = retour à la ligne (un retour à la ligne ici fonctionne aussi) exemple : 
+Le texte à afficher\nest le même que celui en dessous.
+Le texte à afficher
+est le même que celui au dessus
+
+
+
+
+
+
+
+
+
+
+./scripts/global_commandes/func_used_by_button.py -/line 45\- Stats du joueur <@{id_user}> : 
+               
+Nombre de fragments actuels : {resultat_user_stats[1]}
+Nombre de fragments du jour : {resultat_user_stats[2]}/50
+Exp : {resultat_user_stats[3]} (niv {lvl_column.index(lvl)})
+Nombre de cartes obtenues (en comptant les doublons) : {nb_cartes_avec_doublon}
+Nombre de cartes obtenues (sans compter les doublons) : {nb_cartes_sans_doublon}
+
+Cartes obtenues :
+---------------------------------------------------------
+./scripts/global_commandes/func_used_by_button.py -/line 68\- Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments.
+---------------------------------------------------------
+./scripts/global_commandes/func_used_by_button.py -/line 86\- Vous avez tiré une carte {carte_obtained[c][2]} !
+---------------------------------------------------------
+./scripts/global_commandes/func_used_by_button.py -/line 161\- Album de <@{id_user}> :
+---------------------------------------------------------
+./scripts/global_commandes/func_used_by_button.py -/line 279\- Vous avez obtenu **{gain_xp}** exp en recyclant vos doublons.
+---------------------------------------------------------
+./scripts/global_commandes/func_used_by_button.py -/line 281\- Il ne vous reste plus aucun doublon de {carte_selected_info[3]}.
+---------------------------------------------------------
+./scripts/global_commandes/func_used_by_button.py -/line 328\- Vous avez obtenu {xp_user//2} fragments.
+=========================================================
+./scripts/global_commandes/commades_discord.py -/line 9\- Permet d'afficher les commandes possibles.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 13\- Commandes possibles
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 16\- Afficher le tableau des probabilités utilisées pour le drop des cartes.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 20\- Tableau des probabilités utilisées pour le drop des cartes.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 29\- Admin only : permet de rajouter des cartes.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 45\- Carte bien ajoutée.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 47\- Une erreur est survenue :
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 49\- L'image au nom de `{nom}` ne figure pas dans le dossier des images des cartes. Veuillez ajouter l'image avant d'ajouter la carte dans la bdd
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 53\- Admin only : force les effets pour passer d'un jour à un autre.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 67\- Affiche les artistes qui ont participé pour les cartes.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 83\- Admin only : affiche l'état actuel de la bdd en format txt.
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 93\- Échanger tout son XP contre des fragments (2 pour 1). Disponible qu'à partir du niveau 5
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 104\- Vous êtes sur le point d'échanger **{xp_user}** exp contre **{xp_user//2}** fragments. **Vous reviendrez donc au niveau 1**\nConfirmer l'action ?
+---------------------------------------------------------
+./scripts/global_commandes/commades_discord.py -/line 110\- Vous devez être minimum **niveau 5** pour reroll.
+Vous êtes actuellement **niveau {lvl_column.index(lvl)}**.
+/proba pour voir l'xp nécessaire pour monter de niveau
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 15\- Montrer ses stats à tout le monde pour flex
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 27\- Vous avez **{fragments}** fragrment{pluriel(fragments)}\nDémarrer l'opening ?
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 36\- Vous n'avez pas de carte !
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 53\- Montrer mon album à tout le monde
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 60\- Quête quotidienne
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 67\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 74\- Ouvrir 1 carte
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 80\- Ouvrir 5 cartes
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 86\- Ouvrir 10 cartes
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 96\- Action annulée
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 126\- Recycler UN doublon
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 132\- Recycler TOUS les doublons de cette carte
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 138\- Recycler TOUS les doublons de l'album
+---------------------------------------------------------
+./scripts/global_commandes/button.py -/line 156\- Action annulée
+---------------------------------------------------------
+./scripts/daily_quest/roue_fortune/fonctions_roue_fortune.py -/line 14\- Résultat : 
+                         
+PERDU !
+
+Tu n'as rien gagné(e) et pourtant tu n'avais qu'une chance sur 6 de perdre...
+---------------------------------------------------------
+./scripts/daily_quest/roue_fortune/fonctions_roue_fortune.py -/line 53\- Résultat : 
+
+Vous avez obtenu une nouvelle carte {carte_tiree[2]} !
+---------------------------------------------------------
+./scripts/daily_quest/roue_fortune/fonctions_roue_fortune.py -/line 72\- Résultat : 
+                         
+Vous avez obtenu un gain de + 100 exp !
+---------------------------------------------------------
+./scripts/daily_quest/roue_fortune/fonctions_roue_fortune.py -/line 89\- Résultat : 
+                         
+Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !
+---------------------------------------------------------
+./scripts/daily_quest/roue_fortune/bouton_roue_fortune.py -/line 13\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/roue_fortune/bouton_roue_fortune.py -/line 17\- Daily quest : Roue de la fortune
+
+Règle : vous avez juste à cliquer sur le bouton et prier pour obtenir une bonne récompense.
+                          
+Gain possible : 
+ • XP
+ • Fragments
+ • carte
+ • rien
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/func_used_by_button_quackity_button.py -/line 8\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/func_used_by_button_quackity_button.py -/line 21\- 0 chance restante
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/func_used_by_button_quackity_button.py -/line 23\- C'est perdu ! Vous ferez peut-être mieux la prochaine fois.
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/func_used_by_button_quackity_button.py -/line 29\- Loupé, il vous reste encore {nb_chance_left-1} chance{pluriel(nb_chance_left-1)}.
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/fonctions_quackity_button.py -/line 50\- Bravo, vous avez trouvé le bon bouton ! 
+
+Vous avez obtenu une nouvelle carte {carte_tiree[2]} !
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/fonctions_quackity_button.py -/line 67\- Bravo, vous avez trouvé le bon bouton ! 
+
+Vous avez obtenu un gain de + 100 exp !
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/fonctions_quackity_button.py -/line 81\- Bravo, vous avez trouvé le bon bouton !  
+
+Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/bouton_quackity_button.py -/line 8\- Démarrer le jeu
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/bouton_quackity_button.py -/line 16\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/quackity_button/bouton_quackity_button.py -/line 128\- Daily quest : Boutons de Quackity
+
+Règle : vous devrez choisir entre 25 boutons pour gagner une possible récompense.
+Vous avez 3 chances possibles.
+                          
+Gain possible : 
+ • XP
+ • Fragments
+ • carte
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/func_used_by_button_puissance_4.py -/line 41\- C'est perdu ! Pomme-bot a été bien trop forte pour cette fois ||gros nul||
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/func_used_by_button_puissance_4.py -/line 52\- La colonne est déjà complétée.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 365\- Bravo, vous avez gagné contre Pomme-bot ! 
+
+Vous avez obtenu une nouvelle carte {carte_tiree[2]} !
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 376\- Bravo, vous avez gagné contre Pomme-bot !
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 378\- Égalité, voici un lot de consolation
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 390\- Vous avez obtenu un gain de + {xp} exp !
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 396\- Égalité, voici un lot de consolation
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 398\- Bravo, vous avez gagné contre Pomme-bot !
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/fonctions_puissance_4.py -/line 408\- Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 11\- Démarrer le jeu
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 23\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 34\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 43\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 51\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 59\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 67\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 75\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 83\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/puissance_4/bouton_puissance_4.py -/line 92\- Vous devrez gagner au Puissance 4 contre Pomme-bot (vous commencez et êtes toujours rouge)
+**Règle** : voir les règles dans la rubrique Règle sur ce site [ici](https://fr.wikipedia.org/wiki/Puissance_4)
+
+**Comment jouer** : appuyer sur le bouton correspondant à la colonne voulue.
+                                                                    
+**Gain possible** : 
+ • XP
+ • Fragments
+ • carte
+---------------------------------------------------------
+./scripts/daily_quest/motus/func_used_by_button_motus.py -/line 63\- Bravo, vous avez trouvé le bon mot ! 
+
+Vous avez obtenu une nouvelle carte {carte_tiree[2]} !
+---------------------------------------------------------
+./scripts/daily_quest/motus/func_used_by_button_motus.py -/line 80\- Bravo vous avez trouvé le bon mot ! 
+
+Vous avez obtenu un gain de + 100 exp !
+---------------------------------------------------------
+./scripts/daily_quest/motus/func_used_by_button_motus.py -/line 94\- Bravo vous avez trouvé le bon mot !  
+
+Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !
+---------------------------------------------------------
+./scripts/daily_quest/motus/fonctions_motus.py -/line 81\- **{mot_user}** est trop long ({len(mot_user)} lettres au lieu de {len(mot_mystere)})
+---------------------------------------------------------
+./scripts/daily_quest/motus/fonctions_motus.py -/line 84\- **{mot_user}** est trop court ({len(mot_user)} lettres au lieu de {len(mot_mystere)})
+---------------------------------------------------------
+./scripts/daily_quest/motus/fonctions_motus.py -/line 87\- **{mot_user}** a déjà été proposé.
+---------------------------------------------------------
+./scripts/daily_quest/motus/fonctions_motus.py -/line 99\- **{mot_user}** n'est pas dans mon dictionnaire.
+---------------------------------------------------------
+./scripts/daily_quest/motus/fonctions_motus.py -/line 110\- Perdu ! Le mot était **{mot_mystere}**
+---------------------------------------------------------
+./scripts/daily_quest/motus/bouton_motus.py -/line 7\- Démarrer le jeu
+---------------------------------------------------------
+./scripts/daily_quest/motus/bouton_motus.py -/line 32\- Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot.
+---------------------------------------------------------
+./scripts/daily_quest/motus/bouton_motus.py -/line 35\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/motus/bouton_motus.py -/line 42\- **Règle :** le but est de retrouver des mots (qui ont tous un lien avec QSMP)
+La 1ʳᵉ lettre du mot mystère est affichée. Le but est de trouver le mot en un minimum de coups sans dépasser 6 tentatives ou la partie est perdue.
+À chaque tentative, les lettres bien placées sont en rouge et celles mal placées en jaune. Les mots mal orthographiés ou absents du dictionnaire ne seront pas testés.
+
+**Comment jouer :** écrivez simplement un mot dans le chat.
+                          
+:warning:**Attention**:warning: : Le jeu est faisable **uniquement en MP avec pomme-bot** 
+           
+**Gain possible :** 
+ • XP
+ • Fragments
+ • carte
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 17\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante} 
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 42\- Nombre de bombes : {get_nb_bombes()}\nTentative restante : 0
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 44\- Perdu ! Réfléchit mieux la prochaine fois :upside_down:
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 50\- Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}. Le plateau va redémarrer dans **5** secondes. Veuillez **ATTENDRE**, merci
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 70\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(tentative_restante)} restante{pluriel(tentative_restante)} : {tentative_restante}
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 79\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 102\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 111\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}
+---------------------------------------------------------
+./scripts/daily_quest/demineur/func_used_by_button_demineur.py -/line 129\- Nombre de bombes : {get_nb_bombes()}\nTentative restante : 0
+---------------------------------------------------------
+./scripts/daily_quest/demineur/fonctions_demineur.py -/line 168\- Bravo, vous avez terminé le démineur ! 
+
+Vous avez obtenu une nouvelle carte {carte_tiree[2]} !
+---------------------------------------------------------
+./scripts/daily_quest/demineur/fonctions_demineur.py -/line 185\- Bravo, vous avez terminé le démineur ! 
+
+Vous avez obtenu un gain de + 100 exp !
+---------------------------------------------------------
+./scripts/daily_quest/demineur/fonctions_demineur.py -/line 199\- Bravo, vous avez terminé le démineur !  
+
+Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 19\- Démarrer le jeu
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 26\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 29\- Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 31\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 42\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 52\- Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 57\- 
+**Règle** : voir ce site pour les règles bien expliquées [ici](https://demineur.nhtdev.com/fr/rules) 
+
+**Comment jouer** :sélectionner la ligne et la colonne en écrivant dans le chat la ligne, la colonne ou les 2, par exemple `e4`, `c`, `4`ou `1a`
+Puis appuyer sur le bouton "déminer" ou "drapeau" pour effectuer les bonnes actions.
+(Pour Drapeau, appuyer en place un. Réappuyer pour l'enlever)
+
+:warning:**Attention**:warning: : Le jeu est faisable **uniquement en MP avec pomme-bot** 
+
+**légende** :
+ • :white_medium_square: = case non explorée
+ • :bomb: = bombe
+ • :triangular_flag_on_post: = drapeau
+ •     = case vide (pas d'emoji)
+ • :one: :two: :three: :four: :five: :six: :seven: :eight: = nombre de bombes dans les cases adjacentes   
+ • :arrow_down: = colonne sélectionnée
+ • :arrow_right: = ligne sélectionnée
+ • :green_circle: = case sélectionnée (s'affiche uniquement si c'est une case non minée)
+                                     
+**Gain possible** : 
+ • XP
+ • Fragments
+ • carte
+---------------------------------------------------------
+./scripts/daily_quest/demineur/bouton_demineur.py -/line 106\- Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}

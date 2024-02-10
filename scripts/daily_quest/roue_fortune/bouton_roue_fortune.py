@@ -16,7 +16,7 @@ class Roue_fortune(discord.ui.View):
 async def message_lunch_quest_roue_fortune(interaction) :
     embed = discord.Embed(title="""Daily quest : Roue de la fortune
 
-Règle : Vous avez juste à cliquer sur le bouton et prier pour obtenir une bonne récompense.
+Règle : vous avez juste à cliquer sur le bouton et prier pour obtenir une bonne récompense.
                           
 Gain possible : 
  • XP

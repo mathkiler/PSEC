@@ -4,7 +4,7 @@ from scripts.global_commandes.import_et_variable import *
 
 
 class Motus(discord.ui.View):
-    @discord.ui.button(label="Démarer le jeu", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Démarrer le jeu", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
@@ -29,7 +29,7 @@ mot en {len(mot_mystere)} lettres""")
                 os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
                 motus_msg_player[str(interaction.user.id)] = {"nb_chance_left" : 6, "mot_donnes" : []}
             else :
-                await interaction.response.send_message("Cette quête ne peut s'éfectuer **qu'en** MP avec pomme-bot", ephemeral=True)
+                await interaction.response.send_message("Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot.", ephemeral=True)
 
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
@@ -39,18 +39,18 @@ mot en {len(mot_mystere)} lettres""")
 
 async def message_lunch_quest_motus(interaction) :
     embed = discord.Embed(title="""Daily quest : Motus""", description="""
-**Règle :** Le but est de retrouver des mots (qui on tous un lien avec QSMP)
-La 1ère lettre du mot mystère est affichée. Le but est de trouver le mot en un minimum de coups sans dépasser 6 tentatives ou la partie est perdue.
-A chaque tentative, les lettres bien placées sont en rouge et celles mal placées en jaune. Les mots mal orthographiés ou absents du dictionnaire ne seront pas testé.
+**Règle :** le but est de retrouver des mots (qui ont tous un lien avec QSMP)
+La 1ʳᵉ lettre du mot mystère est affichée. Le but est de trouver le mot en un minimum de coups sans dépasser 6 tentatives ou la partie est perdue.
+À chaque tentative, les lettres bien placées sont en rouge et celles mal placées en jaune. Les mots mal orthographiés ou absents du dictionnaire ne seront pas testés.
 
 **Comment jouer :** écrivez simplement un mot dans le chat.
-                          
+                          
 :warning:**Attention**:warning: : Le jeu est faisable **uniquement en MP avec pomme-bot** 
-           
+           
 **Gain possible :** 
- • XP
- • Fragments
- • carte
+ • XP
+ • Fragments
+ • carte
 """)
     #enfin on répond à l'utilisateur par  bouton...
     await interaction.response.send_message(embed = embed, view=Motus(), ephemeral=True)

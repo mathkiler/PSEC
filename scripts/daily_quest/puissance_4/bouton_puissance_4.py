@@ -8,7 +8,7 @@ from scripts.global_commandes.import_et_variable import *
 
 
 class MsgPuissance_4(discord.ui.View):
-    @discord.ui.button(label="Démarer le jeu", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Démarrer le jeu", style=discord.ButtonStyle.primary)
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
@@ -86,15 +86,15 @@ class Puissance_4(discord.ui.View) :
 
 async def message_lunch_quest_puissance_4(interaction) :
     embed = discord.Embed(title="Daily quest : Puissance 4", description="""
-Vous devrez gagner au puissance 4 contre Pomme-bot (vous commencez et êtes toujours rouge)
-**Règle** : Voir les règles dans la rubrique règle sur ce site [ici](https://fr.wikipedia.org/wiki/Puissance_4)
+Vous devrez gagner au Puissance 4 contre Pomme-bot (vous commencez et êtes toujours rouge)
+**Règle** : voir les règles dans la rubrique Règle sur ce site [ici](https://fr.wikipedia.org/wiki/Puissance_4)
 
-**Comment jouer** : Appuyer sur le bouton corespondant à la colonne voulue
-                                                                    
+**Comment jouer** : appuyez sur le bouton correspondant à la colonne voulue.
+                                                                    
 **Gain possible** : 
- • XP
- • Fragments
- • carte
+ • XP
+ • Fragments
+ • carte
 """)
     #enfin on répond à l'utilisateur par  bouton...
     await interaction.response.send_message(embed = embed, view=MsgPuissance_4(), ephemeral=True)

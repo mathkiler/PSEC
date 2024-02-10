@@ -49,7 +49,7 @@ async def place_pion(interaction, ind_colone_pion) :
         name_img = create_img_p4(interaction.user.id, ["rien", None, None])
         await affiche_image_discord(interaction, name_img)
         os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
-        msg = await interaction.followup.send("La colonne est déjà complête", ephemeral = True)
+        msg = await interaction.followup.send("La colonne est déjà complétée.", ephemeral = True)
         await asyncio.sleep(5)
         await msg.delete()
     

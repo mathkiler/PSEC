@@ -12,7 +12,7 @@ def get_number_chance_left(id_user) :
     try :
         return int(txt[0])
     except Exception as e:
-        print("il y a eu un problème lors de la lecture de sfichier de save", e)
+        print("il y a eu un problème lors de la lecture de fichier de save", e)
 
 
 
@@ -47,7 +47,7 @@ def effet_carte_quackity_button(id_user) :
     #Enfin, on affiche le résultat au joueur sur discord
     img_path = CURRENT_PATH+f'/assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
-    embed = discord.Embed(title = f"""Bravo vous avez trouvé le bon bouton ! 
+    embed = discord.Embed(title = f"""Bravo, vous avez trouvé le bon bouton ! 
 
 Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
     embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")

@@ -60,7 +60,7 @@ def effet_carte_motus(id_user) :
     #Enfin, on affiche le résultat au joueur sur discord
     img_path = CURRENT_PATH+f'/assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
-    embed = discord.Embed(title = f"""Bravo vous avez trouvé le bon mot ! 
+    embed = discord.Embed(title = f"""Bravo, vous avez trouvé le bon mot ! 
 
 Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
     embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
@@ -77,7 +77,7 @@ def effet_xp_motus(id_user) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
-    embed = discord.Embed(title="""Bravo vous avez trouvé le bon mot ! 
+    embed = discord.Embed(title="""Bravo, vous avez trouvé le bon mot ! 
 
 Vous avez obtenu un gain de + 100 exp !""")
     return embed, None
@@ -91,7 +91,7 @@ def effet_fragment_motus(id_user, nb_fragment) :
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()    
-    embed = discord.Embed(title=f"""Bravo vous avez trouvé le bon mot !  
+    embed = discord.Embed(title=f"""Bravo, vous avez trouvé le bon mot !  
 
 Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
     return embed, None

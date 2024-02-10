@@ -362,7 +362,7 @@ def effet_carte_puissance_4(id_user) :
     #Enfin, on affiche le résultat au joueur sur discord
     img_path = CURRENT_PATH+f'/assets/cartes/{carte_tiree[1]}.png'
     file = discord.File(img_path)
-    embed = discord.Embed(title = f"""Bravo avez gagné contre Pomme-bot ! 
+    embed = discord.Embed(title = f"""Bravo, vous avez gagné contre Pomme-bot ! 
 
 Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
     embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
@@ -373,9 +373,9 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 def effet_xp_puissance_4(id_user, gain) :
     if gain == "xp" :
         xp = 100
-        msgWinOrNot = "Bravo avez gagné contre Pomme-bot !"
+        msgWinOrNot = "Bravo, vous avez gagné contre Pomme-bot !"
     else :
-        msgWinOrNot = "Égualité, voici un lot de consolation"
+        msgWinOrNot = "Égalité, voici un lot de consolation"
         xp = 50
     baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
@@ -393,9 +393,9 @@ Vous avez obtenu un gain de + {xp} exp !""")
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
 def effet_fragment_puissance_4(id_user, nb_fragment) :
     if nb_fragment == "3" :
-        msg_to_print = "Égualité, voici un lot de consolation"
+        msg_to_print = "Égalité, voici un lot de consolation"
     else :
-        msg_to_print = "Bravo avez gagné contre Pomme-bot !"
+        msg_to_print = "Bravo, vous avez gagné contre Pomme-bot !"
     baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
