@@ -1,6 +1,6 @@
 from scripts.daily_quest.demineur.fonctions_demineur import *
 from scripts.daily_quest.demineur.func_used_by_button_demineur import *
-from scripts.global_commandes.fonctions import pluriel, test_daily_quest_completed, select_interaction_argument, test_message_mp
+from scripts.global_commandes.fonctions import pluriel, test_daily_quest_completed, select_interaction_argument, test_message_mp, check_current_daily_quest
 from scripts.global_commandes.import_et_variable import *
 
 
@@ -20,13 +20,16 @@ class MsgDemineur(discord.ui.View):
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            if test_message_mp(interaction.channel) :
-                discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
-                tentative_restante = get_tentative_restante(interaction.user.id)
-                embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
-                await interaction.response.send_message(embed=embed, view=Demineur(), ephemeral=True)
+            if check_current_daily_quest("demineur") :
+                if test_message_mp(interaction.channel) :
+                    discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
+                    tentative_restante = get_tentative_restante(interaction.user.id)
+                    embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+                    await interaction.response.send_message(embed=embed, view=Demineur(), ephemeral=True)
+                else :
+                    await interaction.response.send_message("Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot", ephemeral=True)
             else :
-                await interaction.response.send_message("Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot", ephemeral=True)
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -37,7 +40,10 @@ class Demineur(discord.ui.View):
     async def deminer_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await demine_case(interaction)
+            if check_current_daily_quest("demineur") :
+                await demine_case(interaction)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
@@ -47,7 +53,9 @@ class Demineur(discord.ui.View):
     async def drapeau_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await add_flag(interaction)
+            if check_current_daily_quest("demineur") :
+                await add_flag(interaction)
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 

@@ -1,3 +1,4 @@
+Date 10-02-2024
 à chaque fois on a : 
 chemin/relatif/script.py -/line xx\- texte qui s'affiche par le bot sur discord
 

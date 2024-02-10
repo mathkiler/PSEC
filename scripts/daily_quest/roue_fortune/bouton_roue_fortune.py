@@ -1,5 +1,5 @@
 from scripts.daily_quest.roue_fortune.func_used_by_button_roue_fortune import tourne_roue
-from scripts.global_commandes.fonctions import select_interaction_argument, test_daily_quest_completed
+from scripts.global_commandes.fonctions import select_interaction_argument, test_daily_quest_completed, check_current_daily_quest
 from scripts.global_commandes.import_et_variable import *
 
 
@@ -8,7 +8,10 @@ class Roue_fortune(discord.ui.View):
     async def demarer_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         if test_daily_quest_completed(interaction.user.id) == False :
-            await tourne_roue(interaction)
+            if check_current_daily_quest("roue de la fortune") :
+                await tourne_roue(interaction)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
