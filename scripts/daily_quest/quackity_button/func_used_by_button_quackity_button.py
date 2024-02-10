@@ -7,7 +7,7 @@ async def response_choix_button_quackity(interaction, ind_button) :
     if test_daily_quest_completed(interaction.user.id) :
         await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
         return
-    if check_current_daily_quest("bouton de quackity") :
+    if check_current_daily_quest("bouton de quackity") == False:
         await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         return
     nb_chance_left = get_number_chance_left(interaction.user.id)
