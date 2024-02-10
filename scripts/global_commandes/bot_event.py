@@ -14,7 +14,7 @@ async def on_ready():
 #à chaque fois qu'un joueur écrit un message, on va incrémenter ses fragments et xp
 @bot.event
 async def on_message(message):
-    if message.author != bot.user :
+    if id_user not in bot_id : #if the user is not the bot himself
         test_changement_de_jour()
         if test_joueur_ecrit_commande(message.content) == False and test_player_in_bdd(message.author.id) and test_message_mp(message.channel) == False:
             id_user = message.author.id
