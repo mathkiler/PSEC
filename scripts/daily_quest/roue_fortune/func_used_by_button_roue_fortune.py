@@ -29,6 +29,6 @@ async def tourne_roue(interaction) :
     file = discord.File(img_path)
     embed = discord.Embed()
     embed.set_image(url=f"attachment://{gain}.gif")
-    msg = await interaction.response.send_message(embed=embed, file=file, ephemeral=True)
+    await interaction.response.send_message(embed=embed, file=file, ephemeral=True)
     await asyncio.sleep(9)
-    await msg.edit(embed=embed_wheel_finish, file=file_wheel_finish)
+    await interaction.edit_original_response(embed=embed_wheel_finish, file=file_wheel_finish)
