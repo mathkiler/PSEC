@@ -15,8 +15,8 @@ def effet_rien_roue_fortune() :
                          
 PERDU !
 
-Tu n'as rien gagné(e) et pourtant tu n'avais qu'une chance sur 6 de perdre...""")
-    embed.set_image(url=f"attachment://rien.gif")
+Tu n'as rien gagné et pourtant tu n'avais qu'une chance sur 6 de perdre...""")
+    embed.set_image(url=f"attachment://rien.png")
     return embed, file
 
 
@@ -53,6 +53,7 @@ def effet_carte_roue_fortune(id_user) :
     embed = discord.Embed(title = f"""Résultat : 
 
 Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
+    embed.set_image(url=f"attachment://carte.png")
     embed.set_image(url=f"attachment://{formatage_nom_carte(carte_tiree[1])}.png")
     return embed, file
 
@@ -72,7 +73,7 @@ def effet_xp_roue_fortune(id_user) :
     embed = discord.Embed(title="""Résultat : 
                          
 Vous avez obtenu un gain de + 100 exp !""")
-    embed.set_image(url=f"attachment://xp.gif")
+    embed.set_image(url=f"attachment://xp.png")
     return embed, file
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
@@ -89,7 +90,7 @@ def effet_fragment_roue_fortune(id_user, nb_fragment) :
     embed = discord.Embed(title=f"""Résultat : 
                          
 Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
-    embed.set_image(url=f"attachment://fragment_{nb_fragment}.gif")
+    embed.set_image(url=f"attachment://fragment_{nb_fragment}.png")
     return embed, file
 
 
