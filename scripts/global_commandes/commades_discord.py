@@ -6,14 +6,14 @@ from scripts.global_commandes.bouton import *
 #--|--# Commande discord (admin = !nom_commande only)
 #commande e base pour afficher les options de l'utilisateur. Renvoi vers la class Voir_Commandes()
 #( posibilité d'écrire !c ou !commandes)
-@bot.command(name="commandes", description="Permet d'afficher les commandes possibles.")
+@bot.command(name="commandes", description="Affiche les commandes possibles.")
 async def commandes(interaction: discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()
     await interaction.response.send_message("Commandes possibles", view=Voir_Commandes(), ephemeral=True)
 
 
-@bot.command(name="proba", description="Afficher le tableau des probabilités utilisées pour le drop des cartes.")
+@bot.command(name="proba", description="Affiche le tableau des probabilités de drop des cartes.")
 async def proba(interaction: discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()

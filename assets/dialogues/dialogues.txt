@@ -43,11 +43,11 @@ Cartes obtenues :
 ---------------------------------------------------------
 ./scripts/global_commandes/func_used_by_button.py -/line 328\- Vous avez obtenu {xp_user//2} fragments.
 =========================================================
-./scripts/global_commandes/commades_discord.py -/line 9\- Permet d'afficher les commandes possibles.
+./scripts/global_commandes/commades_discord.py -/line 9\- Affiche les commandes possibles.
 ---------------------------------------------------------
 ./scripts/global_commandes/commades_discord.py -/line 13\- Commandes possibles
 ---------------------------------------------------------
-./scripts/global_commandes/commades_discord.py -/line 16\- Afficher le tableau des probabilités utilisées pour le drop des cartes.
+./scripts/global_commandes/commades_discord.py -/line 16\- Affiche le tableau des probabilités de drop des cartes.
 ---------------------------------------------------------
 ./scripts/global_commandes/commades_discord.py -/line 20\- Tableau des probabilités utilisées pour le drop des cartes.
 ---------------------------------------------------------
