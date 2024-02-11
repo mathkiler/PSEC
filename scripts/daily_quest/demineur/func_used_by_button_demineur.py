@@ -3,6 +3,35 @@ from scripts.global_commandes.import_et_variable import *
 
 
 
+#class du jeu
+class Demineur(discord.ui.View):
+    @discord.ui.button(label="Déminer", style=discord.ButtonStyle.primary)
+    async def deminer_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        if test_daily_quest_completed(interaction.user.id) == False :
+            if check_current_daily_quest("demineur") :
+                await demine_case(interaction)
+            else :
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
+        else :
+            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.")
+
+
+
+    @discord.ui.button(label="Drapeau", style=discord.ButtonStyle.primary)
+    async def drapeau_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        if test_daily_quest_completed(interaction.user.id) == False :
+            if check_current_daily_quest("demineur") :
+                await add_flag(interaction)
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
+        else :
+            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.")
+
+
+
+
+
 #ajout un drapeau (ou l'enlève s'il y en a un)
 async def add_flag(interaction) :
     x_ind_arrow, y_ind_arrow, _, _ = get_info_demineur(interaction.user.id)
@@ -46,10 +75,8 @@ async def demine_case(interaction) :
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative restante : {tentative_restante}", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
-            message = await interaction.original_response()
-            msg = await interaction.followup.send(f"**Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}. Le plateau va redémarrer dans **5** secondes. Veuillez **ATTENDRE**, merci")
-            await asyncio.sleep(5)
-            await msg.delete()
+            await interaction.original_response()
+            await interaction.followup.send(f"**Perdu !** Encore **{tentative_restante}** tentative{pluriel(tentative_restante)}.")
             #recalcule d'un nouveau plateau démineur
             plateau_save = ["0\n", "1\n"]
             plateau_save.extend(["c\n" if k == get_taille_demineur()*get_taille_demineur()-1 else "c," for k in range(get_taille_demineur()*get_taille_demineur())])
@@ -68,8 +95,8 @@ async def demine_case(interaction) :
                 f.write(plateau_save)
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(tentative_restante)} restante{pluriel(tentative_restante)} : {tentative_restante}", description=discord_txt)
-            await message.edit(embed=embed)
-
+            #await message.edit(embed=embed)
+            await interaction.followup.send(embed=embed, view=Demineur())
     elif case_to_compare == "c" : #il appui sur une case non minée
         nb_bombe = test_bomb_around(ind_case, list_ind_bomb)
         if nb_bombe != 0 : #une case avec un nombre
@@ -144,3 +171,28 @@ async def c_gagne(interaction) :
         await interaction.followup.send(embed=embed_gain_result)
     else : 
         await interaction.followup.send(embed=embed_gain_result, file=file_gain_result)
+
+
+
+
+async def demineur_move_selecteur(message) :
+    if message.content in alphabet_demnineur :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content)+1, "type selecteur" : "column"}
+    elif message.content in nombre_demineur :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : message.content, "type selecteur" : "line"}
+    elif message.content in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : [message.content[1], alphabet_demnineur.index(message.content[0])+1], "type selecteur" : "both"}
+    elif message.content in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
+        message_for_demineur = True
+        move_select_info = {"content_msg" : [message.content[0], alphabet_demnineur.index(message.content[1])+1], "type selecteur" : "both"}
+    else :
+        message_for_demineur = False
+    if message_for_demineur :
+        modif_ligne_colonne_selected(move_select_info, message.author.id)
+        discord_txt = convert_txt_to_discord_demineur(message.author.id)
+        tentative_restante = get_tentative_restante(message.author.id)
+        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
+        await message.author.send(embed=embed, view=Demineur())

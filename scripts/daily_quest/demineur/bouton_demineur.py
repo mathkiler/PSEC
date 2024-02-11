@@ -25,39 +25,15 @@ class MsgDemineur(discord.ui.View):
                     discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
                     tentative_restante = get_tentative_restante(interaction.user.id)
                     embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
-                    await interaction.response.send_message(embed=embed, view=Demineur(), ephemeral=True)
+                    await interaction.response.send_message(embed=embed, view=Demineur())
                 else :
                     await interaction.response.send_message("Cette quête ne peut s'effectuer **qu'en** MP avec pomme-bot", ephemeral=True)
             else :
-                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
+                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.", ephemeral=True)
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
 
-#class du jeu
-class Demineur(discord.ui.View):
-    @discord.ui.button(label="Déminer", style=discord.ButtonStyle.primary)
-    async def deminer_callback(self, button, interaction):
-        interaction = select_interaction_argument(interaction, button)
-        if test_daily_quest_completed(interaction.user.id) == False :
-            if check_current_daily_quest("demineur") :
-                await demine_case(interaction)
-            else :
-                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
-        else :
-            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
-
-
-
-    @discord.ui.button(label="Drapeau", style=discord.ButtonStyle.primary)
-    async def drapeau_callback(self, button, interaction):
-        interaction = select_interaction_argument(interaction, button)
-        if test_daily_quest_completed(interaction.user.id) == False :
-            if check_current_daily_quest("demineur") :
-                await add_flag(interaction)
-                await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
-        else :
-            await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.", ephemeral=True)
 
 
 async def message_lunch_quest_demineur(interaction) :
@@ -92,24 +68,3 @@ Puis appuyer sur le bouton "déminer" ou "drapeau" pour effectuer les bonnes act
 
 
 
-async def demineur_move_selecteur(message) :
-    if message.content in alphabet_demnineur :
-        message_for_demineur = True
-        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content)+1, "type selecteur" : "column"}
-    elif message.content in nombre_demineur :
-        message_for_demineur = True
-        move_select_info = {"content_msg" : message.content, "type selecteur" : "line"}
-    elif message.content in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
-        message_for_demineur = True
-        move_select_info = {"content_msg" : [message.content[1], alphabet_demnineur.index(message.content[0])+1], "type selecteur" : "both"}
-    elif message.content in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
-        message_for_demineur = True
-        move_select_info = {"content_msg" : [message.content[0], alphabet_demnineur.index(message.content[1])+1], "type selecteur" : "both"}
-    else :
-        message_for_demineur = False
-    if message_for_demineur :
-        modif_ligne_colonne_selected(move_select_info, message.author.id)
-        discord_txt = convert_txt_to_discord_demineur(message.author.id)
-        tentative_restante = get_tentative_restante(message.author.id)
-        embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative{pluriel(int(tentative_restante))} restante{pluriel(int(tentative_restante))} : {tentative_restante}", description=discord_txt)
-        await message.author.send(embed=embed, view=Demineur())
