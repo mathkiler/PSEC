@@ -24,6 +24,7 @@ class Demineur(discord.ui.View):
         if test_daily_quest_completed(interaction.user.id) == False :
             if check_current_daily_quest("demineur") :
                 await add_flag(interaction)
+            else :
                 await interaction.response.send_message("Vous essayez de faire une daily quest fermée.")
         else :
             await interaction.response.send_message("Vous avez déjà effectué votre quête du jour. Revenez demain pour une nouvelle quête.")
