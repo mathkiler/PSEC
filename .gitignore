@@ -5,3 +5,4 @@ __pycache__
 photoshop
 test_db.py
 *.deb
+img_without_card
