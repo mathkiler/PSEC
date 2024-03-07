@@ -120,6 +120,7 @@ def pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening) :
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
 async def mon_album(interaction, le_montrer) :
+    await interaction.response.defer()
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
@@ -131,12 +132,24 @@ async def mon_album(interaction, le_montrer) :
     resultat_carte_possede = [resultat_carte_possede[k][0] for k in range(len(resultat_carte_possede))]
         #on calcule la position des images (on démare à -1 car on va compter la carte unknown (carte qui montre celles non obtenue))
     nombre_totale_carte = -1
-    ordre_cartes = []
+    derange_ordre_cartes = []
     for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
         for f in fichiers :
-            ordre_cartes.append(f[:-4])
+            derange_ordre_cartes.append(f[:-4])
             nombre_totale_carte+=1
-    ordre_cartes.pop(0) # pour enlever la carte unknown
+        break #on break pour ne parcourir que le premier dossier
+    derange_ordre_cartes.pop(0) # pour enlever la carte du forground
+    rarete_list_name_file = ["C_", "PC_", "R_", "E_", "H_"]
+    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
+    for carte in derange_ordre_cartes :
+        for ind_rarete in range(len(rarete_list_name_file)) :
+            if rarete_list_name_file[ind_rarete] in carte :
+                break
+        rarete_list_arrange[ind_rarete].append(carte)
+    ordre_cartes = rarete_list_arrange[0]
+    for k in range(1,5) :
+        ordre_cartes.extend(rarete_list_arrange[k])
+
     width_carte = 321
     height_carte = 515
     nb_carte_square = int(sqrt(nombre_totale_carte))
@@ -145,6 +158,7 @@ async def mon_album(interaction, le_montrer) :
         nb_carte_remain = 0
     else :
         nb_carte_remain = 1
+    
     
     #enfin, on créer l'image
     album = Image.new('RGBA', (width_carte*nb_carte_square, height_carte*(nb_carte_square+nb_carte_remain)))
@@ -158,7 +172,7 @@ async def mon_album(interaction, le_montrer) :
         count+=1
     name_album = randint(100000, 999999)
     album.save(CURRENT_PATH+f"/assets/img_tamp/{name_album}.png")
-    await interaction.response.send_message(f"Album de <@{id_user}> :", file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_album}.png'), ephemeral=le_montrer)
+    await interaction.followup.send(f"Album de <@{id_user}> :", file=discord.File(CURRENT_PATH+f'/assets/img_tamp/{name_album}.png'), ephemeral=le_montrer)
     os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_album}.png")
 
 
@@ -172,7 +186,20 @@ async def initialisation_mes_cartes(interaction) :
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
     curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
-    resultat_carte_possede = curseur.fetchall()
+    derange_ordre_cartes = curseur.fetchall()
+
+
+    rarete_list_name_file = ["C_", "PC_", "R_", "E_", "H_"]
+    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
+    for carte in derange_ordre_cartes :
+        for ind_rarete in range(len(rarete_list_name_file)) :
+            if rarete_list_name_file[ind_rarete] in carte[0] :
+                break
+        rarete_list_arrange[ind_rarete].append(carte)
+    resultat_carte_possede = rarete_list_arrange[0]
+    for k in range(1,5) :
+        resultat_carte_possede.extend(rarete_list_arrange[k])
+
     nb_cartes = len(resultat_carte_possede)
     baseDeDonnees.close()
 
@@ -188,7 +215,19 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
     curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
-    resultat_carte_possede = curseur.fetchall()
+    derange_ordre_cartes = curseur.fetchall()
+
+    rarete_list_name_file = ["C_", "PC_", "R_", "E_", "H_"]
+    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
+    for carte in derange_ordre_cartes :
+        for ind_rarete in range(len(rarete_list_name_file)) :
+            if rarete_list_name_file[ind_rarete] in carte[0] :
+                break
+        rarete_list_arrange[ind_rarete].append(carte)
+    resultat_carte_possede = rarete_list_arrange[0]
+    for k in range(1,5) :
+        resultat_carte_possede.extend(rarete_list_arrange[k])
+
     nb_cartes = len(resultat_carte_possede)
     #en fonction du bouton appuyé, on renvoi vers la bonne fonction pour bien changer le curseur
     if button == "five_prev" :
