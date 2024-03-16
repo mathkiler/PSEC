@@ -26,7 +26,7 @@ bot = discord.Bot(intents=intents)
 
 
 ###########  USE BDD TEST  ##########
-db_test = True
+db_test = False
 if db_test :
     db_used = "database_test.db"
 else :

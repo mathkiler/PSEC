@@ -149,7 +149,7 @@ async def mon_album(interaction, le_montrer) :
     ordre_cartes = rarete_list_arrange[0]
     for k in range(1,5) :
         ordre_cartes.extend(rarete_list_arrange[k])
-
+    ordre_cartes.pop(0) # pour enlever la carte unknown
     width_carte = 321
     height_carte = 515
     nb_carte_square = int(sqrt(nombre_totale_carte))
