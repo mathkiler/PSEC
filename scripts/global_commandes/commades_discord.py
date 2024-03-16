@@ -121,3 +121,36 @@ async def affiche_bdd(interaction : discord.Interaction) :
         dt_string = datetime.now().strftime("%d-%m-%Y_%Hh-%Mm-%Ss")
         shutil.copyfile(CURRENT_PATH+"/assets/database/database.db", CURRENT_PATH+f"/assets/database/backup_database/database_backup_{dt_string}.db")
         await interaction.response.send_message("Backup créée.", ephemeral=True)
+
+
+
+@bot.command(name="help", description="Affiche le fonctionnement du jeu et de ses commandes.")
+async def help(interaction: discord.Interaction) :
+    embed = discord.Embed(description="""
+Le but est d'obtenir toutes les cartes. Pour ce faire il existe 2 possibilités : 
+• Faire des cartes openning
+• Obtenir une carte en récompense lors d'une daily quest
+
+Pour faire des cartes openning, vous aurez besoin de fragments obtenable de différentes manières :
+• être actif sur le serveur, notamment en écrivant un message (1 msg = 1 fragment avec 50 fragments max par jour pour éviter le spam)
+• Obtenir des fragments en récompense lors d'une daily quest
+• Chaque jour, vous obtenez 1 fragment gratuit, même si vous êtes afk
+Chaque carte openning coûte 5 fragments.
+                          
+Chaque joueur possède un niveau (1-11). Plus votre lvl est haut, plus vous avez de chance d'obtenir des cartes plus rares (/proba pour voir les probabilités).
+Vous pouvez gagner de l'exp pour augmenter de niveau de la même manière que pour les fragments (exp nécessaire pour lvl up visible dans /proba).
+Si vous obtenez des doublons, vous pouvez les revendre contre de l'exp dans la rubrique **mes cartes** (commun = 2 exp, peu courant = 4 exp, rare = 6 exp ...)
+Vous pouvez aussi faire un /reroll pour échanger toutes votre exp contre des fragments (2 exp = 1 fragment).
+
+Une daily quest par jour sous forme de mini-jeu sera faisable pour obtenir une récompense dans la rubrique **daily quest** dans la commande /commandes
+                          
+Pour effectuer les commandes, il vous suffit d'écrire un /nom_de_la_commande et discord vous proposera les slash commande en ce nom **de pomme-bot**
+Attention, les messages visibles que par vous ne seront affichés sur discord que 15 minutes (c'est discord qui veut ça).
+
+Les commandes disponibles sont :
+• /commandes → Menu principal sous forme de bouton
+• /proba → affiche les probabilités utilisées lors des cartes oppening
+• /artistes → affiche tous les artistes qui ont réalisé les fanarts et un lien vers leur réseau.
+• /reroll → Permet d'échanger tout son exp contre des fragments (2 exp pour 1 fragment)
+• /help → Affiche cette commande""") 
+    await interaction.response.send_message(embed=embed, ephemeral=True)
