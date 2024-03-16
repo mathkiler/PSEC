@@ -39,6 +39,7 @@ async def ajout_carte(
                 if file == nom+".png" :
                     carte_in_folder = True
                     break
+            break
         if carte_in_folder :
             resultat = ajouter_une_carte(nom, rarete)
             if resultat == None :

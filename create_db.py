@@ -4,13 +4,45 @@ import os
 
 from scripts.global_commandes.import_et_variable import CURRENT_PATH
 
-####
-#Proba des cartes aléatoire
-commun=40
-peu_courant=25
-rare=16
-epique=11
-heroique=8
+link_carte_to_rarete = {
+    "C_avion" : "commun",
+    "C_Bagi" : "commun",
+    "C_Cellbit" : "commun",
+    "C_club" : "commun",
+    "C_El_Quakity" : "commun",
+    "C_Foolish" : "commun",
+    "C_gare" : "commun",
+    "C_Ironmouse" : "commun",
+    "C_Jaiden" : "commun",
+    "C_Philza" : "commun",
+    "C_Roier" : "commun",
+    "C_Slimecicle" : "commun",
+    "C_wall" : "commun",
+    "E_Cafard_Cucaracha" : "épique",
+    "E_Lobo_Nocturno" : "épique",
+    "E_Ramon" : "épique",
+    "E_Richalyson" : "épique",
+    "H_Gegg" : "héroïque",
+    "H_Pomme" : "héroïque",
+    "PC_antoineD" : "peu courant",
+    "PC_Aypierre" : "peu courant",
+    "PC_Baghera " : "peu courant",
+    "PC_Dapper" : "peu courant",
+    "PC_Etoiles" : "peu courant",
+    "PC_Furest_Camp" : "peu courant",
+    "PC_Musee" : "peu courant",
+    "PC_Pactw" : "peu courant",
+    "PC_Tubbo" : "peu courant",
+    "R_BadBoyHalo" : "rare",
+    "R_CellBrioche" : "rare",
+    "R_CucurAthieu" : "rare",
+    "R_FitMC" : "rare",
+    "R_le_code" : "rare",
+    "R_PhilzAlicia" : "rare",
+    "R_Quakity" : "rare",
+    "R_Tallulah" : "rare",
+    "R_Teoad" : "rare"
+}
 
 try :
     os.remove(CURRENT_PATH+"\\assets\\database\\database.db")
@@ -86,22 +118,19 @@ def creation_daily_quest_table() :
 
 
 def inser_into_cartes(nom, rarete) :
-    curseur.execute("INSERT INTO Cartes (nom, rarete) VALUES (?, ?)", (f"{nom}", f"{rarete}")) # On ajoute un enregistrement
+    curseur.execute("INSERT INTO Cartes (nom, rarete) VALUES (?, ?)", (nom, rarete)) # On ajoute un enregistrement
 
 
 
 
 #chargement des cartes selon la proba de rareté (en %): C=54, PC=25, R=12, E=6, H=3
 def chargement_cartes() :
-    proba_rarete = ["commun" for k in range(commun)]
-    proba_rarete.extend(["peu courant" for k in range(peu_courant)])
-    proba_rarete.extend(["rare" for k in range(rare)])
-    proba_rarete.extend(["épique" for k in range(epique)])
-    proba_rarete.extend(["héroïque" for k in range(heroique)])
+    
     for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
         for nom in fichiers :
-            if "nom" != ".inconnue.png" :
-                inser_into_cartes(nom[:-4], choice(proba_rarete))
+            if nom != ".inconnue.png" :
+                inser_into_cartes(nom[:-4], link_carte_to_rarete[nom[:-4]])
+        break
 
     
 
