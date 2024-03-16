@@ -215,19 +215,7 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
     curseur.execute(f"SELECT nom, rarete, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
-    derange_ordre_cartes = curseur.fetchall()
-
-    rarete_list_name_file = ["C_", "PC_", "R_", "E_", "H_"]
-    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
-    for carte in derange_ordre_cartes :
-        for ind_rarete in range(len(rarete_list_name_file)) :
-            if rarete_list_name_file[ind_rarete] in carte[0] :
-                break
-        rarete_list_arrange[ind_rarete].append(carte)
-    resultat_carte_possede = rarete_list_arrange[0]
-    for k in range(1,5) :
-        resultat_carte_possede.extend(rarete_list_arrange[k])
-
+    resultat_carte_possede = curseur.fetchall()
     nb_cartes = len(resultat_carte_possede)
     #en fonction du bouton appuyé, on renvoi vers la bonne fonction pour bien changer le curseur
     if button == "five_prev" :
