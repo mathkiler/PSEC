@@ -138,7 +138,7 @@ Pour faire des cartes openning, vous aurez besoin de fragments obtenable de diff
 • Chaque jour, vous obtenez 1 fragment gratuit, même si vous êtes afk
 Chaque carte openning coûte 5 fragments.
                           
-Chaque joueur possède un niveau (1-11). Plus votre lvl est haut, plus vous avez de chance d'obtenir des cartes plus rares (/proba pour voir les probabilités).
+Chaque joueur possède un niveau (0-10). Plus votre lvl est haut, plus vous avez de chance d'obtenir des cartes plus rares (/proba pour voir les probabilités).
 Vous pouvez gagner de l'exp pour augmenter de niveau de la même manière que pour les fragments (exp nécessaire pour lvl up visible dans /proba).
 Si vous obtenez des doublons, vous pouvez les revendre contre de l'exp dans la rubrique **mes cartes** (commun = 2 exp, peu courant = 4 exp, rare = 6 exp ...)
 Vous pouvez aussi faire un /reroll pour échanger toutes votre exp contre des fragments (2 exp = 1 fragment).

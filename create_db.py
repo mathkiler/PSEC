@@ -5,6 +5,7 @@ import os
 from scripts.global_commandes.import_et_variable import CURRENT_PATH
 
 link_carte_to_rarete = {
+    "C_Cucurucho" : "commun",
     "C_avion" : "commun",
     "C_Bagi" : "commun",
     "C_Cellbit" : "commun",
@@ -18,12 +19,16 @@ link_carte_to_rarete = {
     "C_Roier" : "commun",
     "C_Slimecicle" : "commun",
     "C_wall" : "commun",
+    "C_Mike" : "commun",
+    "E_Tototte" : "épique",
     "E_Cafard_Cucaracha" : "épique",
     "E_Lobo_Nocturno" : "épique",
     "E_Ramon" : "épique",
     "E_Richalyson" : "épique",
     "H_Gegg" : "héroïque",
     "H_Pomme" : "héroïque",
+    "H_Kameto" : "héroïque",
+    "PC_Evil_cucurucho" : "peu courant",
     "PC_antoineD" : "peu courant",
     "PC_Aypierre" : "peu courant",
     "PC_Baghera " : "peu courant",
