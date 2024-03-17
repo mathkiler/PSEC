@@ -24,7 +24,7 @@ class Voir_Commandes(discord.ui.View):
         interaction = select_interaction_argument(interaction, button)
         #on va chercher le nombre de fragment de l'utilisateur pour lui montrer avant son opening
         fragments = get_fragments_by_user(interaction.user.id)
-        await interaction.response.send_message(f"Coût **5** fragments. Vous avez **{fragments}** fragrment{pluriel(fragments)}\nDémarrer l'opening ?", view=Start_opening(), ephemeral=True)
+        await interaction.response.send_message(f"Coût **5** fragments. Vous avez **{fragments}** fragment{pluriel(fragments)}\nDémarrer l'opening ?", view=Start_opening(), ephemeral=True)
 
     @discord.ui.button(label="Mes cartes", row=2, style=discord.ButtonStyle.primary)
     async def mes_cartes_button_callback(self, button, interaction):
