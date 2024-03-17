@@ -130,26 +130,27 @@ async def mon_album(interaction, le_montrer) :
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
     resultat_carte_possede = [resultat_carte_possede[k][0] for k in range(len(resultat_carte_possede))]
+    sorted(resultat_carte_possede) #on réarange la liste des cartes obtenu au cas où elle est malangé bizarement
         #on calcule la position des images (on démare à -1 car on va compter la carte unknown (carte qui montre celles non obtenue))
-    nombre_totale_carte = -1
+    nombre_totale_carte = 0
     derange_ordre_cartes = []
     for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
         for f in fichiers :
-            derange_ordre_cartes.append(f[:-4])
-            nombre_totale_carte+=1
+            if f != ".inconnue.png" :
+                derange_ordre_cartes.append(f[:-4])
+                nombre_totale_carte+=1
         break #on break pour ne parcourir que le premier dossier
-    derange_ordre_cartes.pop(0) # pour enlever la carte du forground
-    rarete_list_name_file = ["C_", "PC_", "R_", "E_", "H_"]
+    sorted(derange_ordre_cartes)
+    rarete_list_name_file = ["H_", "E_", "R_", "PC_", "C_"]
     rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
     for carte in derange_ordre_cartes :
         for ind_rarete in range(len(rarete_list_name_file)) :
             if rarete_list_name_file[ind_rarete] in carte :
                 break
         rarete_list_arrange[ind_rarete].append(carte)
-    ordre_cartes = rarete_list_arrange[0]
-    for k in range(1,5) :
+    ordre_cartes = rarete_list_arrange[4]
+    for k in range(3,-1, -1) :
         ordre_cartes.extend(rarete_list_arrange[k])
-    ordre_cartes.pop(0) # pour enlever la carte unknown
     width_carte = 321
     height_carte = 515
     nb_carte_square = int(sqrt(nombre_totale_carte))
