@@ -51,12 +51,13 @@ link_carte_to_rarete = {
 
 try :
     os.remove(CURRENT_PATH+"\\assets\\database\\database.db")
+    os.remove(CURRENT_PATH+"/assets/database/database.db")
 except :
     pass
 
 
 
-baseDeDonnees = sqlite3.connect(CURRENT_PATH+'\\assets\\database\\database.db')
+baseDeDonnees = sqlite3.connect(CURRENT_PATH+'/assets/database/database.db')
 curseur = baseDeDonnees.cursor()
 
 
