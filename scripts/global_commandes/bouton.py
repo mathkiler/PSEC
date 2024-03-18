@@ -105,13 +105,13 @@ class Mes_cartes(discord.ui.View): # Create a class called MyView that subclasse
         interaction = select_interaction_argument(interaction, button)
         await selecteur_button_mes_cartes(interaction, "five_prev")
 
-    @discord.ui.button(label="Prev", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="<-", style=discord.ButtonStyle.secondary)
     async def left_button_callback(self, button, interaction):
         test_changement_de_jour()
         interaction = select_interaction_argument(interaction, button)
         await selecteur_button_mes_cartes(interaction, "one_prev")
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="->", style=discord.ButtonStyle.secondary)
     async def one_next_button_callback(self, button, interaction):
         test_changement_de_jour()
         interaction = select_interaction_argument(interaction, button)
