@@ -18,7 +18,7 @@ async def on_message(message):
         test_changement_de_jour()
         if test_joueur_ecrit_commande(message.content) == False and test_player_in_bdd(message.author.id) and test_message_mp(message.channel) == False:
             id_user = message.author.id
-            baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+            baseDeDonnees = sqlite3.connect(db_path)
             curseur = baseDeDonnees.cursor()
             curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
             resultat = curseur.fetchone()

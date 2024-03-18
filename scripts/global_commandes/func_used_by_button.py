@@ -14,7 +14,7 @@ from scripts.daily_quest.puissance_4.bouton_puissance_4 import message_lunch_que
 async def voir_stats(interaction, le_cacher) :
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
@@ -32,7 +32,11 @@ async def voir_stats(interaction, le_cacher) :
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
-        carte_arange[carte[1]][carte[0]] = carte[2]
+        print(carte)
+        if carte[1] == "peu courant" :
+            carte_arange[carte[1]][carte[0][3:]] = carte[2]
+        else :
+            carte_arange[carte[1]][carte[0][2:]] = carte[2]
 
     txt_print_cartes = ""
     for rarete in carte_arange :
@@ -59,7 +63,7 @@ async def opening(interaction, nb_opening) :
     #on chope les info du joueur
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
@@ -124,32 +128,33 @@ async def mon_album(interaction, le_montrer) :
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
     resultat_carte_possede = [resultat_carte_possede[k][0] for k in range(len(resultat_carte_possede))]
+    sorted(resultat_carte_possede) #on réarange la liste des cartes obtenu au cas où elle est malangé bizarement
         #on calcule la position des images (on démare à -1 car on va compter la carte unknown (carte qui montre celles non obtenue))
-    nombre_totale_carte = -1
+    nombre_totale_carte = 0
     derange_ordre_cartes = []
     for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
         for f in fichiers :
-            derange_ordre_cartes.append(f[:-4])
-            nombre_totale_carte+=1
+            if f != ".inconnue.png" :
+                derange_ordre_cartes.append(f[:-4])
+                nombre_totale_carte+=1
         break #on break pour ne parcourir que le premier dossier
-    derange_ordre_cartes.pop(0) # pour enlever la carte du forground
-    rarete_list_name_file = ["C_", "PC_", "R_", "E_", "H_"]
+    sorted(derange_ordre_cartes)
+    rarete_list_name_file = ["H_", "E_", "R_", "PC_", "C_"]
     rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
     for carte in derange_ordre_cartes :
         for ind_rarete in range(len(rarete_list_name_file)) :
             if rarete_list_name_file[ind_rarete] in carte :
                 break
         rarete_list_arrange[ind_rarete].append(carte)
-    ordre_cartes = rarete_list_arrange[0]
-    for k in range(1,5) :
+    ordre_cartes = rarete_list_arrange[4]
+    for k in range(3,-1, -1) :
         ordre_cartes.extend(rarete_list_arrange[k])
-    ordre_cartes.pop(0) # pour enlever la carte unknown
     width_carte = 321
     height_carte = 515
     nb_carte_square = int(sqrt(nombre_totale_carte))
@@ -181,7 +186,7 @@ async def initialisation_mes_cartes(interaction) :
     #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -210,7 +215,7 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     #si le bouton est appuyé, on update la variable du curseur puis on affiche la nouvelle image
     #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -275,7 +280,7 @@ def mes_cartes_action_five_next_buton(nb_cartes, index_curseur): #ici, interacti
 #fonction pour faire supprimer un doublon et obtenir de l'xp
 async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
     id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -343,7 +348,7 @@ async def selecteur_lunch_quest(name_quest, interaction) :
 
 #fonction pour faire prendre effet au reroll
 async def effet_reroll(interaction) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
     xp_user = curseur.fetchone()[0]

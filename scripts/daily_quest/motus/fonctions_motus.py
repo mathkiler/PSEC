@@ -7,7 +7,7 @@ from scripts.global_commandes.import_et_variable import *
 
 
 def get_mot_mystere() :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute("SELECT info_quest FROM daily_quest")
     result = curseur.fetchall()[-1][0]
@@ -109,7 +109,7 @@ async def user_test_mot_motus(message, id_user, mot_user) :
             elif motus_msg_player[id_user]["nb_chance_left"] == 0 :
                 await message.reply(f"Perdu ! Le mot était **{mot_mystere}**")
                 motus_msg_player.pop(id_user)
-                baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
+                baseDeDonnees = sqlite3.connect(db_path)
                 curseur = baseDeDonnees.cursor()
                 curseur.execute(f"""UPDATE Joueur
                                 SET daily_quest_done = 1
