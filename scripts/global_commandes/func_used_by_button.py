@@ -14,7 +14,7 @@ from scripts.daily_quest.puissance_4.bouton_puissance_4 import message_lunch_que
 async def voir_stats(interaction, le_cacher) :
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
@@ -63,7 +63,7 @@ async def opening(interaction, nb_opening) :
     #on chope les info du joueur
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()
@@ -128,7 +128,7 @@ async def mon_album(interaction, le_montrer) :
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT nom FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
     resultat_carte_possede = curseur.fetchall()
@@ -186,7 +186,7 @@ async def initialisation_mes_cartes(interaction) :
     #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -215,7 +215,7 @@ async def selecteur_button_mes_cartes(interaction : discord.Interaction, button)
     #si le bouton est appuyé, on update la variable du curseur puis on affiche la nouvelle image
     #on chope les info du joueur (id, nombre de cartes, quel carte il a...)
     id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -280,7 +280,7 @@ def mes_cartes_action_five_next_buton(nb_cartes, index_curseur): #ici, interacti
 #fonction pour faire supprimer un doublon et obtenir de l'xp
 async def mes_cartes_supprime_doublon(interaction, combien_doublon) :
     id_user = interaction.user.id
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT curseur_carte FROM Joueur WHERE id_discord_player == {id_user}")
     index_curseur = curseur.fetchone()[0]
@@ -348,7 +348,7 @@ async def selecteur_lunch_quest(name_quest, interaction) :
 
 #fonction pour faire prendre effet au reroll
 async def effet_reroll(interaction) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
     xp_user = curseur.fetchone()[0]

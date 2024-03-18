@@ -54,7 +54,7 @@ async def ajout_carte(
 @bot.command(name="force_change_jour", description="Admin only : force les effets pour passer d'un jour à un autre.")
 async def force_change_jour(interaction: discord.Interaction) :
     if admin_restrict(interaction.user.id) :
-        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+        baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"""UPDATE Joueur 
                     SET fragment = fragment + 1, fragment_cumule = 0, xp = xp + 1, daily_quest_done = 0""")
@@ -95,7 +95,7 @@ async def affiche_bdd(interaction : discord.Interaction) :
 async def reroll(interaction : discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {interaction.user.id}")
     xp_user = curseur.fetchone()[0]
