@@ -13,12 +13,12 @@ curseur = baseDeDonnees.cursor()
 
     
 curseur.execute(f"""UPDATE Cartes 
-      SET nom = C_El_Quackity
+      SET nom = 'C_El_Quackity'
       WHERE id == 4""")
 
 
 curseur.execute(f"""UPDATE Cartes 
-      SET nom = R_Quackity
+      SET nom = 'R_Quackity'
       WHERE id == 7""")
 
 
