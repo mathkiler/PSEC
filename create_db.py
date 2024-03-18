@@ -10,7 +10,7 @@ link_carte_to_rarete = {
     "C_Bagi" : "commun",
     "C_Cellbit" : "commun",
     "C_club" : "commun",
-    "C_El_Quakity" : "commun",
+    "C_El_Quackity" : "commun",
     "C_Foolish" : "commun",
     "C_gare" : "commun",
     "C_Ironmouse" : "commun",
@@ -44,7 +44,7 @@ link_carte_to_rarete = {
     "R_FitMC" : "rare",
     "R_le_code" : "rare",
     "R_PhilzAlicia" : "rare",
-    "R_Quakity" : "rare",
+    "R_Quackity" : "rare",
     "R_Tallulah" : "rare",
     "R_Teoad" : "rare"
 }
