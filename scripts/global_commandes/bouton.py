@@ -135,7 +135,7 @@ class Mes_cartes(discord.ui.View): # Create a class called MyView that subclasse
         interaction = select_interaction_argument(interaction, button)
         await mes_cartes_supprime_doublon(interaction, "TOUS")
 
-    @discord.ui.button(label="Recycler TOUT les doublons de l'album", row=2, style=discord.ButtonStyle.red)
+    @discord.ui.button(label="Recycler TOUS les doublons de l'album", row=2, style=discord.ButtonStyle.red)
     async def supr_all_doublon_button_callback(self, button, interaction):
         test_changement_de_jour()
         interaction = select_interaction_argument(interaction, button)
