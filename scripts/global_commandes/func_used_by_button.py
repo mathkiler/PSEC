@@ -39,7 +39,7 @@ async def voir_stats(interaction, le_cacher) :
         if len(carte_arange[rarete]) != 0 :
             txt_print_cartes+=rarete+" : \n"
             for carte in carte_arange[rarete] :
-                txt_print_cartes+="     "+str(carte_arange[rarete][carte])+" posssédé : "+carte+"\n"
+                txt_print_cartes+="     "+str(carte_arange[rarete][carte])+" possédé : "+carte+"\n"
             txt_print_cartes+="\n\n"
     
     await interaction.response.send_message(f"""Stats du joueur <@{id_user}> : 
