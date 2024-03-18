@@ -15,7 +15,7 @@ async def tourne_roue(interaction) :
     else :
         embed_wheel_finish, file_wheel_finish = effet_fragment_roue_fortune(interaction.user.id, get_nb_fragment(gain))
 
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur
                     SET daily_quest_done = 1

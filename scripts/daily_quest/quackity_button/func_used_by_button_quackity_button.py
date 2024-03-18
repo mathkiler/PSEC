@@ -14,7 +14,7 @@ async def response_choix_button_quackity(interaction, ind_button) :
     tirage = randint(0,24-(3-nb_chance_left))
     if tirage != 0 :
         if nb_chance_left == 1 :
-            baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+            baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
             curseur = baseDeDonnees.cursor()
             curseur.execute(f"""UPDATE Joueur
                             SET daily_quest_done = 1
@@ -41,7 +41,7 @@ async def response_choix_button_quackity(interaction, ind_button) :
         else :
             embed_gain_result, file_gain_result = effet_fragment_quackity_button(interaction.user.id, get_nb_fragment(gain))
 
-        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"""UPDATE Joueur
                         SET daily_quest_done = 1

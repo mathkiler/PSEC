@@ -28,7 +28,7 @@ async def place_pion(interaction, ind_colone_pion) :
             if result_test_fin_jeu[0] == "eguale" :
                 await c_gagne(interaction, result_test_fin_jeu[0],  result_test_fin_jeu)
             elif result_test_fin_jeu[0] == "win" :
-                baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+                baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
                 curseur = baseDeDonnees.cursor()
                 curseur.execute(f"""UPDATE Joueur
                                 SET daily_quest_done = 1
@@ -62,7 +62,7 @@ async def c_gagne(interaction, win_or_eguale, result_win) :
     name_img = create_img_p4(interaction.user.id, result_win)
     await affiche_image_discord(interaction, name_img)
     os.remove(CURRENT_PATH+f"/assets/img_tamp/{name_img}.png")
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur
                     SET daily_quest_done = 1

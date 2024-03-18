@@ -138,7 +138,7 @@ def test_demineur_termine(id_user) :
 #renvoi l'embed et effectu l'effet lorsque le gain est carte
 def effet_carte_demineur(id_user) :
     #on get l'xp que le joueur possède
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT xp FROM Joueur WHERE id_discord_player == {id_user}")
     resultat_user_stats = curseur.fetchone()[0]
@@ -174,7 +174,7 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est xp
 def effet_xp_demineur(id_user) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET xp = xp + 100
@@ -189,7 +189,7 @@ Vous avez obtenu un gain de + 100 exp !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
 def effet_fragment_demineur(id_user, nb_fragment) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur 
                 SET fragment = fragment + {nb_fragment}

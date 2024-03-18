@@ -60,7 +60,7 @@ async def demine_case(interaction) :
         for bomb in list_ind_bomb :
             replace_somthing_in_demineur(interaction.user.id, "b", (bomb%taille_demineur+1, bomb//taille_demineur))
         if tentative_restante == 0 : #et c'est perdu complêtement
-            baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+            baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
             curseur = baseDeDonnees.cursor()
             curseur.execute(f"""UPDATE Joueur
                             SET daily_quest_done = 1
@@ -146,7 +146,7 @@ async def c_gagne(interaction) :
     _, _, _, list_ind_bomb = get_info_demineur(interaction.user.id)
     for bomb in list_ind_bomb :
         replace_somthing_in_demineur(interaction.user.id, "b", (bomb%taille_demineur+1, bomb//taille_demineur))
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'/assets/database/{db_used}')
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""UPDATE Joueur
                     SET daily_quest_done = 1
