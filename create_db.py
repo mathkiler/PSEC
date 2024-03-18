@@ -2,7 +2,7 @@ from random import choice, randint
 import sqlite3
 import os
 
-from scripts.global_commandes.import_et_variable import CURRENT_PATH
+from scripts.global_commandes.import_et_variable import CURRENT_PATH, db_path
 
 link_carte_to_rarete = {
     "C_Cucurucho" : "commun",
@@ -57,7 +57,7 @@ except :
 
 
 
-baseDeDonnees = sqlite3.connect(CURRENT_PATH+'/assets/database/database.db')
+baseDeDonnees = sqlite3.connect(db_path)
 curseur = baseDeDonnees.cursor()
 
 
