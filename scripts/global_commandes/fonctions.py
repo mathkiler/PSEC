@@ -12,7 +12,7 @@ def admin_restrict(id_user) :
 #fonction pour ajouter une carte. A renseigner : nom, rarete
 def ajouter_une_carte(nom, rarete) :
     try :
-        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+        baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()
         curseur.execute("INSERT INTO Cartes (nom, rarete) VALUES (?, ?)", (f"{nom}", f"{rarete}"))
         baseDeDonnees.commit()
@@ -30,7 +30,7 @@ def test_changement_de_jour() :
     if int(jour_diff) > 0 :
         motus_msg_player = {} #on reset le motus 
         DATE_actuel = date.today()  #date du jour
-        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+        baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"""UPDATE Joueur 
                     SET fragment = fragment + {jour_diff}, fragment_cumule = 0, xp = xp + {jour_diff}""")
@@ -40,7 +40,7 @@ def test_changement_de_jour() :
 
 #fonction pour tester si un utilisateur est ans la BDD (test seulement)
 def test_player_in_bdd(id_user) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute("SELECT id_discord_player FROM Joueur")
     result = curseur.fetchall()
@@ -55,7 +55,7 @@ def test_player_in_bdd(id_user) :
 #fonction pour tester si un utilisatzur est dans la BDD. Si oui, on lui rajoute ddans la bdd les info nécessaire
 def test_cration_bdd_user(id_user) :
     if test_player_in_bdd(id_user) == False:
-        baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+        baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"SELECT id FROM Cartes")
         result = curseur.fetchall()
@@ -89,7 +89,7 @@ def test_joueur_ecrit_commande(msg) :
 
 
 def get_fragments_by_user(id_user) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT fragment FROM joueur Where id_discord_player == {id_user}")
     result = curseur.fetchone()[0]
@@ -106,7 +106,7 @@ def get_data_lvl_from_csv(xp_user) :
 
 #return True if the user already did the daily quest
 def test_daily_quest_completed(id_user) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"SELECT daily_quest_done FROM Joueur WHERE id_discord_player == {id_user}")
     daily_quest_done = curseur.fetchone()[0]
@@ -125,7 +125,7 @@ def reset_daily_quest_all_users(baseDeDonnees, curseur) :
 def get_daily_quest(id_user) :
     global motus_msg_player
     #get toutes les info
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""SELECT * FROM daily_quest""")
     result_daily_quest = curseur.fetchall()
@@ -206,7 +206,7 @@ def selecteur_txt_initialisation_daily_quest(name_quest) :
 
 #fonction pour initialiser le ficihier txt de la save de la daily quest si besoin pour quaques utilisateur
 def reset_initialisation_daily_quest_save(name_quest) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute("SELECT id_discord_player FROM Joueur")
     result_id_players = curseur.fetchall()
@@ -333,7 +333,7 @@ def test_message_mp(channel) :
 
 #the if the current game is realy the game that user click on
 def check_current_daily_quest(daily_quest_to_test) :
-    baseDeDonnees = sqlite3.connect(CURRENT_PATH+f'\\assets\\database\\{db_used}')
+    baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
     curseur.execute(f"""SELECT * FROM daily_quest""")
     current_daily_quest = curseur.fetchall()[-1][0]
