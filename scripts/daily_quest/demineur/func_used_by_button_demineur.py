@@ -86,7 +86,9 @@ async def demine_case(interaction) :
                 placement = randint(0,get_taille_demineur()*get_taille_demineur()-1)
                 while placement in ind_list_bomb :
                     placement = randint(0,get_taille_demineur()*get_taille_demineur()-1)
-                ind_list_bomb.append(f"{placement},")
+                ind_list_bomb.append(placement)
+            for k in range(len(ind_list_bomb)) :
+                ind_list_bomb[k] = f"{ind_list_bomb[k]},"
             ind_list_bomb[-1] = ind_list_bomb[-1][:-1]+"\n"
             plateau_save.extend(ind_list_bomb)
             plateau_save.append(str(tentative_restante))
