@@ -176,15 +176,20 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 def effet_xp_demineur(id_user) :
     baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
+    #on cherche à avoir le niveau du joueur pour lui adapter son gain d'exp
+    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+    resultat_user_stats = curseur.fetchone()
+    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
+
     curseur.execute(f"""UPDATE Joueur 
-                SET xp = xp + 100
+                SET xp = xp + {lvl_column.index(lvl)*11}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
-    embed = discord.Embed(title="""Bravo, vous avez terminé le démineur ! 
+    embed = discord.Embed(title=f"""Bravo, vous avez terminé le démineur ! 
 
-Vous avez obtenu un gain de + 100 exp !""")
+Vous avez obtenu un gain de + {lvl_column.index(lvl)*11} exp !""")
     return embed, None
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment

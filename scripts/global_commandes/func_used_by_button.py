@@ -32,7 +32,6 @@ async def voir_stats(interaction, le_cacher) :
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
-        print(carte)
         if carte[1] == "peu courant" :
             carte_arange[carte[1]][carte[0][3:]] = carte[2]
         else :

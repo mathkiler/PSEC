@@ -62,17 +62,22 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 def effet_xp_roue_fortune(id_user) :
     baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
+    #on cherche à avoir le niveau du joueur pour lui adapter son gain d'exp
+    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+    resultat_user_stats = curseur.fetchone()
+    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
+
     curseur.execute(f"""UPDATE Joueur 
-                SET xp = xp + 100
+                SET xp = xp + {lvl_column.index(lvl)*11}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
     img_path = CURRENT_PATH+f"/assets/animations/daily_quest/roue_fortune/fin_animation_png/xp.png"
     file = discord.File(img_path)
-    embed = discord.Embed(title="""Résultat : 
+    embed = discord.Embed(title=f"""Résultat : 
                          
-Vous avez obtenu un gain de + 100 exp !""")
+Vous avez obtenu un gain de + {lvl_column.index(lvl)*11} exp !""")
     embed.set_image(url=f"attachment://xp.png")
     return embed, file
 
