@@ -161,13 +161,13 @@ async def c_gagne(interaction) :
     await message.edit(embed=embed)
     #choix du gain
     #xp gagné -> toujours 100
-    gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+    gain = choice(["carte", "xp", "fragment_10", "fragment_15"])
     if gain == "carte" :
         embed_gain_result, file_gain_result = effet_carte_demineur(interaction.user.id)
     elif gain == "xp" :
         embed_gain_result, file_gain_result = effet_xp_demineur(interaction.user.id)
     else :
-        embed_gain_result, file_gain_result = effet_fragment_demineur(interaction.user.id, get_nb_fragment(gain))
+        embed_gain_result, file_gain_result = effet_fragment_demineur(interaction.user.id, gain[-2:])
     #Enfin, on affiche le résultat au joueur sur discord 
     #en premeir le gif en fonction du gain gagné
     if file_gain_result == None :
