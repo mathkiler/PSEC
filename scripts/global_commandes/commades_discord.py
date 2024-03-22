@@ -155,3 +155,30 @@ Les commandes disponibles sont :
 • /reroll → Permet d'échanger tout son exp contre des fragments (2 exp pour 1 fragment)
 • /help → Affiche cette commande""") 
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+#commande pour ajouter une carte (une par une)
+@bot.command(name="album", description="Permet d'afficher son album directement")
+async def album(
+    interaction: discord.Interaction,
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ou non son album au autre pour flex un MAX",)
+    ) :
+    if afficher_en_public == "Non" : 
+        reponse = True
+    else :
+        reponse = False
+    test_changement_de_jour()
+    await mon_album(interaction, reponse)
+
+#commande pour ajouter une carte (une par une)
+@bot.command(name="stats", description="Permet d'afficher ses stats directement")
+async def stats(
+    interaction: discord.Interaction,
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ou non ses stats au autre pour flex",)
+    ) :
+    if afficher_en_public == "Non" : 
+        reponse = True
+    else :
+        reponse = False
+    test_changement_de_jour()
+    await voir_stats(interaction, reponse)
