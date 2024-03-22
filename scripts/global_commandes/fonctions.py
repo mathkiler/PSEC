@@ -100,7 +100,7 @@ def get_data_lvl_from_csv(xp_user) :
             data = list(csv.reader(csvfile, delimiter=","))[1:-1]
     lvl_column = [int(j.pop(-2)) for j in data]
     for lvl in lvl_column :
-        if lvl >= xp_user :
+        if lvl > xp_user :
             break
     return data, lvl_column, lvl
 
