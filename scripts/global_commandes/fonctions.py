@@ -342,3 +342,8 @@ def check_current_daily_quest(daily_quest_to_test) :
     if daily_quest_to_test == current_daily_quest :
         return True
     return False
+
+
+def count_nb_openning_possible(id_user) :
+    nb_fragments = get_fragments_by_user(id_user)
+    return nb_fragments//5
