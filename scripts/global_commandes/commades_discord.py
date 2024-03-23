@@ -155,3 +155,12 @@ Les commandes disponibles sont :
 • /reroll → Permet d'échanger tout son exp contre des fragments (2 exp pour 1 fragment)
 • /help → Affiche cette commande""") 
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+
+@bot.command(name="echange", description="échanger des acrtes")
+async def echange(
+    interaction: discord.Interaction,
+    pseudo: discord.Option(discord.User)
+    ) :
+    print(pseudo)
