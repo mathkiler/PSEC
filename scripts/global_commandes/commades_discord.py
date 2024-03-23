@@ -161,7 +161,7 @@ Les commandes disponibles sont :
 @bot.command(name="album", description="Permet d'afficher son album directement")
 async def album(
     interaction: discord.Interaction,
-    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ou non son album au autre pour flex un MAX",)
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher son album à tous pour flex un MAX",)
     ) :
     if afficher_en_public == "Non" : 
         reponse = True
@@ -174,7 +174,7 @@ async def album(
 @bot.command(name="stats", description="Permet d'afficher ses stats directement")
 async def stats(
     interaction: discord.Interaction,
-    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ou non ses stats au autre pour flex",)
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ses stats à tous pour flex un MAX",)
     ) :
     if afficher_en_public == "Non" : 
         reponse = True
