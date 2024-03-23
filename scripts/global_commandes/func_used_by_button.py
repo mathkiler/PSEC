@@ -32,7 +32,6 @@ async def voir_stats(interaction, le_cacher) :
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
-        print(carte)
         if carte[1] == "peu courant" :
             carte_arange[carte[1]][carte[0][3:]] = carte[2]
         else :
@@ -446,6 +445,13 @@ async def calc_classement(interaction, type_classement) :
     elif type_classement == "Super fan" :
         curseur.execute(f"SELECT max(nombre_carte_possede), id_discord_player, c.nom FROM carte_possede as cp, Cartes as c WHERE cp.id == c.id GROUP BY id_discord_player ORDER BY max(nombre_carte_possede) DESC")
         resultat_carte_possede = curseur.fetchall()
+        for k in range(len(resultat_carte_possede)) :
+            resultat_carte_possede[k] = [resultat_carte_possede[k][0], resultat_carte_possede[k][1], resultat_carte_possede[k][2]] #on trensforme le tuple en liste
+            if resultat_carte_possede[k][2][:resultat_carte_possede[k][2].index("_")] == "PC" :
+                resultat_carte_possede[k][2] = resultat_carte_possede[k][2][3:]
+            else :
+                resultat_carte_possede[k][2] = resultat_carte_possede[k][2][2:]
+        
         if interaction.user.id in [resultat_carte_possede[k][1] for k in range(3)] :
             current_pos = None
         else :
@@ -457,7 +463,7 @@ async def calc_classement(interaction, type_classement) :
                 current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
             except :
                 current_pos[1] = str(interaction.user)
-            current_pos[2] = str(current_pos[2])+ " ème "
+            current_pos[3] = str(current_pos[3])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
             "description" : "Le plus de fois la même carte",
@@ -489,8 +495,10 @@ async def calc_classement(interaction, type_classement) :
         msg = info_classement["rank_current_player"][-1]+info_classement["rank_current_player"][1]
         bbox = title_font.getbbox(msg)
         I1.text((500-bbox[2]//2, 580-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
-        
-        msg = info_classement["info_display"]+str(info_classement["rank_current_player"][0])
+        try :
+            msg = info_classement["info_display"]+str(info_classement["rank_current_player"][0])+" ("+info_classement["rank_current_player"][2]+")"
+        except :
+            msg = info_classement["info_display"]+str(info_classement["rank_current_player"][0])
         bbox = title_font.getbbox(msg)
         I1.text((500-bbox[2]//2, 610-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
 
@@ -507,8 +515,10 @@ async def calc_classement(interaction, type_classement) :
         pp_user.thumbnail((100, 100))
         Image.Image.paste(img_ranked, pp_user, coords_classement_pp[rank])
         pp_user.close()
-
-        msg = info_classement["info_display"]+str(info_classement["classement"][rank][0])
+        try :
+            msg = info_classement["info_display"]+str(info_classement["classement"][rank][0])+" ("+info_classement["classement"][rank][2]+")"
+        except :
+            msg = info_classement["info_display"]+str(info_classement["classement"][rank][0])
         bbox = title_font.getbbox(msg)
         I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]+115)-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
         
