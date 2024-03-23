@@ -358,3 +358,182 @@ async def effet_reroll(interaction) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     await interaction.response.send_message(f"Vous avez obtenu {xp_user//2} fragments.", ephemeral=True)
+
+
+
+async def calc_classement(interaction, type_classement) :
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    if type_classement == "Collectionneur" :
+        curseur.execute(f"SELECT count(nom), j.id_discord_player FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player AND nombre_carte_possede != 0 GROUP BY cp.id_discord_player ORDER BY count(nom) DESC")
+        resultat_carte_possede = curseur.fetchall()
+        if interaction.user.id in [resultat_carte_possede[k][1] for k in range(3)] :
+            current_pos = None
+        else :
+            current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
+            current_pos = [current_pos[0], current_pos[1]]
+            current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
+            try :
+                user_self = str(interaction.user)
+                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
+            except :
+                current_pos[1] = str(interaction.user)
+            current_pos[2] = str(current_pos[2])+ " ème "
+        info_classement = {
+            "name_categorie" : type_classement,
+            "description" : "Le plus de cartes possédées (sans doublons)",
+            "info_display" : "cartes : ",
+            "classement" : [
+                resultat_carte_possede[0],
+                resultat_carte_possede[1],
+                resultat_carte_possede[2]
+            ],
+            "rank_current_player" : current_pos
+        }
+    elif type_classement == "Grip sou" :
+        curseur.execute(f"SELECT fragment, id_discord_player FROM Joueur order by fragment DESC")
+        resultat_carte_possede = curseur.fetchall()
+        if interaction.user.id in [resultat_carte_possede[k][1] for k in range(3)] :
+            current_pos = None
+        else :
+            current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
+            current_pos = [current_pos[0], current_pos[1]]
+            current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
+            try :
+                user_self = str(interaction.user)
+                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
+            except :
+                current_pos[1] = str(interaction.user)
+            current_pos[2] = str(current_pos[2])+ " ème "
+        info_classement = {
+            "name_categorie" : type_classement,
+            "description" : "Le plus de fragments",
+            "info_display" : "fragments : ",
+            "classement" : [
+                resultat_carte_possede[0],
+                resultat_carte_possede[1],
+                resultat_carte_possede[2]
+            ],
+            "rank_current_player" : current_pos
+        }
+
+    elif type_classement == "Farmer" :
+        curseur.execute(f"SELECT xp, id_discord_player FROM Joueur order by xp DESC")
+        resultat_carte_possede = curseur.fetchall()
+        if interaction.user.id in [resultat_carte_possede[k][1] for k in range(3)] :
+            current_pos = None
+        else :
+            current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
+            current_pos = [current_pos[0], current_pos[1]]
+            current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
+            try :
+                user_self = str(interaction.user)
+                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
+            except :
+                current_pos[1] = str(interaction.user)
+            current_pos[2] = str(current_pos[2])+ " ème "
+        info_classement = {
+            "name_categorie" : type_classement,
+            "description" : "Le plus de XP",
+            "info_display" : "XP : ",
+            "classement" : [
+                resultat_carte_possede[0],
+                resultat_carte_possede[1],
+                resultat_carte_possede[2]
+            ],
+            "rank_current_player" : current_pos
+        }
+    elif type_classement == "Super fan" :
+        curseur.execute(f"SELECT max(nombre_carte_possede), id_discord_player, c.nom FROM carte_possede as cp, Cartes as c WHERE cp.id == c.id GROUP BY id_discord_player ORDER BY max(nombre_carte_possede) DESC")
+        resultat_carte_possede = curseur.fetchall()
+        if interaction.user.id in [resultat_carte_possede[k][1] for k in range(3)] :
+            current_pos = None
+        else :
+            current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
+            current_pos = [current_pos[0], current_pos[1], current_pos[2]]
+            current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
+            try :
+                user_self = str(interaction.user)
+                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
+            except :
+                current_pos[1] = str(interaction.user)
+            current_pos[2] = str(current_pos[2])+ " ème "
+        info_classement = {
+            "name_categorie" : type_classement,
+            "description" : "Le plus de fois la même carte",
+            "info_display" : "Nombre : ",
+            "classement" : [
+                resultat_carte_possede[0],
+                resultat_carte_possede[1],
+                resultat_carte_possede[2]
+            ],
+            "rank_current_player" : current_pos
+        }
+
+    img_ranked = Image.open(CURRENT_PATH+f"/assets/classement/classement_template.png")
+    I1 = ImageDraw.Draw(img_ranked)
+ 
+    # Adding text for title categorie (Collectionneur ici)
+    title_font = ImageFont.truetype("arial.ttf", 40)
+    bbox = title_font.getbbox(info_classement["name_categorie"])
+    I1.text((500-bbox[2]//2, 490-bbox[3]//2), info_classement["name_categorie"], font=title_font, stroke_width=1, fill =(0, 0, 0))
+    
+    #adding description
+    title_font = ImageFont.truetype("arial.ttf", 15)
+    bbox = title_font.getbbox(info_classement["description"])
+    I1.text((500-bbox[2]//2, 520-bbox[3]//2), info_classement["description"], font=title_font, fill =(0, 0, 0))
+    
+    #rank current player
+    if info_classement["rank_current_player"] != None :
+        title_font = ImageFont.truetype("arial.ttf", 25)
+        msg = info_classement["rank_current_player"][-1]+info_classement["rank_current_player"][1]
+        bbox = title_font.getbbox(msg)
+        I1.text((500-bbox[2]//2, 580-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
+        
+        msg = info_classement["info_display"]+str(info_classement["rank_current_player"][0])
+        bbox = title_font.getbbox(msg)
+        I1.text((500-bbox[2]//2, 610-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
+
+    #adding pp and rank and info 
+    coords_classement_pp = [(450, 35), (184, 140), (700, 165)]
+    rank = 0
+    for user_rank in info_classement["classement"] :
+        User = await bot.fetch_user(user_rank[1])
+        
+        img_data = requests.get(User.avatar).content
+        with open(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png", 'wb') as handler:
+            handler.write(img_data)
+        pp_user = Image.open(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png")
+        pp_user.thumbnail((100, 100))
+        Image.Image.paste(img_ranked, pp_user, coords_classement_pp[rank])
+        pp_user.close()
+
+        msg = info_classement["info_display"]+str(info_classement["classement"][rank][0])
+        bbox = title_font.getbbox(msg)
+        I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]+115)-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
+        
+        try :
+            user_name_bad = str(User)
+            user_name_reshape = user_name_bad[user_name_bad.index("(")+1:user_name_bad.index(")")]
+        except :
+            user_name_reshape = str(User)
+        
+        bbox = title_font.getbbox(user_name_reshape)
+        I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]-20)-bbox[3]//2), user_name_reshape, font=title_font, fill =(0, 0, 0))
+
+        rank+=1
+        
+
+    #save image
+    random_name = randint(1000000, 9999999)
+    img_ranked.save(CURRENT_PATH+f"/assets/img_tamp/{random_name}.png")
+    for user_rank in info_classement["classement"] :
+        os.remove(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png")
+    return random_name
+    
+    
+
+
+
+
+

@@ -3,8 +3,9 @@ from random import randint, random, choice
 from discord.ext import commands
 from datetime import date, datetime
 from math import sqrt, inf
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import numpy as np
+import requests
 import asyncio
 import discord
 import sqlite3

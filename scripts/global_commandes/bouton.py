@@ -154,3 +154,39 @@ class Reroll(discord.ui.View):
     async def Annuler_button_callback(self, button, interaction):
         test_changement_de_jour()
         await interaction.response.send_message("Action annulé", ephemeral=True)
+
+#boutons pour afficher les classements 
+class Mon_classement(discord.ui.View): 
+    @discord.ui.select( 
+            placeholder = "Choisir un type de classement",
+            min_values = 1, 
+            max_values = 1, 
+            options = [ 
+                discord.SelectOption(
+                    label="Collectionneur",
+                    description="Le plus de cartes possédées (sans doublons)"
+                ),
+                discord.SelectOption(
+                    label="Super fan",
+                    description="Le plus de fois la même carte"
+                ),
+                discord.SelectOption(
+                    label="Grip sou",
+                    description="Le plus de fragments"
+                ),
+                discord.SelectOption(
+                    label="Farmer",
+                    description="Le plus de XP"
+                )
+            ]
+        )
+    async def select_callback(self, select, interaction): # the function called when the user is done selecting options
+        img_name = await calc_classement(interaction, select.values[0])
+        img_path = CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"
+        file = discord.File(img_path)
+        embed = discord.Embed(title=f"Classement")
+        embed.set_image(url=f"attachment://{img_name}.png")
+        #enfin on répond à l'utilisateur par l'image, bouton...
+        await interaction.response.edit_message(embed = embed, file=file)
+        os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
+

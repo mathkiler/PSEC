@@ -127,6 +127,8 @@ async def affiche_bdd(interaction : discord.Interaction) :
 
 @bot.command(name="help", description="Affiche le fonctionnement du jeu et de ses commandes.")
 async def help(interaction: discord.Interaction) :
+    test_cration_bdd_user(interaction.user.id)
+    test_changement_de_jour()
     embed = discord.Embed(description="""
 Le but est d'obtenir toutes les cartes. Pour ce faire il existe 2 possibilités : 
 • Faire des cartes openning
@@ -155,3 +157,20 @@ Les commandes disponibles sont :
 • /reroll → Permet d'échanger tout son exp contre des fragments (2 exp pour 1 fragment)
 • /help → Affiche cette commande""") 
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+
+@bot.command(name="classement", description="Affiche les classements selon plusieurs catégories.")
+async def classement(interaction: discord.Interaction) :
+    test_cration_bdd_user(interaction.user.id)
+    test_changement_de_jour()
+    
+    img_name = await calc_classement(interaction, "Collectionneur")
+    img_path = CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"
+    file = discord.File(img_path)
+    embed = discord.Embed(title=f"Classement")
+    embed.set_image(url=f"attachment://{img_name}.png")
+    #enfin on répond à l'utilisateur par l'image, bouton...
+    await interaction.response.send_message(embed = embed, view=Mon_classement(), file=file, ephemeral=True)
+    os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
+
