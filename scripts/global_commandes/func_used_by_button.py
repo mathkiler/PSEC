@@ -373,10 +373,10 @@ async def calc_classement(interaction, type_classement) :
             current_pos = [current_pos[0], current_pos[1]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
             try :
-                user_self = str(interaction.user)
+                user_self = str(interaction.user).replace("#0", "")
                 current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
             except :
-                current_pos[1] = str(interaction.user)
+                current_pos[1] = str(interaction.user).replace("#0", "")
             current_pos[2] = str(current_pos[2])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -399,10 +399,10 @@ async def calc_classement(interaction, type_classement) :
             current_pos = [current_pos[0], current_pos[1]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
             try :
-                user_self = str(interaction.user)
+                user_self = str(interaction.user).replace("#0", "")
                 current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
             except :
-                current_pos[1] = str(interaction.user)
+                current_pos[1] = str(interaction.user).replace("#0", "")
             current_pos[2] = str(current_pos[2])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -426,10 +426,10 @@ async def calc_classement(interaction, type_classement) :
             current_pos = [current_pos[0], current_pos[1]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
             try :
-                user_self = str(interaction.user)
+                user_self = str(interaction.user).replace("#0", "")
                 current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
             except :
-                current_pos[1] = str(interaction.user)
+                current_pos[1] = str(interaction.user).replace("#0", "")
             current_pos[2] = str(current_pos[2])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -459,10 +459,10 @@ async def calc_classement(interaction, type_classement) :
             current_pos = [current_pos[0], current_pos[1], current_pos[2]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
             try :
-                user_self = str(interaction.user)
+                user_self = str(interaction.user).replace("#0", "")
                 current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
             except :
-                current_pos[1] = str(interaction.user)
+                current_pos[1] = str(interaction.user).replace("#0", "")
             current_pos[3] = str(current_pos[3])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -495,9 +495,9 @@ async def calc_classement(interaction, type_classement) :
         msg = info_classement["rank_current_player"][-1]+info_classement["rank_current_player"][1]
         bbox = title_font.getbbox(msg)
         I1.text((500-bbox[2]//2, 580-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
-        try :
+        if len(info_classement["rank_current_player"]) >= 4 :
             msg = info_classement["info_display"]+str(info_classement["rank_current_player"][0])+" ("+info_classement["rank_current_player"][2]+")"
-        except :
+        else :
             msg = info_classement["info_display"]+str(info_classement["rank_current_player"][0])
         bbox = title_font.getbbox(msg)
         I1.text((500-bbox[2]//2, 610-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
@@ -507,7 +507,6 @@ async def calc_classement(interaction, type_classement) :
     rank = 0
     for user_rank in info_classement["classement"] :
         User = await bot.fetch_user(user_rank[1])
-        
         img_data = requests.get(User.avatar).content
         with open(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png", 'wb') as handler:
             handler.write(img_data)
@@ -523,10 +522,10 @@ async def calc_classement(interaction, type_classement) :
         I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]+115)-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
         
         try :
-            user_name_bad = str(User)
+            user_name_bad = str(User).replace("#0", "")
             user_name_reshape = user_name_bad[user_name_bad.index("(")+1:user_name_bad.index(")")]
         except :
-            user_name_reshape = str(User)
+            user_name_reshape = str(User).replace("#0", "")
         
         bbox = title_font.getbbox(user_name_reshape)
         I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]-20)-bbox[3]//2), user_name_reshape, font=title_font, fill =(0, 0, 0))
@@ -537,8 +536,11 @@ async def calc_classement(interaction, type_classement) :
     #save image
     random_name = randint(1000000, 9999999)
     img_ranked.save(CURRENT_PATH+f"/assets/img_tamp/{random_name}.png")
-    for user_rank in info_classement["classement"] :
-        os.remove(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png")
+    try :
+        for user_rank in info_classement["classement"] :
+            os.remove(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png")
+    except :
+        pass
     return random_name
     
     
