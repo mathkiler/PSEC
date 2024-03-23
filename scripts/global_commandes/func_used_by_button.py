@@ -372,11 +372,7 @@ async def calc_classement(interaction, type_classement) :
             current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
             current_pos = [current_pos[0], current_pos[1]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
-            try :
-                user_self = str(interaction.user).replace("#0", "")
-                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
-            except :
-                current_pos[1] = str(interaction.user).replace("#0", "")
+            current_pos[1] = interaction.user.display_name
             current_pos[2] = str(current_pos[2])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -398,11 +394,7 @@ async def calc_classement(interaction, type_classement) :
             current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
             current_pos = [current_pos[0], current_pos[1]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
-            try :
-                user_self = str(interaction.user).replace("#0", "")
-                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
-            except :
-                current_pos[1] = str(interaction.user).replace("#0", "")
+            current_pos[1] = interaction.user.display_name
             current_pos[2] = str(current_pos[2])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -425,11 +417,7 @@ async def calc_classement(interaction, type_classement) :
             current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
             current_pos = [current_pos[0], current_pos[1]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
-            try :
-                user_self = str(interaction.user).replace("#0", "")
-                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
-            except :
-                current_pos[1] = str(interaction.user).replace("#0", "")
+            current_pos[1] = interaction.user.display_name
             current_pos[2] = str(current_pos[2])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -458,11 +446,7 @@ async def calc_classement(interaction, type_classement) :
             current_pos = resultat_carte_possede[[resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)]
             current_pos = [current_pos[0], current_pos[1], current_pos[2]]
             current_pos.append([resultat_carte_possede[k][1] for k in range(len(resultat_carte_possede))].index(interaction.user.id)+1)
-            try :
-                user_self = str(interaction.user).replace("#0", "")
-                current_pos[1] = user_self[user_self.index("(")+1:user_self.index(")")]
-            except :
-                current_pos[1] = str(interaction.user).replace("#0", "")
+            current_pos[1] = interaction.user.display_name
             current_pos[3] = str(current_pos[3])+ " ème "
         info_classement = {
             "name_categorie" : type_classement,
@@ -520,15 +504,9 @@ async def calc_classement(interaction, type_classement) :
             msg = info_classement["info_display"]+str(info_classement["classement"][rank][0])
         bbox = title_font.getbbox(msg)
         I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]+115)-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
-        
-        try :
-            user_name_bad = str(User).replace("#0", "")
-            user_name_reshape = user_name_bad[user_name_bad.index("(")+1:user_name_bad.index(")")]
-        except :
-            user_name_reshape = str(User).replace("#0", "")
-        
-        bbox = title_font.getbbox(user_name_reshape)
-        I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]-20)-bbox[3]//2), user_name_reshape, font=title_font, fill =(0, 0, 0))
+        user_name = User.display_name    
+        bbox = title_font.getbbox(user_name)
+        I1.text(((coords_classement_pp[rank][0]+50)-bbox[2]//2, (coords_classement_pp[rank][1]-20)-bbox[3]//2), user_name, font=title_font, fill =(0, 0, 0))
 
         rank+=1
         
