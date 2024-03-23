@@ -480,18 +480,18 @@ async def calc_classement(interaction, type_classement) :
     I1 = ImageDraw.Draw(img_ranked)
  
     # Adding text for title categorie (Collectionneur ici)
-    title_font = ImageFont.truetype("arial.ttf", 40)
+    title_font = ImageFont.load_default(40)
     bbox = title_font.getbbox(info_classement["name_categorie"])
     I1.text((500-bbox[2]//2, 490-bbox[3]//2), info_classement["name_categorie"], font=title_font, stroke_width=1, fill =(0, 0, 0))
     
     #adding description
-    title_font = ImageFont.truetype("arial.ttf", 15)
+    title_font = ImageFont.load_default(15)
     bbox = title_font.getbbox(info_classement["description"])
     I1.text((500-bbox[2]//2, 520-bbox[3]//2), info_classement["description"], font=title_font, fill =(0, 0, 0))
     
     #rank current player
     if info_classement["rank_current_player"] != None :
-        title_font = ImageFont.truetype("arial.ttf", 25)
+        title_font = ImageFont.load_default(25)
         msg = info_classement["rank_current_player"][-1]+info_classement["rank_current_player"][1]
         bbox = title_font.getbbox(msg)
         I1.text((500-bbox[2]//2, 580-bbox[3]//2), msg, font=title_font, fill =(0, 0, 0))
