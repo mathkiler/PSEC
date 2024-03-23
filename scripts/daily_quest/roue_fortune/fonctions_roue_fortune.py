@@ -68,7 +68,7 @@ def effet_xp_roue_fortune(id_user) :
     _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
 
     curseur.execute(f"""UPDATE Joueur 
-                SET xp = xp + {lvl_column.index(lvl)*11}
+                SET xp = xp + {(lvl_column.index(lvl)+1)*11}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
@@ -77,7 +77,7 @@ def effet_xp_roue_fortune(id_user) :
     file = discord.File(img_path)
     embed = discord.Embed(title=f"""Résultat : 
                          
-Vous avez obtenu un gain de + {lvl_column.index(lvl)*11} exp !""")
+Vous avez obtenu un gain de + {(lvl_column.index(lvl)+1)*11} exp !""")
     embed.set_image(url=f"attachment://xp.png")
     return embed, file
 

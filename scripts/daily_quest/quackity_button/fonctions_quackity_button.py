@@ -64,14 +64,14 @@ def effet_xp_quackity_button(id_user) :
     _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
 
     curseur.execute(f"""UPDATE Joueur 
-                SET xp = xp + {lvl_column.index(lvl)*11}
+                SET xp = xp + {(lvl_column.index(lvl)+1)*11}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
     embed = discord.Embed(title=f"""Bravo vous avez trouvé le bon bouton ! 
 
-Vous avez obtenu un gain de + {lvl_column.index(lvl)*11} exp !""")
+Vous avez obtenu un gain de + {(lvl_column.index(lvl)+1)*11} exp !""")
     return embed, None
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment

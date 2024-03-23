@@ -378,11 +378,11 @@ def effet_xp_puissance_4(id_user, gain) :
     resultat_user_stats = curseur.fetchone()
     _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
     if gain == "xp" :
-        xp = lvl_column.index(lvl)*11
+        xp = (lvl_column.index(lvl)+1)*11
         msgWinOrNot = "Bravo, vous avez gagné contre Pomme-bot !"
     else :
         msgWinOrNot = "Égalité, voici un lot de consolation"
-        xp = lvl_column.index(lvl)*6
+        xp = (lvl_column.index(lvl)+1)*6
     curseur.execute(f"""UPDATE Joueur 
                 SET xp = xp + {xp}
                 WHERE id_discord_player == {id_user}""")
