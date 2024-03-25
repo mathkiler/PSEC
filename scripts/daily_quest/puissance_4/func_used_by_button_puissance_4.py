@@ -72,7 +72,7 @@ async def c_gagne(interaction, win_or_eguale, result_win) :
     #choix du gain
     #xp gagné -> toujours 100
     if win_or_eguale == "win" :
-        gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+        gain = choice(["carte", "xp", "fragment_10", "fragment_15"])
     else :
         gain = choice(["half-xp", "fragment_3"])
     if gain == "carte" :
@@ -80,7 +80,7 @@ async def c_gagne(interaction, win_or_eguale, result_win) :
     elif "xp" in gain :
         embed_gain_result, file_gain_result = effet_xp_puissance_4(interaction.user.id, gain)
     else :
-        embed_gain_result, file_gain_result = effet_fragment_puissance_4(interaction.user.id, get_nb_fragment(gain))
+        embed_gain_result, file_gain_result = effet_fragment_puissance_4(interaction.user.id, gain[-2:])
     #Enfin, on affiche le résultat au joueur sur discord 
     #en premeir le gif en fonction du gain gagné
     if file_gain_result == None :

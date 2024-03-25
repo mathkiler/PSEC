@@ -33,13 +33,13 @@ async def response_choix_button_quackity(interaction, ind_button) :
     else :
         #choix du gain
         #xp gagné -> toujours 100
-        gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+        gain = choice(["carte", "xp", "fragment_10", "fragment_15"])
         if gain == "carte" :
             embed_gain_result, file_gain_result = effet_carte_quackity_button(interaction.user.id)
         elif gain == "xp" :
             embed_gain_result, file_gain_result = effet_xp_quackity_button(interaction.user.id)
         else :
-            embed_gain_result, file_gain_result = effet_fragment_quackity_button(interaction.user.id, get_nb_fragment(gain))
+            embed_gain_result, file_gain_result = effet_fragment_quackity_button(interaction.user.id, gain[-2:])
 
         baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()

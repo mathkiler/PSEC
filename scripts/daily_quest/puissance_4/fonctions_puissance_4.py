@@ -405,12 +405,6 @@ def effet_fragment_puissance_4(id_user, nb_fragment) :
     baseDeDonnees.close()    
     embed = discord.Embed(title=f"""{msg_to_print}
 
-Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
+Vous avez obtenu un gain de + {nb_fragment} fragments !""")
     return embed, None
 
-
-def get_nb_fragment(txt_fragment) :
-    if "10" in txt_fragment :
-        return txt_fragment[-2:]
-    else :
-        return txt_fragment[-1:]

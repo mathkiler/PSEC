@@ -5,13 +5,13 @@ from scripts.global_commandes.import_et_variable import *
 
 #effet si on appui sur un bouton 
 async def gagne_motus(message) :
-    gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+    gain = choice(["carte", "xp", "fragment_10", "fragment_15"])
     if gain == "carte" :
         embed_gain_result, file_gain_result = effet_carte_motus(message.author.id)
     elif gain == "xp" :
         embed_gain_result, file_gain_result = effet_xp_motus(message.author.id)
     else :
-        embed_gain_result, file_gain_result = effet_fragment_motus(message.author.id, get_nb_fragment(gain))
+        embed_gain_result, file_gain_result = effet_fragment_motus(message.author.id, gain[-2:])
 
     baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
@@ -93,12 +93,8 @@ def effet_fragment_motus(id_user, nb_fragment) :
     baseDeDonnees.close()    
     embed = discord.Embed(title=f"""Bravo, vous avez trouvé le bon mot !  
 
-Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
+Vous avez obtenu un gain de + {nb_fragment} fragments !""")
     return embed, None
 
 
-def get_nb_fragment(txt_fragment) :
-    if "10" in txt_fragment :
-        return txt_fragment[-2:]
-    else :
-        return txt_fragment[-1:]
+
