@@ -1,6 +1,7 @@
 #import des modules
 from random import randint, random, choice
-from discord.ext import commands
+# from discord.ext import commands
+from discord import app_commands
 from datetime import date, datetime
 from math import sqrt, inf
 from PIL import Image
@@ -23,7 +24,7 @@ import os
 intents = discord.Intents().all()
 intents.members = True
 bot = discord.Bot(intents=intents)
-
+tree = app_commands.CommandTree(bot)
 
 ###########  USE BDD TEST  ##########
 db_test = False

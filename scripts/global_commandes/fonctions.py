@@ -342,3 +342,92 @@ def check_current_daily_quest(daily_quest_to_test) :
     if daily_quest_to_test == current_daily_quest :
         return True
     return False
+
+def get_all_cards(with_prefix) :
+    ind = 0
+    all_cards = []
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
+        for img in fichiers :
+            if with_prefix :
+                all_cards.append(img[:-4])
+            else :
+                if "PC_" in img :
+                    all_cards.append(img[3:-4])
+                else :
+                    all_cards.append(img[2:-4])
+        break
+    return all_cards
+
+
+def plateau_echange_exist(id_user1, id_user2) :
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
+            lines = file_plateau.readlines()
+    ind_plateau = 0
+    for line in lines :
+        if f"{id_user1}|{id_user2}" in line or f"{id_user2}|{id_user1}" in line :
+            return True,ind_plateau, lines
+        ind_plateau+=1 
+    return False, ind_plateau, lines
+def get_plateau_echange_by_id(id_plateau) :
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
+            lines = file_plateau.readlines()
+    ind_plateau = 0
+    for line in lines :
+        if f"{id_plateau}" == line[:6] :
+            return True,ind_plateau, lines
+        ind_plateau+=1 
+    return False, ind_plateau, lines
+def get_all_id_plateau() :
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
+        lines = file_plateau.readlines()
+    id_plateau_list = []
+    for line in lines :
+        id_plateau_list.append(int(line[:6]))
+    return id_plateau_list
+
+def creation_plateau_echange(id_user1, id_user2) :
+    result_exist, _, lines = plateau_echange_exist(id_user1, id_user2)
+    if result_exist :
+        return False, None
+    id_plateau = randint(100000, 999999)
+    if len(lines) == 0 :
+        lines.append(f"{id_plateau}|{id_user1}|{id_user2}||")
+    else :
+        lines.append(f"\n{id_plateau}|{id_user1}|{id_user2}||")
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+        file_plateau.write("".join(lines))
+    return True, id_plateau
+    
+
+def annulation_echange(id_plateau, id_user) :
+    _, ind_plateau, lines = get_plateau_echange_by_id(id_plateau)
+    info_plateau = lines[ind_plateau].split("|")
+    if int(info_plateau[1]) == id_user or int(info_plateau[2]) == id_user :
+        lines.pop(ind_plateau)
+        with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+            file_plateau.write("".join(lines))
+        return True
+    else :
+        return False
+
+
+
+def get_nom_rarete_all_cartes(rarete) :
+    rarete_list_name_file = ["H_", "E_", "R_", "pc_", "C_"]
+    all_cards = []
+    ind_rarete_jcpa = rarete_list_name_file.index(rarete)
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
+        for f in fichiers :
+            if f != ".inconnue.png" :
+                all_cards.append(f[:-4].replace("PC_", "pc_"))
+        break #on break pour ne parcourir que le premier dossier
+    sorted(all_cards)
+    
+    to_replace = {"H_" : "héroïque // ", "C_" : "commun // ", "R_" : "rare // ", "E_" : "épique", "pc_" : "peu courant // "}
+    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
+    for carte in all_cards :
+        for ind_rarete in range(len(rarete_list_name_file)) :
+            if rarete_list_name_file[ind_rarete] in carte :
+                break
+        rarete_list_arrange[ind_rarete].append(carte.replace(rarete_list_name_file[ind_rarete], to_replace[rarete_list_name_file[ind_rarete]]))
+    return rarete_list_arrange[ind_rarete_jcpa]
