@@ -124,7 +124,7 @@ def pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening) :
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
 async def mon_album(interaction, le_montrer) :
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=le_montrer)
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
