@@ -20,7 +20,12 @@ async def place_pion(interaction, ind_colone_pion) :
             await c_gagne(interaction, result_test_fin_jeu[0],  result_test_fin_jeu)
         else : #patie IA
             ia = IA_p4(interaction.user.id, interaction)
-            colonne = ia.p4_IA_find_best_move()
+            if randint(0, 3) == 0 :
+                colonne = randint(0,6)
+                while get_line_by_column(interaction.user.id, colonne) == None :
+                    colonne = randint(0,6)
+            else :
+                colonne = ia.p4_IA_find_best_move()
             ind_line_pion = get_line_by_column(interaction.user.id, colonne)
             replace_somthing(interaction.user.id, "j_last_posed", (ind_line_pion, colonne))
             list_plateau = get_etat_puissance_4(interaction.user.id)

@@ -64,7 +64,13 @@ class IA_p4 :
         self.id_user = id_user
         self.interaction = interaction
         self.matrice = None #matrice qui sera initialisé comme l'état actuel du jeu en liste de liste
-        self.profondeur = 2 #profondeur de l'ia de recherche
+        plateau = get_etat_puissance_4(id_user)
+        if len(plateau)-plateau.count("v") == 3 :
+            self.profondeur = 3 #profondeur de l'ia de recherche
+        elif randint(0, 3) == 0 : #une chance sur 5 pour que l'IA ai le meilleur move
+            self.profondeur = 3 #profondeur de l'ia de recherche
+        else :
+            self.profondeur = 1 #profondeur de l'ia de recherche
         self.PIECE_1 = 1
         self.PIECE_2 = 2
 
@@ -289,7 +295,7 @@ def fin_du_jeu(board):
     result_p1 = cacl_move_gagant(board_test, 1)
     if result_p1[0] : return ["win", result_p1[1], result_p1[2]]
     result_p2 = cacl_move_gagant(board_test, 2)
-    if result_p1[0] : return ["win", result_p2[1], result_p2[2]]
+    if result_p2[0] : return ["win", result_p2[1], result_p2[2]]
     elif plateau_complet(board_test) : return ["eguale", None, None]
     return ["rien", None, None]
 
