@@ -179,18 +179,18 @@ async def c_gagne(interaction) :
 
 
 async def demineur_move_selecteur(message) :
-    if message.content in alphabet_demnineur :
+    if message.content.lower() in alphabet_demnineur :
         message_for_demineur = True
-        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content)+1, "type selecteur" : "column"}
-    elif message.content in nombre_demineur :
+        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content.lower())+1, "type selecteur" : "column"}
+    elif message.content.lower() in nombre_demineur :
         message_for_demineur = True
-        move_select_info = {"content_msg" : message.content, "type selecteur" : "line"}
-    elif message.content in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
+        move_select_info = {"content_msg" : message.content.lower(), "type selecteur" : "line"}
+    elif message.content.lower() in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
         message_for_demineur = True
-        move_select_info = {"content_msg" : [message.content[1], alphabet_demnineur.index(message.content[0])+1], "type selecteur" : "both"}
-    elif message.content in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
+        move_select_info = {"content_msg" : [message.content.lower()[1], alphabet_demnineur.index(message.content.lower()[0])+1], "type selecteur" : "both"}
+    elif message.content.lower() in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
         message_for_demineur = True
-        move_select_info = {"content_msg" : [message.content[0], alphabet_demnineur.index(message.content[1])+1], "type selecteur" : "both"}
+        move_select_info = {"content_msg" : [message.content.lower()[0], alphabet_demnineur.index(message.content.lower()[1])+1], "type selecteur" : "both"}
     else :
         message_for_demineur = False
     if message_for_demineur :
