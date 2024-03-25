@@ -165,10 +165,10 @@ class Accepter_echange(discord.ui.View):
         await action_echange_confirme_demarage(interaction)
 
 
-    @discord.ui.button(label="Annuler", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Refuser", style=discord.ButtonStyle.primary)
     async def Annuler_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
-        await action_echange_annule(interaction, interaction.user.id)
+        await action_echange_annule(interaction)
         
 
 

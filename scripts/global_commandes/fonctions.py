@@ -348,13 +348,14 @@ def get_all_cards(with_prefix) :
     all_cards = []
     for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
         for img in fichiers :
-            if with_prefix :
-                all_cards.append(img[:-4])
-            else :
-                if "PC_" in img :
-                    all_cards.append(img[3:-4])
+            if img != ".inconnue.png" :
+                if with_prefix :
+                    all_cards.append(img[:-4])
                 else :
-                    all_cards.append(img[2:-4])
+                    if "PC_" in img :
+                        all_cards.append(img[3:-4])
+                    else :
+                        all_cards.append(img[2:-4])
         break
     return all_cards
 
@@ -373,7 +374,7 @@ def get_plateau_echange_by_id(id_plateau) :
             lines = file_plateau.readlines()
     ind_plateau = 0
     for line in lines :
-        if f"{id_plateau}" == line[:6] :
+        if f"{id_plateau}" == line[:3] :
             return True,ind_plateau, lines
         ind_plateau+=1 
     return False, ind_plateau, lines
@@ -382,14 +383,16 @@ def get_all_id_plateau() :
         lines = file_plateau.readlines()
     id_plateau_list = []
     for line in lines :
-        id_plateau_list.append(int(line[:6]))
+        id_plateau_list.append(int(line[:3]))
     return id_plateau_list
 
 def creation_plateau_echange(id_user1, id_user2) :
     result_exist, _, lines = plateau_echange_exist(id_user1, id_user2)
     if result_exist :
         return False, None
-    id_plateau = randint(100000, 999999)
+    id_plateau = randint(100, 999)
+    while id_plateau in get_all_id_plateau() :
+        id_plateau = randint(100, 999)
     if len(lines) == 0 :
         lines.append(f"{id_plateau}|{id_user1}|{id_user2}||")
     else :
