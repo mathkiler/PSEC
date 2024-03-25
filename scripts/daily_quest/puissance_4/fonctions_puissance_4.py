@@ -377,14 +377,18 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 
 #renvoi l'embed et effectu l'effet lorsque le gain est xp
 def effet_xp_puissance_4(id_user, gain) :
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    #on cherche à avoir le niveau du joueur pour lui adapter son gain d'exp
+    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+    resultat_user_stats = curseur.fetchone()
+    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
     if gain == "xp" :
-        xp = 100
+        xp = (lvl_column.index(lvl)+1)*11
         msgWinOrNot = "Bravo, vous avez gagné contre Pomme-bot !"
     else :
         msgWinOrNot = "Égalité, voici un lot de consolation"
-        xp = 50
-    baseDeDonnees = sqlite3.connect(db_path)
-    curseur = baseDeDonnees.cursor()
+        xp = (lvl_column.index(lvl)+1)*6
     curseur.execute(f"""UPDATE Joueur 
                 SET xp = xp + {xp}
                 WHERE id_discord_player == {id_user}""")
