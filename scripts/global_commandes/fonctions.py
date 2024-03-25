@@ -27,13 +27,13 @@ def ajouter_une_carte(nom, rarete) :
 def test_changement_de_jour() :
     global DATE_actuel, motus_msg_player
     jour_diff = int((date.today()-DATE_actuel).days)
-    if int(jour_diff) > 0 :
+    if jour_diff > 0 :
         motus_msg_player = {} #on reset le motus 
         DATE_actuel = date.today()  #date du jour
         baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"""UPDATE Joueur 
-                    SET fragment = fragment + {jour_diff}, fragment_cumule = 0, xp = xp + {jour_diff}""")
+                    SET fragment = fragment + {jour_diff*5}, fragment_cumule = 0, xp = xp + {jour_diff*5}""")
         baseDeDonnees.commit()
         baseDeDonnees.close()
 
