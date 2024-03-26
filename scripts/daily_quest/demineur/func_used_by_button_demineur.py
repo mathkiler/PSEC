@@ -161,13 +161,13 @@ async def c_gagne(interaction) :
     await message.edit(embed=embed)
     #choix du gain
     #xp gagné -> toujours 100
-    gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+    gain = choice(["carte", "xp", "fragment_10", "fragment_15"])
     if gain == "carte" :
         embed_gain_result, file_gain_result = effet_carte_demineur(interaction.user.id)
     elif gain == "xp" :
         embed_gain_result, file_gain_result = effet_xp_demineur(interaction.user.id)
     else :
-        embed_gain_result, file_gain_result = effet_fragment_demineur(interaction.user.id, get_nb_fragment(gain))
+        embed_gain_result, file_gain_result = effet_fragment_demineur(interaction.user.id, gain[-2:])
     #Enfin, on affiche le résultat au joueur sur discord 
     #en premeir le gif en fonction du gain gagné
     if file_gain_result == None :
@@ -179,18 +179,18 @@ async def c_gagne(interaction) :
 
 
 async def demineur_move_selecteur(message) :
-    if message.content in alphabet_demnineur :
+    if message.content.lower() in alphabet_demnineur :
         message_for_demineur = True
-        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content)+1, "type selecteur" : "column"}
-    elif message.content in nombre_demineur :
+        move_select_info = {"content_msg" : alphabet_demnineur.index(message.content.lower())+1, "type selecteur" : "column"}
+    elif message.content.lower() in nombre_demineur :
         message_for_demineur = True
-        move_select_info = {"content_msg" : message.content, "type selecteur" : "line"}
-    elif message.content in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
+        move_select_info = {"content_msg" : message.content.lower(), "type selecteur" : "line"}
+    elif message.content.lower() in [alphabet_demnineur[k]+nombre_demineur[i] for k in range(9) for i in range(9)] :
         message_for_demineur = True
-        move_select_info = {"content_msg" : [message.content[1], alphabet_demnineur.index(message.content[0])+1], "type selecteur" : "both"}
-    elif message.content in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
+        move_select_info = {"content_msg" : [message.content.lower()[1], alphabet_demnineur.index(message.content.lower()[0])+1], "type selecteur" : "both"}
+    elif message.content.lower() in [nombre_demineur[k]+alphabet_demnineur[i] for k in range(9) for i in range(9)] :
         message_for_demineur = True
-        move_select_info = {"content_msg" : [message.content[0], alphabet_demnineur.index(message.content[1])+1], "type selecteur" : "both"}
+        move_select_info = {"content_msg" : [message.content.lower()[0], alphabet_demnineur.index(message.content.lower()[1])+1], "type selecteur" : "both"}
     else :
         message_for_demineur = False
     if message_for_demineur :

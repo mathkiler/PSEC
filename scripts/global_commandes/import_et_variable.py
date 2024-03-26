@@ -106,3 +106,10 @@ nom_carte_relatif = {
     "R_Tallulah" : ["tallulah", "talulah", "talullah", "tallullah", "tallula", "talula", "talulla", "tallulla", "tahllula", "tahlula", "tahlulla", "tahllulla"],
     "R_Teoad" : ["teo", "téo", "teoad", "teod"]
 }
+ALL_CARTES = [
+    'C_avion','C_Bagi','C_Cellbit','C_club','C_Cucurucho','C_El_Quackity','C_Foolish','C_gare','C_Ironmouse','C_Jaiden','C_Mike','C_Philza','C_Roier','C_Slimecicle','C_wall',
+    'PC_Aypierre','PC_Baghera ','PC_Dapper','PC_Etoiles','PC_Evil_cucurucho','PC_Furest_Camp','PC_Musee','PC_Pactw','PC_Tubbo','PC_antoineD',
+    'R_BadBoyHalo','R_CellBrioche','R_CucurAthieu','R_FitMC','R_le_code','R_PhilzAlicia','R_Quackity','R_Tallulah','R_Teoad',
+    'E_Cafard_Cucaracha','E_Lobo_Nocturno','E_Ramon','E_Richarlyson','E_Tototte',
+    'H_Gegg','H_Kameto','H_Pomme'
+] #nom de tte les cartes dans le bon ordre 

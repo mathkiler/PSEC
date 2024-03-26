@@ -157,6 +157,34 @@ Les commandes disponibles sont :
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
+#commande pour ajouter une carte (une par une)
+@bot.command(name="album", description="Permet d'afficher son album directement")
+async def album(
+    interaction: discord.Interaction,
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher son album à tous pour flex un MAX",)
+    ) :
+    if afficher_en_public == "Non" : 
+        reponse = True
+    else :
+        reponse = False
+    test_changement_de_jour()
+    await mon_album(interaction, reponse)
+
+#commande pour ajouter une carte (une par une)
+@bot.command(name="stats", description="Permet d'afficher ses stats directement")
+async def stats(
+    interaction: discord.Interaction,
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ses stats à tous pour flex un MAX",)
+    ) :
+    if afficher_en_public == "Non" : 
+        reponse = True
+    else :
+        reponse = False
+    test_changement_de_jour()
+    await voir_stats(interaction, reponse)
+
+
+
 
 @bot.command(name="echange_demare", description="Démarer un échange de cartes avec quelqu'un.")
 async def echange_demare(

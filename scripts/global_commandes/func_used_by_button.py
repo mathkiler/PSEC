@@ -32,7 +32,6 @@ async def voir_stats(interaction, le_cacher) :
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
     for carte in resultat_carte_possede :
-        print(carte)
         if carte[1] == "peu courant" :
             carte_arange[carte[1]][carte[0][3:]] = carte[2]
         else :
@@ -124,7 +123,7 @@ def pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening) :
 
 #fonction pour créer l'album puis l'envoyer (à tout le monde ou non)
 async def mon_album(interaction, le_montrer) :
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=le_montrer)
     #première partie, on récupère le nom de toutes le cartes que le joueur possède
     id_user = interaction.user.id
     test_cration_bdd_user(id_user)
@@ -136,25 +135,7 @@ async def mon_album(interaction, le_montrer) :
     resultat_carte_possede = [resultat_carte_possede[k][0] for k in range(len(resultat_carte_possede))]
     sorted(resultat_carte_possede) #on réarange la liste des cartes obtenu au cas où elle est malangé bizarement
         #on calcule la position des images (on démare à -1 car on va compter la carte unknown (carte qui montre celles non obtenue))
-    nombre_totale_carte = 0
-    derange_ordre_cartes = []
-    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
-        for f in fichiers :
-            if f != ".inconnue.png" :
-                derange_ordre_cartes.append(f[:-4])
-                nombre_totale_carte+=1
-        break #on break pour ne parcourir que le premier dossier
-    sorted(derange_ordre_cartes)
-    rarete_list_name_file = ["H_", "E_", "R_", "PC_", "C_"]
-    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
-    for carte in derange_ordre_cartes :
-        for ind_rarete in range(len(rarete_list_name_file)) :
-            if rarete_list_name_file[ind_rarete] in carte :
-                break
-        rarete_list_arrange[ind_rarete].append(carte)
-    ordre_cartes = rarete_list_arrange[4]
-    for k in range(3,-1, -1) :
-        ordre_cartes.extend(rarete_list_arrange[k])
+    nombre_totale_carte = len(ALL_CARTES)
     width_carte = 321
     height_carte = 515
     nb_carte_square = int(sqrt(nombre_totale_carte))
@@ -164,11 +145,10 @@ async def mon_album(interaction, le_montrer) :
     else :
         nb_carte_remain = 1
     
-    
     #enfin, on créer l'image
     album = Image.new('RGBA', (width_carte*nb_carte_square, height_carte*(nb_carte_square+nb_carte_remain)))
     count = 0
-    for carte in ordre_cartes :
+    for carte in ALL_CARTES :
         if carte in resultat_carte_possede :
             im_carte = Image.open(CURRENT_PATH+f"/assets/cartes/{carte}.png")
         else :
