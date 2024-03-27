@@ -186,8 +186,8 @@ async def stats(
 
 
 
-@bot.command(name="echange_demare", description="Démarer un échange de cartes avec quelqu'un.")
-async def echange_demare(
+@bot.command(name="echange_demarre", description="Démarrer un échange de cartes avec quelqu'un.")
+async def echange_demarre(
     interaction: discord.Interaction,
     pseudo: discord.Option(discord.User, description="Pseudo de la personne avec qui faire l'échange") # type: ignore
     ) :
@@ -197,54 +197,100 @@ async def echange_demare(
     if test_player_in_bdd(pseudo.id) == False :
         await interaction.response.send_message("Le joueur sélectionné n'est pas encore dans le jeu. Il doit au moins faire une commande pour créer son compte.", ephemeral=True)
         return
-    plateau_created, id_plateau = creation_plateau_echange(interaction.user.id, pseudo.id)
+    plateau_created = creation_plateau_echange(interaction.user.id, pseudo.id)
     if plateau_created == False :
-        await interaction.response.send_message(f"Vous avez déjà un échange en cours avec **{pseudo.global_name}** /echange_annule pseudo pour anuler cet échange")
+        await interaction.response.send_message(f"Vous avez déjà un échange en cours. Vous ne pouvez faire qu'un seul échange à la fois. **/echange_annule** pour annuler l'échange en cours", ephemeral=True)
         return
-    await interaction.response.send_message(f"Demande d'échange envoyé à **{pseudo.global_name}** `id échange : {id_plateau}`", ephemeral=True)
-    await pseudo.send(f"**{interaction.user.global_name}** souhaite faire un échange avec vous, accépte vous ? `id échange : {id_plateau}`", view = Accepter_echange())
+    await interaction.response.send_message(f"Demande d'échange envoyée à **{pseudo.global_name}**", ephemeral=True)
+    await pseudo.send(f"**{interaction.user.global_name}** souhaite faire un échange avec vous, acceptez-vous ?", view = Accepter_echange())
 
 
 @bot.command(name="echange_annule", description="Annuler un échange avec quelqu'un")
 async def echange_annule(
-    interaction: discord.Interaction,
-    id_echange: discord.Option(int, description="Id de l'échange qui est donné à chaques messages") # type: ignore
+    interaction: discord.Interaction
     ) :
-    result_exist, ind_plateau, lines = get_plateau_echange_by_id(id_echange)
+    result_exist, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
     if result_exist == False :
-        await interaction.response.send_message(f"L'id échange **{id_echange}** n'éxiste pas", ephemeral=True)
+        await interaction.response.send_message(f"Vous n'avez pas d'échange en cours. **/echange_demarre** pseudo pour en créer un", ephemeral=True)
         return
     user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
-    retour_annule_echange = annulation_echange(id_echange, interaction.user.id)
-    if retour_annule_echange :
-        await interaction.response.send_message(f"L'échange avec **{user_envoyeur.global_name}** bien été annulé", ephemeral=True)
-        await user_envoyeur.send(f"**{interaction.user.global_name}** a annulé l'échange")
-    else :
-        await interaction.response.send_message(f"Vous n'êtes pas présent dans cet échange. Il est possible que vous vous soyez trompé d'id échange", ephemeral=True)
+    annulation_echange(interaction.user.id)
+    await interaction.response.send_message(f"L'échange avec **{user_envoyeur.global_name}** a bien été annulé", ephemeral=True)
+    await user_envoyeur.send(f"**{interaction.user.global_name}** a annulé l'échange")
 
 
 @bot.command(name="echange_ajout_carte", description="Ajouter une carte à échanger")
 async def echange_ajout_carte(
     interaction: discord.Interaction,
-    id_echange: discord.Option(int, description="Id de l'échange qui est donné à chaques messages"), # type: ignore
     carte: discord.Option(str,description="Nom de la carte à échanger"), #type: ignore 
     quantite: discord.Option(int, description="Quantité de carte") # type: ignore
     ) :
-    result_exist, ind_plateau, lines = get_plateau_echange_by_id(id_echange)
+    result_exist, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
     if result_exist == False :
-        await interaction.response.send_message(f"L'id échange **{id_echange}** n'éxiste pas", ephemeral=True)
-        return
-    info_plateau = lines[ind_plateau].split("|")
-    if int(info_plateau[1]) != interaction.user.id and int(info_plateau[2]) != interaction.user.id :
-        await interaction.response.send_message(f"Vous n'êtes pas présent dans cet échange. Il est possible que vous vous soyez trompé d'id échange", ephemeral=True)
+        await interaction.response.send_message(f"Vous n'avez pas d'échange en cours. **/echange_demarre** pseudo pour en créer un", ephemeral=True)
         return
     if quantite <= 0 :
-        await interaction.response.send_message(f"Merci de ne pas échanger une quantitée nul ou négatif de carte", ephemeral=True)
+        await interaction.response.send_message(f"Merci de ne pas échanger une quantité nulle ou négative de carte", ephemeral=True)
         return
     for carte_relatif in list(nom_carte_relatif.values()) :
         if carte.lower() in carte_relatif :
-            await analyse_select_card_echange(interaction, carte.lower(), quantite, ind_plateau, lines)
+            await analyse_select_card_echange(interaction, carte_relatif[-1].lower(), quantite, ind_plateau, lines)
             return
-    await interaction.response.send_message(f"La carte **{carte.lower()}** n'éxiste pas. Voici le nom de toute les cartes :\n{' / '.join(get_all_cards(False))}", ephemeral=True)
+    await interaction.response.send_message(f"La carte **{fomatage_carte_into_printable(carte)}** n'existe pas. Voici le nom de toutes les cartes :\n{' / '.join(get_all_cards(False))}", ephemeral=True)
         
 
+
+
+@bot.command(name="echange_retire_carte", description="Retirer une carte à échanger qui est déjà dans l'échange")
+async def echange_retire_carte(
+    interaction: discord.Interaction,
+    carte: discord.Option(str,description="Nom de la carte à échanger") #type: ignore 
+    ) :
+    result_exist, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    if result_exist == False :
+        await interaction.response.send_message(f"Vous n'avez pas d'échange en cours. **/echange_demarre** pseudo pour en créer un", ephemeral=True)
+        return
+    for carte_relatif in list(nom_carte_relatif.values()) :
+        if carte.lower() in carte_relatif :
+            result_exist, lines = suppression_carte(interaction.user.id, ind_plateau, lines, carte_relatif[-1].lower())
+            if result_exist == False :
+                await interaction.response.send_message(f"La carte **{fomatage_carte_into_printable(carte)}** n'est pas présente dans l'échange", ephemeral=True)
+                return
+            else :
+                user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+                with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+                    file_plateau.write("".join(lines))
+                await display_current_plateau(interaction, user_envoyeur, {"info" : "suppr", "carte" : fomatage_carte_into_printable(carte)}, ind_plateau, lines)
+                return
+    await interaction.response.send_message(f"La carte **{fomatage_carte_into_printable(carte)}** n'existe pas. Voici le nom de toutes les cartes :\n{' / '.join(get_all_cards(False))}", ephemeral=True)
+
+
+@bot.command(name="echange_en_cours", description="Affiche l'échange en cours si vous en avez un")
+async def echange_en_cours(interaction: discord.Interaction) :
+    result_exist, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    if result_exist == False :
+        await interaction.response.send_message(f"Vous n'avez pas d'échange en cours. **/echange_demarre** pseudo pour en créer un", ephemeral=True)
+        return
+    user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+    await display_current_plateau(interaction, user_envoyeur, {"info" : "affiche_current_plateau"}, ind_plateau, lines)
+
+
+@bot.command(name="echange_help", description="Affiche comment fonctionne le systeme d'échange e cartes entre joueur")
+async def echange_en_cours(interaction: discord.Interaction) :
+    embed = discord.Embed(title="Aide system d'echange", description="""
+Grâce à ce système, vous pourrez échanger n'importe laquelle de vos cartes contre n'importe quelle carte d'une personne.
+Toutes les commandes de ce système commencent par un **/echange_**
+Vous ne pouvez avoir **qu'un seul** échange en même temps.
+Vous pouvez échanger le nombre de cartes différentes que vous souhaitez et leur quantité que vous souhaitez.
+Attention, il n'y a aucune restriction quant à l'échange. Si vous acceptez d'échanger une pomme héroïque contre un avion commun, c'est votre unique choix.
+
+**Commandes disponibles dans l'ordre d'utilisation : **
+
+• /echange_demarre pseudo ⇒ permet de proposer de démarrer un échange avec quelqu'un (cette commande ne pourra être effectuée que sur le serveur).
+• /echange_annule ⇒ permet d'annuler l'échange en cours.
+• /echange_en_cours ⇒ permet d'afficher l'échange en cours
+• /echange_ajout_carte carte quantité ⇒ permet d'ajouter une carte sur le plateau d'échange en spécifiant sa quantité
+• /echange_retire_carte carte ⇒ permet de retirer une carte que vous avez préalablement placée sur le plateau avec la commande /echange_ajout_carte
+                          
+Pour effectuer l'échange, il vous suffit d'appuyer sur le bouton `Effectuer l'échange` lorsque vous voyez le plateau (/echange_en_cours par exemple) ce qui enverra une demande à l'autre joueur. S'il l'accepte, la transaction est immédiatement effectuée.""")
+    await interaction.response.send_message(embed=embed, ephemeral=True)

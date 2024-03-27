@@ -225,7 +225,7 @@ def create_daily_quest_save_if_not_exist(name_quest, id_user) :
 
 
 
-def pluriel(nb) :
+def pluriel(nb : int) :
     if nb == 1 :
         return ""
     else :
@@ -343,75 +343,50 @@ def check_current_daily_quest(daily_quest_to_test) :
         return True
     return False
 
+#fonction pour avoir le nom de tte les cartes avec ou non le prefix (C_, E_...)
 def get_all_cards(with_prefix) :
-    ind = 0
     all_cards = []
-    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
-        for img in fichiers :
-            if img != ".inconnue.png" :
-                if with_prefix :
-                    all_cards.append(img[:-4])
-                else :
-                    if "PC_" in img :
-                        all_cards.append(img[3:-4])
-                    else :
-                        all_cards.append(img[2:-4])
-        break
+    for carte in ALL_CARTES :
+        if with_prefix :
+            all_cards.append(carte)
+        else :
+            if "PC_" in carte :
+                all_cards.append(carte[3:])
+            else :
+                all_cards.append(carte[2:])
     return all_cards
 
 
-def plateau_echange_exist(id_user1, id_user2) :
+def plateau_echange_exist(id_user) :
     with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
             lines = file_plateau.readlines()
     ind_plateau = 0
     for line in lines :
-        if f"{id_user1}|{id_user2}" in line or f"{id_user2}|{id_user1}" in line :
-            return True,ind_plateau, lines
+        if f"{id_user}" in line :
+            return True, ind_plateau, lines
         ind_plateau+=1 
     return False, ind_plateau, lines
-def get_plateau_echange_by_id(id_plateau) :
-    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
-            lines = file_plateau.readlines()
-    ind_plateau = 0
-    for line in lines :
-        if f"{id_plateau}" == line[:3] :
-            return True,ind_plateau, lines
-        ind_plateau+=1 
-    return False, ind_plateau, lines
-def get_all_id_plateau() :
-    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
-        lines = file_plateau.readlines()
-    id_plateau_list = []
-    for line in lines :
-        id_plateau_list.append(int(line[:3]))
-    return id_plateau_list
 
 def creation_plateau_echange(id_user1, id_user2) :
-    result_exist, _, lines = plateau_echange_exist(id_user1, id_user2)
+    result_exist, _, lines = plateau_echange_exist(id_user1)
     if result_exist :
-        return False, None
-    id_plateau = randint(100, 999)
-    while id_plateau in get_all_id_plateau() :
-        id_plateau = randint(100, 999)
+        return False
     if len(lines) == 0 :
-        lines.append(f"{id_plateau}|{id_user1}|{id_user2}||")
+        lines.append(f"{id_user1}|{id_user2}||")
     else :
-        lines.append(f"\n{id_plateau}|{id_user1}|{id_user2}||")
+        lines.append(f"\n{id_user1}|{id_user2}||")
     with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
         file_plateau.write("".join(lines))
-    return True, id_plateau
+    return True
     
 
-def annulation_echange(id_plateau, id_user) :
-    _, ind_plateau, lines = get_plateau_echange_by_id(id_plateau)
-    info_plateau = lines[ind_plateau].split("|")
-    if int(info_plateau[1]) == id_user or int(info_plateau[2]) == id_user :
+def annulation_echange(id_user) :
+    result_exist, ind_plateau, lines = plateau_echange_exist(id_user)
+    if result_exist :
         lines.pop(ind_plateau)
         with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
             file_plateau.write("".join(lines))
-        return True
-    else :
-        return False
+
 
 
 
@@ -434,3 +409,38 @@ def get_nom_rarete_all_cartes(rarete) :
                 break
         rarete_list_arrange[ind_rarete].append(carte.replace(rarete_list_name_file[ind_rarete], to_replace[rarete_list_name_file[ind_rarete]]))
     return rarete_list_arrange[ind_rarete_jcpa]
+
+
+def suppression_carte(id_user, ind_plateau, lines, carte) :
+    info_plateau = lines[ind_plateau].split("|")
+    if int(info_plateau[0]) == id_user :
+        placement_ind_user = 2
+    else :
+        placement_ind_user = 3
+    cards = info_plateau[placement_ind_user].split("-")
+
+    ind_carte = 0
+    for card in cards :
+        if carte in card.split("#")[0] :
+            cards.pop(ind_carte)
+            new_cards = "-".join(cards)
+            info_plateau[placement_ind_user] = new_cards
+            lines[ind_plateau] = "|".join(info_plateau)
+            if ind_plateau+1 != len(lines) and "\n" not in lines[ind_plateau] :
+                lines[ind_plateau]+="\n"
+            return True, lines
+        ind_carte+=1
+    return False, lines
+    
+
+
+
+def fomatage_carte_into_printable(carte) :
+    carte = carte.lower()
+    if "pc_" in carte :
+        carte = carte.replace("pc_", "peu courant - ")
+    to_replace = {"h_" : "héroïque - ", "c_" : "commun - ", "r_" : "rare - ", "e_" : "épique - "}
+    for rarete in to_replace :
+        if rarete in carte :
+            carte = carte.replace(rarete, to_replace[rarete])
+    return carte
