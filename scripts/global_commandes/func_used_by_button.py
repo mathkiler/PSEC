@@ -365,7 +365,7 @@ async def action_echange_confirme_demarage(interaction) :
     _, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
     user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
     await interaction.response.send_message(f"Échange avec **{user_envoyeur.global_name}** démarré.\n Faites un **/echange_ajout_carte** pour ajouter des cartes à échanger\n Faites un **/echange_retire_carte** pour retirer des cartes\nEnfin, appuyez sur `Effectuer l'échange` pour demander à l'autre d'effectuer l'échange", ephemeral=True)
-    await user_envoyeur.send(f"**{interaction.user.global_name}** démarré.\n Faites un **/echange_ajout_carte** pour ajouter des cartes à échanger\n Faites un **/echange_retire_carte** pour retirer des cartes\nEnfin, appuyez sur `Effectuer l'échange` pour demander à l'autre d'effectuer l'échange")
+    await user_envoyeur.send(f"Échange avec **{interaction.user.global_name}** démarré.\n Faites un **/echange_ajout_carte** pour ajouter des cartes à échanger\n Faites un **/echange_retire_carte** pour retirer des cartes\nEnfin, appuyez sur `Effectuer l'échange` pour demander à l'autre d'effectuer l'échange")
 
 
 async def analyse_select_card_echange(interaction, carte, quantite, ind_plateau, lines) :
