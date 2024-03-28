@@ -159,7 +159,6 @@ Les commandes disponibles sont :
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-
 @bot.command(name="classement", description="Affiche les classements selon plusieurs catégories.")
 async def classement(interaction: discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
@@ -171,4 +170,29 @@ async def classement(interaction: discord.Interaction) :
     #enfin on répond à l'utilisateur par l'image, bouton...
     await interaction.followup.send(embed = embed, view=Mon_classement(), file=discord.File(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"))
     os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
+
+@bot.command(name="album", description="Permet d'afficher son album directement")
+async def album(
+    interaction: discord.Interaction,
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher son album à tous pour flex un MAX",)
+    ) :
+    if afficher_en_public == "Non" : 
+        reponse = True
+    else :
+        reponse = False
+    test_changement_de_jour()
+    await mon_album(interaction, reponse)
+
+
+@bot.command(name="stats", description="Permet d'afficher ses stats directement")
+async def stats(
+    interaction: discord.Interaction,
+    afficher_en_public: discord.Option(str, choices=['Non', 'Oui'], description="Afficher ses stats à tous pour flex un MAX",)
+    ) :
+    if afficher_en_public == "Non" : 
+        reponse = True
+    else :
+        reponse = False
+    test_changement_de_jour()
+    await voir_stats(interaction, reponse)
 

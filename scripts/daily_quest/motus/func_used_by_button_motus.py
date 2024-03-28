@@ -5,13 +5,13 @@ from scripts.global_commandes.import_et_variable import *
 
 #effet si on appui sur un bouton 
 async def gagne_motus(message) :
-    gain = choice(["carte", "xp", "fragment_5", "fragment_10"])
+    gain = choice(["carte", "xp", "fragment_10", "fragment_15"])
     if gain == "carte" :
         embed_gain_result, file_gain_result = effet_carte_motus(message.author.id)
     elif gain == "xp" :
         embed_gain_result, file_gain_result = effet_xp_motus(message.author.id)
     else :
-        embed_gain_result, file_gain_result = effet_fragment_motus(message.author.id, get_nb_fragment(gain))
+        embed_gain_result, file_gain_result = effet_fragment_motus(message.author.id, gain[-2:])
 
     baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
@@ -71,15 +71,20 @@ Vous avez obtenu une nouvelle carte {carte_tiree[2]} !""")
 def effet_xp_motus(id_user) :
     baseDeDonnees = sqlite3.connect(db_path)
     curseur = baseDeDonnees.cursor()
+    #on cherche à avoir le niveau du joueur pour lui adapter son gain d'exp
+    curseur.execute(f"SELECT * FROM Joueur WHERE id_discord_player == {id_user}")
+    resultat_user_stats = curseur.fetchone()
+    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
+
     curseur.execute(f"""UPDATE Joueur 
-                SET xp = xp + 100
+                SET xp = xp + {(lvl_column.index(lvl)+1)*11}
                 WHERE id_discord_player == {id_user}""")
     baseDeDonnees.commit()
     baseDeDonnees.close()
     
-    embed = discord.Embed(title="""Bravo, vous avez trouvé le bon mot ! 
+    embed = discord.Embed(title=f"""Bravo, vous avez trouvé le bon mot ! 
 
-Vous avez obtenu un gain de + 100 exp !""")
+Vous avez obtenu un gain de + {(lvl_column.index(lvl)+1)*11} exp !""")
     return embed, None
 
 #renvoi l'embed et effectu l'effet lorsque le gain est fragment
@@ -93,12 +98,8 @@ def effet_fragment_motus(id_user, nb_fragment) :
     baseDeDonnees.close()    
     embed = discord.Embed(title=f"""Bravo, vous avez trouvé le bon mot !  
 
-Vous avez obtenu un gain de + {nb_fragment} fragment{pluriel(nb_fragment)} !""")
+Vous avez obtenu un gain de + {nb_fragment} fragments !""")
     return embed, None
 
 
-def get_nb_fragment(txt_fragment) :
-    if "10" in txt_fragment :
-        return txt_fragment[-2:]
-    else :
-        return txt_fragment[-1:]
+
