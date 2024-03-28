@@ -444,8 +444,8 @@ async def display_current_plateau(interaction, user_envoyeur, info_changement, i
         await interaction.response.send_message("La demande d'échange a été envoyée. En attente d'une réponse", ephemeral=True)
         await user_envoyeur.send(f"{interaction.user.global_name} souhaite procéder à l'échange ci-dessous :", embed=embed, view=Acceptation_affect_echange())
     elif info_changement["info"] == "annule_demande_affectation" :
-        await interaction.response.send_message("Vous avez bien refusé la demande d'échange. Voici donc le plateau d'échange en cours : ", embed=embed, view=Affect_echange(), ephemeral=True)
-        await user_envoyeur.send(f"{interaction.user.global_name} a refusé votre proposition d'échange. Voici donc le plateau d'échange en cours : ", embed=embed, view=Affect_echange())
+        await interaction.response.send_message("Vous avez bien refusé la demande d'échange. Voici le plateau d'échange en cours : ", embed=embed, view=Affect_echange(), ephemeral=True)
+        await user_envoyeur.send(f"{interaction.user.global_name} a refusé votre proposition d'échange. Voici le plateau d'échange en cours : ", embed=embed, view=Affect_echange())
     elif info_changement["info"] == "affiche_current_plateau" :
         await interaction.response.send_message("Voici le plateau d'échange en cours : ", embed=embed, view=Affect_echange(), ephemeral=True)
     elif info_changement["info"] == "problem_transacion" :
