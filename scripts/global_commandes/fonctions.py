@@ -342,3 +342,40 @@ def check_current_daily_quest(daily_quest_to_test) :
     if daily_quest_to_test == current_daily_quest :
         return True
     return False
+
+
+def ordre_classement_and_equality(interaction, info_classement) :
+    new_classement = {
+        "0" : [], #premier
+        "1" : [], #deuxième
+        "2" : [], #troisième
+        "self_player" : {
+            "in_podium" : False,
+            "info_self_player" : None
+        }
+    }
+    current_best_score = info_classement[0][0]
+    position = 1
+    current_podium = 0
+    in_podium = True
+    for player in info_classement :
+        if player[0] == current_best_score and in_podium == True:
+            if player[1] == interaction.user.id :
+                new_classement["self_player"]["in_podium"] = True
+            new_classement[str(current_podium)].append(player)
+        elif current_podium <= 1 :
+            current_podium+=1
+            current_best_score = player[0]
+            new_classement[str(current_podium)].append(player)
+            position+=1            
+        elif player[0] != current_best_score :
+            in_podium = False
+            position+=1
+            current_best_score = player[0]
+        if new_classement["self_player"]["in_podium"] == False and new_classement["self_player"]["info_self_player"] == None and player[1] == interaction.user.id:
+            new_classement["self_player"]["in_podium"] = False
+            new_classement["self_player"]["info_self_player"] = [info for info in player]
+            new_classement["self_player"]["info_self_player"].append(str(position)+" ème ")
+            new_classement["self_player"]["info_self_player"][1] = interaction.user.display_name
+        
+    return new_classement

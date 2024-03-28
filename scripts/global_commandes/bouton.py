@@ -181,12 +181,12 @@ class Mon_classement(discord.ui.View):
             ]
         )
     async def select_callback(self, select, interaction): # the function called when the user is done selecting options
+        await interaction.response.defer(ephemeral=True)
         img_name = await calc_classement(interaction, select.values[0])
-        img_path = CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"
-        file = discord.File(img_path)
         embed = discord.Embed(title=f"Classement")
         embed.set_image(url=f"attachment://{img_name}.png")
         #enfin on répond à l'utilisateur par l'image, bouton...
-        await interaction.response.edit_message(embed = embed, file=file)
+        msg = await interaction.original_response()
+        await msg.edit(embed = embed, file=discord.File(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"))
         os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
 

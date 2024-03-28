@@ -164,13 +164,11 @@ Les commandes disponibles sont :
 async def classement(interaction: discord.Interaction) :
     test_cration_bdd_user(interaction.user.id)
     test_changement_de_jour()
-    
+    await interaction.response.defer(ephemeral=True)
     img_name = await calc_classement(interaction, "Collectionneur")
-    img_path = CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"
-    file = discord.File(img_path)
     embed = discord.Embed(title=f"Classement")
     embed.set_image(url=f"attachment://{img_name}.png")
     #enfin on répond à l'utilisateur par l'image, bouton...
-    await interaction.response.send_message(embed = embed, view=Mon_classement(), file=file, ephemeral=True)
+    await interaction.followup.send(embed = embed, view=Mon_classement(), file=discord.File(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"))
     os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
 
