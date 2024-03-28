@@ -444,10 +444,8 @@ async def calc_classement(interaction, type_classement) :
         start_display_pp = coords_classement_pp[ind_podium][0]+int(120*coords_classement_pp[ind_podium][2]*(len(info_classement["classement"][str(ind_podium)])-1)) #var pour savoir où commencer en pixel
         for user_rank in info_classement["classement"][str(ind_podium)] :
             User = await bot.fetch_user(user_rank[1])
-            img_data = requests.get(User.avatar).content
-            with open(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png", 'wb') as handler:
-                handler.write(img_data)
-            pp_user = Image.open(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png")
+            update_get_pp_by_id_user(user_rank[1], str(User.avatar))
+            pp_user = Image.open(CURRENT_PATH+f"/assets/storage_pp_users/{user_rank[1]}.png")
             pp_user.thumbnail((100, 100))
             Image.Image.paste(img_ranked, pp_user, (start_display_pp+ind_player_pixel, coords_classement_pp[ind_podium][1]))
             pp_user.close()
@@ -468,12 +466,6 @@ async def calc_classement(interaction, type_classement) :
     random_name = randint(1000000, 9999999)
     img_ranked.save(CURRENT_PATH+f"/assets/img_tamp/{random_name}.png")
     img_ranked.close()
-    try :
-        for ind_podium in range(3) :
-            for user_rank in info_classement["classement"][str(ind_podium)] :
-                os.remove(CURRENT_PATH+f"/assets/img_tamp/{user_rank[1]}.png")
-    except :
-        pass
     return random_name
     
     

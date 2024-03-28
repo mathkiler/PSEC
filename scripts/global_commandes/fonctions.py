@@ -379,3 +379,36 @@ def ordre_classement_and_equality(interaction, info_classement) :
             new_classement["self_player"]["info_self_player"][1] = interaction.user.display_name
         
     return new_classement
+
+
+
+def update_get_pp_by_id_user(id_user:int, user_avatar:str) -> None :
+    with open (CURRENT_PATH+f"/assets/storage_pp_users/storage_url_pp_user.txt", 'r') as f :
+        lines = f.readlines()
+    changement_pp = False #var pour savoir si on doit ajouter cette user à la base de donnée des pps
+    ind_line = 0
+    for user in lines :
+        user_info = user.split("|")
+        if id_user == int(user_info[0]) :
+            if user_info[1] == user_avatar : #si rien n'a changé, on rentre à la maison
+                return
+            else : #si l'user a changé sa pp
+                changement_pp = True
+                user_info[1] = user_avatar
+                lines[ind_line] = "|".join(user_info)
+
+    if changement_pp == False :
+        if len(lines) == 0 :
+            saut_ligne = ""
+        else :
+            saut_ligne = "\n"
+        new_line = f"{saut_ligne}{str(id_user)}|{user_avatar}|"
+        lines.append(new_line)
+    #enfin on réécrit les changements apporté au txt base de données
+    with open (CURRENT_PATH+f"/assets/storage_pp_users/storage_url_pp_user.txt", 'w') as f :
+        lines = f.write("".join(lines))
+    #enfin on réécrit ou cree + écrit la nouvelle pp. Si on arrive ici c'est qu'il dois y avoir un changement à faire
+    img_data = requests.get(user_avatar).content
+    with open(CURRENT_PATH+f"/assets/storage_pp_users/{id_user}.png", 'wb') as handler:
+        handler.write(img_data)
+    
