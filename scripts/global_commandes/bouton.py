@@ -146,11 +146,29 @@ class Mes_cartes(discord.ui.View): # Create a class called MyView that subclasse
 class Reroll(discord.ui.View): 
     @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
     async def Confirmer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         test_changement_de_jour()
         await effet_reroll(interaction)
   
 
     @discord.ui.button(label="Annuler", style=discord.ButtonStyle.primary)
     async def Annuler_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
         test_changement_de_jour()
         await interaction.response.send_message("Action annulé", ephemeral=True)
+
+#class bouton pour accépter ou non l'échange demandé
+class Accepter_echange(discord.ui.View): 
+    @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.green)
+    async def Confirmer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        await action_echange_confirme_demarage(interaction)
+
+
+    @discord.ui.button(label="Refuser", style=discord.ButtonStyle.red)
+    async def Annuler_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        await action_echange_annule(interaction)
+        
+
+

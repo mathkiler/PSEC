@@ -24,7 +24,7 @@ link_carte_to_rarete = {
     "E_Cafard_Cucaracha" : "épique",
     "E_Lobo_Nocturno" : "épique",
     "E_Ramon" : "épique",
-    "E_Richalyson" : "épique",
+    "E_Richarlyson" : "épique",
     "H_Gegg" : "héroïque",
     "H_Pomme" : "héroïque",
     "H_Kameto" : "héroïque",

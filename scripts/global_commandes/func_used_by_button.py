@@ -135,25 +135,7 @@ async def mon_album(interaction, le_montrer) :
     resultat_carte_possede = [resultat_carte_possede[k][0] for k in range(len(resultat_carte_possede))]
     sorted(resultat_carte_possede) #on réarange la liste des cartes obtenu au cas où elle est malangé bizarement
         #on calcule la position des images (on démare à -1 car on va compter la carte unknown (carte qui montre celles non obtenue))
-    nombre_totale_carte = 0
-    derange_ordre_cartes = []
-    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
-        for f in fichiers :
-            if f != ".inconnue.png" :
-                derange_ordre_cartes.append(f[:-4])
-                nombre_totale_carte+=1
-        break #on break pour ne parcourir que le premier dossier
-    sorted(derange_ordre_cartes)
-    rarete_list_name_file = ["H_", "E_", "R_", "PC_", "C_"]
-    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
-    for carte in derange_ordre_cartes :
-        for ind_rarete in range(len(rarete_list_name_file)) :
-            if rarete_list_name_file[ind_rarete] in carte :
-                break
-        rarete_list_arrange[ind_rarete].append(carte)
-    ordre_cartes = rarete_list_arrange[4]
-    for k in range(3,-1, -1) :
-        ordre_cartes.extend(rarete_list_arrange[k])
+    nombre_totale_carte = len(ALL_CARTES)
     width_carte = 321
     height_carte = 515
     nb_carte_square = int(sqrt(nombre_totale_carte))
@@ -163,11 +145,10 @@ async def mon_album(interaction, le_montrer) :
     else :
         nb_carte_remain = 1
     
-    
     #enfin, on créer l'image
     album = Image.new('RGBA', (width_carte*nb_carte_square, height_carte*(nb_carte_square+nb_carte_remain)))
     count = 0
-    for carte in ordre_cartes :
+    for carte in ALL_CARTES :
         if carte in resultat_carte_possede :
             im_carte = Image.open(CURRENT_PATH+f"/assets/cartes/{carte}.png")
         else :
@@ -357,3 +338,220 @@ async def effet_reroll(interaction) :
     baseDeDonnees.commit()
     baseDeDonnees.close()
     await interaction.response.send_message(f"Vous avez obtenu {xp_user//2} fragments.", ephemeral=True)
+
+
+async def get_other_user_echange(id_user, lines, ind_plateau) :
+    info_plateau = lines[ind_plateau].split("|")
+    if int(info_plateau[0]) == id_user :
+        placement_ind_user = 0
+        id_user_envoyeur = int(info_plateau[1])
+    else :
+        id_user_envoyeur = int(info_plateau[0])
+        placement_ind_user = 1
+    user_envoyeur = await bot.fetch_user(id_user_envoyeur)
+    return user_envoyeur, placement_ind_user
+
+
+#func du bouton pour annuler l'échange
+async def action_echange_annule(interaction) :
+    _, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    annulation_echange(interaction.user.id)
+    user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+    await interaction.response.send_message(f"Échange avec **{user_envoyeur.global_name}** annulé")
+    await user_envoyeur.send(f"**{interaction.user.global_name}** a refusé l'échange")
+
+
+async def action_echange_confirme_demarage(interaction) :
+    _, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+    await interaction.response.send_message(f"Échange avec **{user_envoyeur.global_name}** démarré.\n Faites un **/echange_ajout_carte** pour ajouter des cartes à échanger\n Faites un **/echange_retire_carte** pour retirer des cartes\nEnfin, appuyez sur `Effectuer l'échange` pour demander à l'autre d'effectuer l'échange", ephemeral=True)
+    await user_envoyeur.send(f"Échange avec **{interaction.user.global_name}** démarré.\n Faites un **/echange_ajout_carte** pour ajouter des cartes à échanger\n Faites un **/echange_retire_carte** pour retirer des cartes\nEnfin, appuyez sur `Effectuer l'échange` pour demander à l'autre d'effectuer l'échange")
+
+
+async def analyse_select_card_echange(interaction, carte, quantite, ind_plateau, lines) :
+    id_user = interaction.user.id
+    test_cration_bdd_user(id_user)
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT nom, nombre_carte_possede FROM cartes as c, joueur as j, carte_possede as cp WHERE c.id == cp.id and cp.id_discord_player == j.id_discord_player and j.id_discord_player == {id_user} AND nombre_carte_possede != 0")
+    resultat_carte_possede = curseur.fetchall()
+    baseDeDonnees.close()
+    #on vire la saut de ligne \n avant pour éviter les bugs
+    lines[ind_plateau] = lines[ind_plateau].replace("\n", "")
+    for test_carte in resultat_carte_possede :
+        if test_carte[0].lower() == carte : 
+            if test_carte[1] >= quantite : #affectation de l'ajout de la carte
+                info_plateau = lines[ind_plateau].split("|")
+                user_envoyeur, placement_ind_user = await get_other_user_echange(id_user, lines, ind_plateau)
+                new_cards_player = ""
+                card_changed = False
+                for card_player in info_plateau[placement_ind_user+2].split("-") :
+                    info_card = card_player.split("#")
+                    if carte == info_card[0] : #si la carte éxite déjà dans l'échange
+                        card_changed = True
+                        info_card[1] = str(quantite)
+                    new_cards_player+="-"+"#".join(info_card)
+                info_plateau[placement_ind_user+2] = new_cards_player[1:]
+                if card_changed == False : #si c'est une nouvelle carte
+                    if len(info_plateau[placement_ind_user+2]) == 0 :
+                        prefix = ""
+                    else :
+                        prefix = "-"
+                    info_plateau[placement_ind_user+2]+=prefix+carte+"#"+str(quantite)
+                info_plateau = "|".join(info_plateau)
+                if ind_plateau+1 == len(lines) :
+                    lines[ind_plateau] = info_plateau
+                else :
+                    lines[ind_plateau] = info_plateau+"\n"
+                with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+                    file_plateau.write("".join(lines))
+                await display_current_plateau(interaction, user_envoyeur, {"info" : "ajout", "carte" : fomatage_carte_into_printable(carte), "quantite" : quantite}, ind_plateau, lines)
+                return
+            else : 
+                await interaction.response.send_message(f"Vous n'avez pas la quantité nécessaire de cartes **{fomatage_carte_into_printable(carte)}**. Vous en avez **{test_carte[1]}**, mais voulez en échanger **{quantite}**", ephemeral=True)
+            return
+    await interaction.response.send_message(f"Vous ne possédez pas la carte **{fomatage_carte_into_printable(carte)}**", ephemeral=True)
+    
+    
+
+
+
+async def display_current_plateau(interaction, user_envoyeur, info_changement, ind_plateau, lines) :
+    lines[ind_plateau] = lines[ind_plateau].replace("\n", "")
+    info_plateau = lines[ind_plateau].split("|")
+    current_user_tested = await bot.fetch_user(int(info_plateau[0]))
+    txt_echange = f"**{current_user_tested.global_name}** échange :"
+    if info_plateau[2] != "" :
+        for card_player in info_plateau[2].split("-") :
+            info_card = card_player.split("#")
+            txt_echange+=f"\n{fomatage_carte_into_printable(info_card[0])} | quantité(s) : {info_card[1]}"
+    txt_echange+="\n\n        :arrows_clockwise:\n"
+    current_user_tested = await bot.fetch_user(int(info_plateau[1]))
+    txt_echange+= f"\n**{current_user_tested.global_name}** échange :"
+    if info_plateau[3] != "" :
+        for card_player in info_plateau[3].split("-") :
+            info_card = card_player.split("#")
+            txt_echange+=f"\n{fomatage_carte_into_printable(info_card[0])} | quantité(s) : {info_card[1]}"
+    embed = discord.Embed(title=f"Plateau d'échange", description=txt_echange)
+    
+    if info_changement["info"] == "ajout" :
+        await interaction.response.send_message(embed=embed, ephemeral=True, view=Affect_echange())
+        await user_envoyeur.send(f"**{interaction.user.global_name}** ajoute la carte **{info_changement['carte']}** en **{info_changement['quantite']}** exemplaire{pluriel(int(info_changement['quantite']))}. Voici le nouvel échange :", embed=embed, view=Affect_echange())
+    elif info_changement["info"] == "suppr" :
+        await interaction.response.send_message(embed=embed, ephemeral=True, view=Affect_echange())
+        await user_envoyeur.send(f"**{interaction.user.global_name}** supprime la carte **{info_changement['carte']}** de l'échange. Voici le nouvel échange :", embed=embed, view=Affect_echange())
+    elif info_changement["info"] == "affect_echange" :
+        await interaction.response.send_message("La demande d'échange a été envoyée. En attente d'une réponse", ephemeral=True)
+        await user_envoyeur.send(f"{interaction.user.global_name} souhaite procéder à l'échange ci-dessous :", embed=embed, view=Acceptation_affect_echange())
+    elif info_changement["info"] == "annule_demande_affectation" :
+        await interaction.response.send_message("Vous avez bien refusé la demande d'échange. Voici le plateau d'échange en cours : ", embed=embed, view=Affect_echange(), ephemeral=True)
+        await user_envoyeur.send(f"{interaction.user.global_name} a refusé votre proposition d'échange. Voici le plateau d'échange en cours : ", embed=embed, view=Affect_echange())
+    elif info_changement["info"] == "affiche_current_plateau" :
+        await interaction.response.send_message("Voici le plateau d'échange en cours : ", embed=embed, view=Affect_echange(), ephemeral=True)
+    elif info_changement["info"] == "problem_transacion" :
+        await interaction.response.send_message("Il y a eu un problème lors de la transaction : une ou plusieurs cartes ont voulu être échangés alors que son possesseur n'en avait pas assez. Voici le plateau d'échange réajusté : ", embed=embed, view=Affect_echange(), ephemeral=True)
+        await user_envoyeur.send(f"Il y a eu un problème lors de la transaction : une ou plusieurs cartes ont voulu être échangés alors que son possesseur n'en avait pas assez. Voici le plateau d'échange réajusté : ", embed=embed, view=Affect_echange())
+
+
+async def action_echange_affect(interaction) :
+    _, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+    await display_current_plateau(interaction, user_envoyeur, {"info" : "affect_echange"}, ind_plateau, lines)
+    
+
+#class bouton pour lancer la demande d'échange
+class Affect_echange(discord.ui.View): 
+    @discord.ui.button(label="Effectuer l'échange", style=discord.ButtonStyle.primary)
+    async def Confirmer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        await action_echange_affect(interaction)
+
+
+
+async def echange_annule_affectation(interaction) :
+    _, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+    await display_current_plateau(interaction, user_envoyeur, {"info" : "annule_demande_affectation"}, ind_plateau, lines)
+
+
+async def echange_confirme_affectation(interaction) :
+    _, ind_plateau, lines = plateau_echange_exist(interaction.user.id)
+    lines[ind_plateau] = lines[ind_plateau].replace("\n", "")
+    info_plateau = lines[ind_plateau].split("|")
+    user_envoyeur, _ = await get_other_user_echange(interaction.user.id, lines, ind_plateau)
+    all_info_echange = [
+        {
+            "id_user" : int(info_plateau[k]),
+            "cartes" : [card.split("#")[0] for card in info_plateau[k+2].split("-")],
+            "quantite" : [card.split("#")[-1] for card in info_plateau[k+2].split("-")]
+        } for k in range(2)
+    ]
+
+    all_cartes_lower = [c.lower() for c in ALL_CARTES]
+    ind_player=0
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    for player in all_info_echange :
+        for ind_carte in range(len(player["cartes"])) :
+            if player["cartes"][0] != "" :
+                nom_carte_with_prefix = ALL_CARTES[all_cartes_lower.index(player["cartes"][ind_carte])]
+                curseur.execute(f"SELECT id FROM Cartes WHERE nom == '{nom_carte_with_prefix}'" )
+                id_carte_tested = curseur.fetchone()[0]
+                curseur.execute(f"SELECT nombre_carte_possede FROM carte_possede WHERE id == {id_carte_tested} AND id_discord_player == {player['id_user']}" )
+                nb_carte_possede_current = curseur.fetchone()[0]
+                if nb_carte_possede_current < int(player["quantite"][ind_carte]) : #si le nombre de carte possédé ne correspond pas réelement à son nombre de carte,, on réajuste et le dis
+                    baseDeDonnees.close()
+                    await echange_reajustement_quantite(interaction, user_envoyeur, lines, ind_plateau, info_plateau, all_cartes_lower)
+                    return
+
+                curseur.execute(f"""UPDATE carte_possede 
+                    SET nombre_carte_possede = nombre_carte_possede - {int(player["quantite"][ind_carte])}
+                    WHERE id_discord_player == {player["id_user"]} AND id == {id_carte_tested}""")
+                
+                curseur.execute(f"""UPDATE carte_possede 
+                    SET nombre_carte_possede = nombre_carte_possede + {int(player["quantite"][ind_carte])}
+                    WHERE id_discord_player == {all_info_echange[ind_player-1]["id_user"]} AND id == {id_carte_tested}""")
+        ind_player+=1
+    baseDeDonnees.commit()
+    baseDeDonnees.close()
+    annulation_echange(interaction.user.id)
+    await interaction.response.send_message("Vous avez accepté l'échange. Transaction effectuée", ephemeral=True)
+    await user_envoyeur.send(f"**{interaction.user.global_name}** a accepté l'échange. Transaction effectuée")
+
+
+async def echange_reajustement_quantite(interaction, user_envoyeur, lines, ind_plateau, info_plateau, all_cartes_lower) :
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    for ind_carte_player in range(2, 4) :
+        info_cartes = info_plateau[ind_carte_player].split("-")
+        for ind_carte in range(len(info_cartes)) :
+            current_card = info_cartes[ind_carte].split("#")
+            nom_carte_with_prefix = ALL_CARTES[all_cartes_lower.index(current_card[0])]
+            curseur.execute(f"SELECT nombre_carte_possede FROM carte_possede as cp, cartes as c WHERE id_discord_player = {int(info_plateau[ind_carte_player-2])} AND cp.id == c.id AND nom == '{nom_carte_with_prefix}'" )
+            nb_carte_possede_current = curseur.fetchone()[0]
+            if nb_carte_possede_current <= int(current_card[1]) :
+                current_card[1] = str(nb_carte_possede_current)
+            info_cartes[ind_carte] = "#".join(current_card)
+        info_plateau[ind_carte_player] = "-".join(info_cartes)
+    lines[ind_plateau] = "|".join(info_plateau)
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+        file_plateau.write("".join(lines))
+    await display_current_plateau(interaction, user_envoyeur, {"info" : "problem_transacion"}, ind_plateau, lines)
+    
+
+
+
+
+
+#class bouton pour accépter ou non laffectation de l'échange
+class Acceptation_affect_echange(discord.ui.View): 
+    @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.green)
+    async def Confirmer_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        await echange_confirme_affectation(interaction)
+
+
+    @discord.ui.button(label="Refuser", style=discord.ButtonStyle.red)
+    async def Annuler_button_callback(self, button, interaction):
+        interaction = select_interaction_argument(interaction, button)
+        await echange_annule_affectation(interaction)

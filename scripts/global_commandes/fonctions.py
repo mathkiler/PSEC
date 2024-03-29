@@ -225,7 +225,7 @@ def create_daily_quest_save_if_not_exist(name_quest, id_user) :
 
 
 
-def pluriel(nb) :
+def pluriel(nb : int) :
     if nb == 1 :
         return ""
     else :
@@ -342,3 +342,105 @@ def check_current_daily_quest(daily_quest_to_test) :
     if daily_quest_to_test == current_daily_quest :
         return True
     return False
+
+#fonction pour avoir le nom de tte les cartes avec ou non le prefix (C_, E_...)
+def get_all_cards(with_prefix) :
+    all_cards = []
+    for carte in ALL_CARTES :
+        if with_prefix :
+            all_cards.append(carte)
+        else :
+            if "PC_" in carte :
+                all_cards.append(carte[3:])
+            else :
+                all_cards.append(carte[2:])
+    return all_cards
+
+
+def plateau_echange_exist(id_user) :
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "r") as file_plateau:
+            lines = file_plateau.readlines()
+    ind_plateau = 0
+    for line in lines :
+        if f"{id_user}" in line :
+            return True, ind_plateau, lines
+        ind_plateau+=1 
+    return False, ind_plateau, lines
+
+def creation_plateau_echange(id_user1, id_user2) :
+    result_exist, _, lines = plateau_echange_exist(id_user1)
+    if result_exist :
+        return False
+    if len(lines) == 0 :
+        lines.append(f"{id_user1}|{id_user2}||")
+    else :
+        lines.append(f"\n{id_user1}|{id_user2}||")
+    with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+        file_plateau.write("".join(lines))
+    return True
+    
+
+def annulation_echange(id_user) :
+    result_exist, ind_plateau, lines = plateau_echange_exist(id_user)
+    if result_exist :
+        lines.pop(ind_plateau)
+        with open(CURRENT_PATH+f"/assets/plateau_echange/plateaux.txt", "w") as file_plateau:
+            file_plateau.write("".join(lines))
+
+
+
+
+def get_nom_rarete_all_cartes(rarete) :
+    rarete_list_name_file = ["H_", "E_", "R_", "pc_", "C_"]
+    all_cards = []
+    ind_rarete_jcpa = rarete_list_name_file.index(rarete)
+    for (repertoire, sousRepertoires, fichiers) in os.walk(CURRENT_PATH+"/assets/cartes"):
+        for f in fichiers :
+            if f != ".inconnue.png" :
+                all_cards.append(f[:-4].replace("PC_", "pc_"))
+        break #on break pour ne parcourir que le premier dossier
+    sorted(all_cards)
+    
+    to_replace = {"H_" : "héroïque // ", "C_" : "commun // ", "R_" : "rare // ", "E_" : "épique", "pc_" : "peu courant // "}
+    rarete_list_arrange = [[], [], [], [], []] #arrangé dans le sens "C_", "PC_", "R_", "E_", "H_"
+    for carte in all_cards :
+        for ind_rarete in range(len(rarete_list_name_file)) :
+            if rarete_list_name_file[ind_rarete] in carte :
+                break
+        rarete_list_arrange[ind_rarete].append(carte.replace(rarete_list_name_file[ind_rarete], to_replace[rarete_list_name_file[ind_rarete]]))
+    return rarete_list_arrange[ind_rarete_jcpa]
+
+
+def suppression_carte(id_user, ind_plateau, lines, carte) :
+    info_plateau = lines[ind_plateau].split("|")
+    if int(info_plateau[0]) == id_user :
+        placement_ind_user = 2
+    else :
+        placement_ind_user = 3
+    cards = info_plateau[placement_ind_user].split("-")
+
+    ind_carte = 0
+    for card in cards :
+        if carte in card.split("#")[0] :
+            cards.pop(ind_carte)
+            new_cards = "-".join(cards)
+            info_plateau[placement_ind_user] = new_cards
+            lines[ind_plateau] = "|".join(info_plateau)
+            if ind_plateau+1 != len(lines) and "\n" not in lines[ind_plateau] :
+                lines[ind_plateau]+="\n"
+            return True, lines
+        ind_carte+=1
+    return False, lines
+    
+
+
+
+def fomatage_carte_into_printable(carte) :
+    carte = carte.lower()
+    if "pc_" in carte :
+        carte = carte.replace("pc_", "peu courant - ")
+    to_replace = {"h_" : "héroïque - ", "c_" : "commun - ", "r_" : "rare - ", "e_" : "épique - "}
+    for rarete in to_replace :
+        if rarete in carte :
+            carte = carte.replace(rarete, to_replace[rarete])
+    return carte
