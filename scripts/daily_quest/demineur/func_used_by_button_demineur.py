@@ -71,7 +71,7 @@ async def demine_case(interaction) :
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative restante : 0", description=discord_txt)
             await interaction.response.edit_message(embed=embed)
-            await interaction.followup.send(f"Perdu ! Réfléchit mieux la prochaine fois :upside_down:")
+            await interaction.followup.send(f"Perdu ! Réfléchis mieux la prochaine fois :upside_down:")
         else : #il perd juste une chance sur x
             discord_txt = convert_txt_to_discord_demineur(interaction.user.id)
             embed = discord.Embed(title=f"Nombre de bombes : {get_nb_bombes()}\nTentative restante : {tentative_restante}", description=discord_txt)
