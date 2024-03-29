@@ -89,11 +89,43 @@ class Start_opening(discord.ui.View):
         interaction = select_interaction_argument(interaction, button)
         await opening(interaction, 10)
 
+    @discord.ui.button(label="Ouvrir le max de cartes", style=discord.ButtonStyle.primary)
+    async def ouvrir_max_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        interaction = select_interaction_argument(interaction, button)
+        nb_openning_possible = count_nb_openning_possible(interaction.user.id)
+        if nb_openning_possible == 0 :
+            await opening(interaction, 1)
+        if nb_openning_possible <= 10 :
+            await opening(interaction, nb_openning_possible)
+        else :
+            await interaction.response.send_message(f"Vous vous apprêtez à faire **{nb_openning_possible}** cartes opennig d'un coup et à dépenser **{nb_openning_possible*5}** fragments.\n Confirmez-vous ?", view=Validation_big_openning(), ephemeral=True)
+
     @discord.ui.button(label="Annuler", style=discord.ButtonStyle.red)
     async def non_button_callback(self, button, interaction):
         test_changement_de_jour()
         interaction = select_interaction_argument(interaction, button)
         await interaction.response.send_message("Action annulée", ephemeral=True)
+
+
+class Validation_big_openning(discord.ui.View): 
+    @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.primary)
+    async def oui_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        interaction = select_interaction_argument(interaction, button)
+        nb_openning_possible = count_nb_openning_possible(interaction.user.id)
+        await opening(interaction, nb_openning_possible)
+
+    @discord.ui.button(label="Annuler", style=discord.ButtonStyle.red)
+    async def non_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        interaction = select_interaction_argument(interaction, button)
+        await interaction.response.send_message("Action annulée", ephemeral=True)
+
+
+
+    
+
 
 
 #bouton/message pour afficher mes cartes

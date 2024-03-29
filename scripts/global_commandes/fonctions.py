@@ -343,6 +343,11 @@ def check_current_daily_quest(daily_quest_to_test) :
         return True
     return False
 
+
+def count_nb_openning_possible(id_user) :
+    nb_fragments = get_fragments_by_user(id_user)
+    return nb_fragments//5
+
 #fonction pour avoir le nom de tte les cartes avec ou non le prefix (C_, E_...)
 def get_all_cards(with_prefix) :
     all_cards = []
@@ -444,3 +449,4 @@ def fomatage_carte_into_printable(carte) :
         if rarete in carte :
             carte = carte.replace(rarete, to_replace[rarete])
     return carte
+
