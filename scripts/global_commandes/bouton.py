@@ -189,6 +189,42 @@ class Reroll(discord.ui.View):
         test_changement_de_jour()
         await interaction.response.send_message("Action annulé", ephemeral=True)
 
+
+#boutons pour afficher les classements 
+class Mon_classement(discord.ui.View): 
+    @discord.ui.select( 
+            placeholder = "Choisir un type de classement",
+            min_values = 1, 
+            max_values = 1, 
+            options = [ 
+                discord.SelectOption(
+                    label="Collectionneur",
+                    description="Le plus de cartes possédées (sans doublons)"
+                ),
+                discord.SelectOption(
+                    label="Super fan",
+                    description="Le plus de fois la même carte"
+                ),
+                discord.SelectOption(
+                    label="Grip sou",
+                    description="Le plus de fragments"
+                ),
+                discord.SelectOption(
+                    label="Farmer",
+                    description="Le plus de XP"
+                )
+            ]
+        )
+    async def select_callback(self, select, interaction): # the function called when the user is done selecting options
+        await interaction.response.defer(ephemeral=True)
+        img_name = await calc_classement(interaction, select.values[0])
+        embed = discord.Embed(title=f"Classement")
+        embed.set_image(url=f"attachment://{img_name}.png")
+        #enfin on répond à l'utilisateur par l'image, bouton...
+        msg = await interaction.original_response()
+        await msg.edit(embed = embed, file=discord.File(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"))
+        os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
+
 #class bouton pour accépter ou non l'échange demandé
 class Accepter_echange(discord.ui.View): 
     @discord.ui.button(label="Confirmer", style=discord.ButtonStyle.green)
@@ -202,5 +238,4 @@ class Accepter_echange(discord.ui.View):
         interaction = select_interaction_argument(interaction, button)
         await action_echange_annule(interaction)
         
-
 

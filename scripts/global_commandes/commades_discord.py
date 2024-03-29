@@ -127,6 +127,8 @@ async def affiche_bdd(interaction : discord.Interaction) :
 
 @bot.command(name="help", description="Affiche le fonctionnement du jeu et de ses commandes.")
 async def help(interaction: discord.Interaction) :
+    test_cration_bdd_user(interaction.user.id)
+    test_changement_de_jour()
     embed = discord.Embed(description="""
 Le but est d'obtenir toutes les cartes. Pour ce faire il existe 2 possibilités : 
 • Faire des cartes openning
@@ -157,7 +159,18 @@ Les commandes disponibles sont :
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-#commande pour ajouter une carte (une par une)
+@bot.command(name="classement", description="Affiche les classements selon plusieurs catégories.")
+async def classement(interaction: discord.Interaction) :
+    test_cration_bdd_user(interaction.user.id)
+    test_changement_de_jour()
+    await interaction.response.defer(ephemeral=True)
+    img_name = await calc_classement(interaction, "Collectionneur")
+    embed = discord.Embed(title=f"Classement")
+    embed.set_image(url=f"attachment://{img_name}.png")
+    #enfin on répond à l'utilisateur par l'image, bouton...
+    await interaction.followup.send(embed = embed, view=Mon_classement(), file=discord.File(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png"))
+    os.remove(CURRENT_PATH+f"/assets/img_tamp/{img_name}.png")
+
 @bot.command(name="album", description="Permet d'afficher son album directement")
 async def album(
     interaction: discord.Interaction,
@@ -170,7 +183,7 @@ async def album(
     test_changement_de_jour()
     await mon_album(interaction, reponse)
 
-#commande pour ajouter une carte (une par une)
+
 @bot.command(name="stats", description="Permet d'afficher ses stats directement")
 async def stats(
     interaction: discord.Interaction,

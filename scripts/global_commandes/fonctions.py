@@ -344,6 +344,76 @@ def check_current_daily_quest(daily_quest_to_test) :
     return False
 
 
+
+def ordre_classement_and_equality(interaction, info_classement) :
+    new_classement = {
+        "0" : [], #premier
+        "1" : [], #deuxième
+        "2" : [], #troisième
+        "self_player" : {
+            "in_podium" : False,
+            "info_self_player" : None
+        }
+    }
+    current_best_score = info_classement[0][0]
+    position = 1
+    current_podium = 0
+    in_podium = True
+    for player in info_classement :
+        if player[0] == current_best_score and in_podium == True:
+            if player[1] == interaction.user.id :
+                new_classement["self_player"]["in_podium"] = True
+            new_classement[str(current_podium)].append(player)
+        elif current_podium <= 1 :
+            current_podium+=1
+            current_best_score = player[0]
+            new_classement[str(current_podium)].append(player)
+            position+=1            
+        elif player[0] != current_best_score :
+            in_podium = False
+            position+=1
+            current_best_score = player[0]
+        if new_classement["self_player"]["in_podium"] == False and new_classement["self_player"]["info_self_player"] == None and player[1] == interaction.user.id:
+            new_classement["self_player"]["in_podium"] = False
+            new_classement["self_player"]["info_self_player"] = [info for info in player]
+            new_classement["self_player"]["info_self_player"].append(str(position)+" ème ")
+            new_classement["self_player"]["info_self_player"][1] = interaction.user.display_name
+        
+    return new_classement
+
+
+
+def update_get_pp_by_id_user(id_user:int, user_avatar:str) -> None :
+    with open (CURRENT_PATH+f"/assets/storage_pp_users/storage_url_pp_user.txt", 'r') as f :
+        lines = f.readlines()
+    changement_pp = False #var pour savoir si on doit ajouter cette user à la base de donnée des pps
+    ind_line = 0
+    for user in lines :
+        user_info = user.split("|")
+        if id_user == int(user_info[0]) :
+            if user_info[1] == user_avatar : #si rien n'a changé, on rentre à la maison
+                return
+            else : #si l'user a changé sa pp
+                changement_pp = True
+                user_info[1] = user_avatar
+                lines[ind_line] = "|".join(user_info)
+
+    if changement_pp == False :
+        if len(lines) == 0 :
+            saut_ligne = ""
+        else :
+            saut_ligne = "\n"
+        new_line = f"{saut_ligne}{str(id_user)}|{user_avatar}|"
+        lines.append(new_line)
+    #enfin on réécrit les changements apporté au txt base de données
+    with open (CURRENT_PATH+f"/assets/storage_pp_users/storage_url_pp_user.txt", 'w') as f :
+        lines = f.write("".join(lines))
+    #enfin on réécrit ou cree + écrit la nouvelle pp. Si on arrive ici c'est qu'il dois y avoir un changement à faire
+    img_data = requests.get(user_avatar).content
+    with open(CURRENT_PATH+f"/assets/storage_pp_users/{id_user}.png", 'wb') as handler:
+        handler.write(img_data)
+    
+
 def count_nb_openning_possible(id_user) :
     nb_fragments = get_fragments_by_user(id_user)
     return nb_fragments//5
@@ -449,4 +519,5 @@ def fomatage_carte_into_printable(carte) :
         if rarete in carte :
             carte = carte.replace(rarete, to_replace[rarete])
     return carte
+
 
