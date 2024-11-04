@@ -24,7 +24,6 @@ Example to install lib :
 
     pip install discord
 
-
 **Installing**
 
 You can download the program on GitHub and run it on your own server.
@@ -43,6 +42,7 @@ Then you can run the file psec-bot.py and enjoy the bot
 
     python3 psec-bot.py
     
+
 **Use as a deamon service (linux)**
 
 Due to common recomendation, to use python extention as *discord* you have to install it in a virtual environement dedicated to your applicataion.
