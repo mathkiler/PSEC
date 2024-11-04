@@ -28,7 +28,7 @@ async def voir_stats(interaction, le_cacher) :
     baseDeDonnees.close()
     #calcule du lvl du joueur
     _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) # TODO: replace with getter and delete CSV reading
-    lvl = get_level_by_user(id_user)
+    # lvl = get_level_by_user(id_user)
 
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
@@ -103,20 +103,20 @@ def pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening) :
         #partie qui va piocher la carte en fonction des proba du niveau du joueur
         random_number = randint(1,10000) #random factor into 1 and 10000
         tab_proba_by_level = PROBA[get_level_by_user(id_user)] #probabilioty list by level
-        print("debug: random number is %d\n",random_number)
-        print("debug: proba list retuned is %d based on level value:%d\n",random_number,get_level_by_user(id_user))
+        print(f"debug: random number is {random_number}\n")
+        print(f"debug: proba list retuned is {tab_proba_by_level} based on level value:{get_level_by_user(id_user)}\n")
 
         cumule_proba_value = 0
         niveau_rarete = -1
-        for i in range(0, len(tab_proba_by_level)-1):
+        for i in range(len(tab_proba_by_level)):
             cumule_proba_value+=tab_proba_by_level[i]
-            if (i==len(tab_proba_by_level)-1 and random_number>=cumule_proba_value) : #provide out of range exception, better implementation TODO
-                niveau_rarete=i
+            if random_number <= cumule_proba_value :
+                niveau_rarete = i
                 break
-            elif (random_number >= cumule_proba_value and random_number < (cumule_proba_value + tab_proba_by_level[i+1])):
-                niveau_rarete=i
-                break
-
+        
+        if niveau_rarete == -1 :
+            raise Exception("Failed to catch card's quality")
+                    
         print("debug: resultat de la pioche: niveau de rareté:%d\n",niveau_rarete) 
 
         #on affecte tout les changements à la BDD

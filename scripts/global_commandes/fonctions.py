@@ -89,18 +89,18 @@ def test_joueur_ecrit_commande(msg) :
 
 def get_level_by_user(id_user) :
     playerXp = get_xp_by_user(id_user)
-
+    print( playerXp, len(XP_LEVELS))
     if playerXp < 50 :
             return 0
     elif playerXp >= 4000 :
             return 10
     else :
-        for i in range(1,len(XP_LEVELS)-2) :      
+        for i in range(1,len(XP_LEVELS)-1) :
+            print(i, playerXp < XP_LEVELS[i+1] and playerXp >= XP_LEVELS[i],  playerXp , XP_LEVELS[i+1], XP_LEVELS[i])
             if ( playerXp < XP_LEVELS[i+1] and playerXp >= XP_LEVELS[i]):
                 return i
-            else:
-                raise Exception("Unexpected value when parsing xp to level number !")
-                return-1
+        raise Exception("Unexpected value when parsing xp to level number !")
+        return-1
 
 
 def get_xp_by_user(id_user) :
