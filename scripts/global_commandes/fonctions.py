@@ -87,6 +87,28 @@ def test_joueur_ecrit_commande(msg) :
     return False
 
 
+def get_level_by_user(id_user) :
+    playerXp = get_xp_by_user(id_user)
+
+    if playerXp < 50 :
+            return 0
+    elif playerXp >= 4000 :
+            return 10
+    else :
+        for i in range(1,len(XP_LEVELS)-2) :      
+            if ( playerXp < XP_LEVELS[i+1] and playerXp >= XP_LEVELS[i]):
+                return i
+            else:
+                raise Exception("Unexpected value when parsing xp to level number !")
+                return-1
+
+
+def get_xp_by_user(id_user) :
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT xp FROM joueur Where id_discord_player == {id_user}")
+    return curseur.fetchone()[0]   
+
 
 def get_fragments_by_user(id_user) :
     baseDeDonnees = sqlite3.connect(db_path)
@@ -94,6 +116,7 @@ def get_fragments_by_user(id_user) :
     curseur.execute(f"SELECT fragment FROM joueur Where id_discord_player == {id_user}")
     result = curseur.fetchone()[0]
     return result
+
 
 def get_data_lvl_from_csv(xp_user) :
     with open(CURRENT_PATH+'/assets/proba/Probabilité drop par niveau.csv', newline='') as csvfile:
@@ -103,6 +126,7 @@ def get_data_lvl_from_csv(xp_user) :
         if lvl > xp_user :
             break
     return data, lvl_column, lvl
+
 
 #return True if the user already did the daily quest
 def test_daily_quest_completed(id_user) :
@@ -116,11 +140,11 @@ def test_daily_quest_completed(id_user) :
         return True
 
 
-
 def reset_daily_quest_all_users(baseDeDonnees, curseur) :
     curseur.execute("""UPDATE Joueur
                     SET daily_quest_done = 0""")
     baseDeDonnees.commit()
+
 
 def get_daily_quest(id_user) :
     global motus_msg_player
