@@ -103,8 +103,8 @@ def pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening) :
         #partie qui va piocher la carte en fonction des proba du niveau du joueur
         random_number = randint(1,10000) #random factor into 1 and 10000
         tab_proba_by_level = PROBA[get_level_by_user(id_user)] #probabilioty list by level
-        print(f"debug: random number is {random_number}\n")
-        print(f"debug: proba list retuned is {tab_proba_by_level} based on level value:{get_level_by_user(id_user)}\n")
+        # print(f"debug: random number is {random_number}\n")
+        # print(f"debug: proba list retuned is {tab_proba_by_level} based on level value:{get_level_by_user(id_user)}\n")
 
         cumule_proba_value = 0
         niveau_rarete = -1
@@ -117,7 +117,7 @@ def pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening) :
         if niveau_rarete == -1 :
             raise Exception("Failed to catch card's quality")
                     
-        print("debug: resultat de la pioche: niveau de rareté:%d\n",niveau_rarete) 
+        #print("debug: resultat de la pioche: niveau de rareté:%d\n",niveau_rarete) 
 
         #on affecte tout les changements à la BDD
         curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[niveau_rarete]}' ORDER BY RANDOM() LIMIT 1 ")
