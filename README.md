@@ -51,6 +51,12 @@ Run the follow command:
     path-of-my-venv/bin/pip install dependencies-names
 check the list of dependencies in 'for_linux/install-libs-linux.sh' file.
 
-Then run the script 'start-psecbot-script.sh' manually or as an entry point of your daemon service.
+Then create and run the script 'start-psecbot-script.sh' manually or as an entry point of your daemon service.
+Script sample:
+    #!/bin/bash
+    
+    #cd project-path
+    . ./pommebot-venv/bin/activate
+    python3 ./psec-bot.py
 
 Please check official Python documentation to check how to link VENV to your script's execution.
