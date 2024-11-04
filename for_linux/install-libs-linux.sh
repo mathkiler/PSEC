@@ -6,4 +6,3 @@ pip install pillow
 pip install python-dotenv
 pip install numpy
 pip install py-cord
-pip install requests
