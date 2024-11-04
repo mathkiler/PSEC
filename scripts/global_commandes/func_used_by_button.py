@@ -72,10 +72,6 @@ async def opening(interaction, nb_opening) :
             await interaction.response.send_message(f"Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments.", ephemeral=True)
     else :
         #on lit le taux de drop en fonction du niveau du joueur
-        #data, lvl_column, lvl = get_data_lvl_from_csv(resultat_user_stats[3])
-        #operations qui permet d'avoir la liste des proba selon le niveau du joueur
-        #proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
-        #carte_obtained = pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening)
         carte_obtained = pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening)
         
         #Enfin, on affiche le résultat au joueur sur discord
@@ -103,8 +99,6 @@ def pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening) :
         #partie qui va piocher la carte en fonction des proba du niveau du joueur
         random_number = randint(1,10000) #random factor into 1 and 10000
         tab_proba_by_level = PROBA[get_level_by_user(id_user)] #probabilioty list by level
-        # print(f"debug: random number is {random_number}\n")
-        # print(f"debug: proba list retuned is {tab_proba_by_level} based on level value:{get_level_by_user(id_user)}\n")
 
         cumule_proba_value = 0
         niveau_rarete = -1
@@ -117,8 +111,6 @@ def pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening) :
         if niveau_rarete == -1 :
             raise Exception("Failed to catch card's quality")
                     
-        #print("debug: resultat de la pioche: niveau de rareté:%d\n",niveau_rarete) 
-
         #on affecte tout les changements à la BDD
         curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[niveau_rarete]}' ORDER BY RANDOM() LIMIT 1 ")
         carte_tiree = curseur.fetchone()
