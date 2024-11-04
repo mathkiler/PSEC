@@ -24,6 +24,7 @@ Example to install lib :
 
     pip install discord
 
+
 **Installing**
 
 You can download the program on GitHub and run it on your own server.
@@ -42,3 +43,14 @@ Then you can run the file psec-bot.py and enjoy the bot
 
     python3 psec-bot.py
     
+**Use as a deamon service (linux)**
+
+Due to common recomendation, to use python extention as *discord* you have to install it in a virtual environement dedicated to your applicataion.
+Run the follow command:
+    python -m my-virtual-env-name path-of-my-venv
+    path-of-my-venv/bin/pip install dependencies-names
+check the list of dependencies in 'for_linux/install-libs-linux.sh' file.
+
+Then run the script 'start-psecbot-script.sh' manually or as an entry point of your daemon service.
+
+Please check official Python documentation to check how to link VENV to your script's execution.
