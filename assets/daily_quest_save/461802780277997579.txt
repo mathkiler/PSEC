@@ -1,0 +1,8 @@
+:blue_circle:|:brown_circle:|:purple_circle:|:green_circle:
+:red_circle:|:blue_circle:|:black_circle:|:green_circle:
+:red_circle:|:brown_circle:|:white_circle:|:red_circle:
+:blue_circle:|:brown_circle:|:purple_circle:|:orange_circle:
+:brown_circle:|:blue_circle:|:purple_circle:|:green_circle:
+:blue_circle:|:brown_circle:|:purple_circle:|:green_circle:
+:blue_circle:|:black_circle:|:black_circle:|:brown_circle:
+|||

@@ -41,7 +41,7 @@ bot_id =[1066399413062357062, 1112502285503824003]
 nom_rarete = ["commun", "peu courant", "rare", "épique", "héroïque"]
 liste_comandes = ["/commandes", "/proba" "/force_change_jour", "/ajout_carte", "/affiche_bdd", "/reroll", "/artistes"]
 DATE_actuel = date.today()  #date du jour
-daily_quest_list_name = ["roue de la fortune", "bouton de quackity", "motus", "demineur", "puissance 4"]#liste contenant les nom des events.
+daily_quest_list_name = ["roue de la fortune", "bouton de quackity", "motus", "demineur", "puissance 4", "mastermind"]#liste contenant les nom des events.
 motus_msg_player = {} #dictionnaire utile pour le jeu motus. En clé, l'id discord. En value, (le message qui contient le jeu, nombre d'essai restant, mot donnés )
 demineur_redirect_emote = { #dict des emotes poru le démineur
     "c" : ":white_medium_square:",

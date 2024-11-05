@@ -181,9 +181,9 @@ def selecteur_info_daily_quest(name_quest) :
     return "None"
 
 def selecteur_txt_initialisation_daily_quest(name_quest) :
-    if name_quest == daily_quest_list_name[1] :
+    if name_quest == "bouton de quackity" :
         return "3"
-    elif name_quest == daily_quest_list_name[3] : #initialisation du plateau démineur
+    elif name_quest == "demineur" : #initialisation du plateau démineur
         plateau_save = ["0\n", "1\n"]
         plateau_save.extend(["c\n" if k == 9*9-1 else "c," for k in range(9*9)])
         ind_list_bomb = []
@@ -198,11 +198,20 @@ def selecteur_txt_initialisation_daily_quest(name_quest) :
         plateau_save.extend(ind_list_bomb)
         plateau_save.append("3")
         return "".join(plateau_save)
-    elif name_quest == daily_quest_list_name[4] :
+    elif name_quest == "puissance 4" :
         save_to_paste = ""
         for k in range(6*7) :
             save_to_paste+="v,"
         return save_to_paste[:-1] #[:-1] pour enlever la dernière virgule ","
+    elif name_quest == "mastermind" :
+        colors_master = [":white_circle:", ":black_circle:", ":red_circle:", ":blue_circle:", ":brown_circle:", ":purple_circle:", ":green_circle:", ":yellow_circle:", ":orange_circle:"]
+        color_choosed = []
+        for k in range(4) :
+            current_color = choice(colors_master)
+            while current_color in color_choosed :
+                current_color = choice(colors_master)
+            color_choosed.append(current_color)
+        return "|".join(color_choosed)+"\n|||"
 
     return ""
 
