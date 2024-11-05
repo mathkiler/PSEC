@@ -27,7 +27,8 @@ async def voir_stats(interaction, le_cacher) :
     resultat_carte_possede = curseur.fetchall()
     baseDeDonnees.close()
     #calcule du lvl du joueur
-    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) 
+    _, lvl_column , lvl = get_data_lvl_from_csv(resultat_user_stats[3]) # TODO: replace with getter and delete CSV reading
+    # lvl = get_level_by_user(id_user)
 
     #on range les carte possédé dans leur carégorie pour en même temps compter les doublons de chaques cartes
     carte_arange = {"commun" : {}, "peu courant" : {}, "rare" : {}, "épique" : {}, "héroïque" : {}}
@@ -71,10 +72,8 @@ async def opening(interaction, nb_opening) :
             await interaction.response.send_message(f"Fond insuffisant. Il vous manque {nb_opening*5-resultat_user_stats[1]} fragments.", ephemeral=True)
     else :
         #on lit le taux de drop en fonction du niveau du joueur
-        data, lvl_column, lvl = get_data_lvl_from_csv(resultat_user_stats[3])
-        #operations qui permet d'avoir la liste des proba selon le niveau du joueur
-        proba_box = [float((piece_of_data)[:-1].replace(",", ".")) for piece_of_data in data[lvl_column.index(lvl)][1:-1]]
-        carte_obtained = pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening)
+        carte_obtained = pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening)
+        
         #Enfin, on affiche le résultat au joueur sur discord
         img_path = CURRENT_PATH+f"/assets/animations/open-box.gif"
         file = discord.File(img_path)
@@ -94,19 +93,26 @@ async def opening(interaction, nb_opening) :
                 await interaction.followup.send(f"<@{id_user}>", embed=embed, file=file)
 
 #fonction utilisé pour obtenir une liste de carte pioché (et leurs infos) en fonction du nombre de carte à piocher
-def pioche_cartes(proba_box, curseur, baseDeDonnees, id_user, nb_opening) :
+def pioche_cartes(curseur, baseDeDonnees, id_user, nb_opening) :
     carte_obtained = []
     for c in range(nb_opening) :
         #partie qui va piocher la carte en fonction des proba du niveau du joueur
-        random_number = random()*100
-        cumule_proba = 0
-        for prob in proba_box :
-            if prob+cumule_proba >= random_number :
+        random_number = randint(1,10000) #random factor into 1 and 10000
+        tab_proba_by_level = PROBA[get_level_by_user(id_user)] #probabilioty list by level
+
+        cumule_proba_value = 0
+        niveau_rarete = -1
+        for i in range(len(tab_proba_by_level)):
+            cumule_proba_value+=tab_proba_by_level[i]
+            if random_number <= cumule_proba_value :
+                niveau_rarete = i
                 break
-            cumule_proba+=prob
-        index_box = proba_box.index(prob)
+        
+        if niveau_rarete == -1 :
+            raise Exception("Failed to catch card's quality")
+                    
         #on affecte tout les changements à la BDD
-        curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[index_box]}' ORDER BY RANDOM() LIMIT 1 ")
+        curseur.execute(f"SELECT id, nom, rarete FROM Cartes WHERE rarete == '{nom_rarete[niveau_rarete]}' ORDER BY RANDOM() LIMIT 1 ")
         carte_tiree = curseur.fetchone()
         curseur.execute(f"""UPDATE Joueur 
                     SET fragment = fragment - 5
