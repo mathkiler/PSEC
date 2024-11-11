@@ -64,6 +64,13 @@ async def force_change_jour(interaction: discord.Interaction) :
 
 
 
+#comande admin only ou activer ou non l'envoi du lien vers les jeux du web
+@bot.command(name="activation_web_link", description="comande admin only ou activer ou non l'envoi du lien vers les jeux du web")
+async def activation_web_link(interaction: discord.Interaction) :
+    if admin_restrict(interaction.user.id) :
+        game_web_activation[0] = not game_web_activation[0] #change l'état de l'activation du bouton (cellui ci resera affiché car il faudrai relancer le bot pour l'elever)
+        await interaction.response.send_message(f"L'état du bouton est passé à [{game_web_activation[0]}]", ephemeral=True)
+
 #commande qui montre les artistes
 @bot.command(name="artistes", description="Affiche les artistes qui ont participé pour les cartes.")
 async def artistes(interaction : discord.Interaction) :
