@@ -675,3 +675,27 @@ class Acceptation_affect_echange(discord.ui.View):
     async def Annuler_button_callback(self, button, interaction):
         interaction = select_interaction_argument(interaction, button)
         await echange_annule_affectation(interaction)
+
+
+
+
+#fonction pour afficher au joueur le lien des jeu du web
+async def get_jeu_du_web_link(interaction) :
+    user_id = interaction.user.id
+    baseDeDonnees = sqlite3.connect(db_path)
+    curseur = baseDeDonnees.cursor()
+    curseur.execute(f"SELECT * FROM web_discord_ID_link")
+    web_discord_link_table = curseur.fetchall()
+
+    #check si le joueur est déjà renseigné dans la bdd
+    if user_id in [web_discord_link_table[i][0] for i in range(len(web_discord_link_table))] :
+        id_web = web_discord_link_table[[web_discord_link_table[i][0] for i in range(len(web_discord_link_table))].index(user_id)][1]
+    else :
+        caracter = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+        id_web = "".join([choice(caracter) for k in range(18)])
+        curseur.execute("INSERT INTO web_discord_ID_link (id_discord_player, id_web_player) VALUES (?, ?);", (user_id, id_web))
+        baseDeDonnees.commit()
+    await interaction.response.send_message(f"Voici votre lien pour vos jeux du web (celui-ci est un lien personnel à ne pas partager) : http://localhost:5555/{id_web}", ephemeral=True)
+    baseDeDonnees.close()
+
+

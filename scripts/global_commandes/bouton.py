@@ -68,6 +68,12 @@ class Voir_Commandes(discord.ui.View):
         else :
             await selecteur_lunch_quest(name_quest, interaction)
 
+    @discord.ui.button(label="Jeu du web", row=4, style=discord.ButtonStyle.green)
+    async def Jeu_du_web_button_callback(self, button, interaction):
+        test_changement_de_jour()
+        interaction = select_interaction_argument(interaction, button)
+        await get_jeu_du_web_link(interaction)
+
 
 #bouton/message pour choisir combien de carte l'utilisateur veux ouvrir d'un coup. Ou s'il veux finalemnt annuler l'action (ce ui au passage ne change rien du tout)
 class Start_opening(discord.ui.View): 
