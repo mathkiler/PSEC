@@ -682,7 +682,7 @@ class Acceptation_affect_echange(discord.ui.View):
 #fonction pour afficher au joueur le lien des jeu du web
 async def get_jeu_du_web_link(interaction) :
     if game_web_activation[0] :
-        user_id = interaction.user.id
+        user_id = interaction.user.id+randint(0,100000)
         baseDeDonnees = sqlite3.connect(db_path)
         curseur = baseDeDonnees.cursor()
         curseur.execute(f"SELECT * FROM web_discord_ID_link")
@@ -696,7 +696,21 @@ async def get_jeu_du_web_link(interaction) :
             id_web = "".join([choice(caracter) for k in range(18)])
             curseur.execute("INSERT INTO web_discord_ID_link (id_discord_player, id_web_player) VALUES (?, ?);", (user_id, id_web))
             baseDeDonnees.commit()
-        await interaction.response.send_message(f"Voici votre lien pour vos jeux du web (celui-ci est un lien personnel à ne pas partager) : http://localhost:5555/{id_web}", ephemeral=True)
+            #on modifie les messages lié à la bdd
+            index_msg_modif = (len(web_discord_link_table)+1) // 50 #index du message à modifier sachant qu'on prend max 49 utilisateur (ligne) par message ce qui fait (18*2+1)*50 = 1900 caractères (discord a un max de 2000 caractères par messages)
+            #pour la ligne au dessus, on fait un +1 pour prendre en compte la ligne qu'on viens de rajouter
+            channel = interaction.client.get_channel(ID_CHANNEL_BOT_ONLY)
+            message = await channel.fetch_message(ID_MESSAGES_DB_ID_DISCORD_WEB[index_msg_modif])
+            #creation noveau message
+            old_content = message.content
+            if old_content == "." :
+                new_content = f"{user_id}|{id_web}"
+            else :
+                new_content = old_content+"\n"+f"{user_id}|{id_web}"
+            print(new_content)
+            await message.edit(content=new_content)
+            
+        await interaction.response.send_message(f"Voici votre lien pour vos jeux du web (celui-ci est un lien personnel à ne pas partager) : http://localhost:5555/{id_web}", ephemeral=True) 
         baseDeDonnees.close()
     else :
         await interaction.response.send_message(f"Ce service est momentanément indisponible. Veuillez réessayer plus tard. Pomme-bot vous présente ses excuses pour la gêne occasionnée.", ephemeral=True)
